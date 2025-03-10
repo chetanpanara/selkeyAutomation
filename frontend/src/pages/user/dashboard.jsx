@@ -1,0 +1,412 @@
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Plus, MoreVertical } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchAllFolders,
+  createFolder,
+  deleteFolder,
+} from "@/store/slices/folder-slice";
+import {
+  createWorkflow,
+  getWorkflowCounts,
+} from "@/store/slices/workflow-slice";
+import { useNavigate } from "react-router-dom";
+
+function UserDashboard() {
+  // State variables
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
+  const [isCreateWorkflowDialogOpen, setIsCreateWorkflowDialogOpen] =
+    useState(false);
+  const [isAddFolderDialogOpen, setIsAddFolderDialogOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [workflowFormData, setWorkflowFormData] = useState({
+    workflowName: "",
+    folderId: "",
+  });
+  const [folders, setFolders] = useState([]);
+
+  const [showDropdown, setShowDropdown] = useState({});
+  const [activeFolder, setActiveFolder] = useState("");
+  const [workflowCounts, setWorkflowCounts] = useState({});
+  const pieChartData = [
+    { name: "Completed", value: 10, color: "#36A2EB" },
+    { name: "Pending", value: 5, color: "#FF6384" },
+    { name: "In Progress", value: 3, color: "#FFCE56" },
+  ];
+
+  const dropdownMenu = (folderId) => [
+    {
+      name: "Rename",
+      onClick: () => handleEditFolder(folderId),
+    },
+    {
+      name: "Delete",
+      onClick: () => handleDeleteFolder(folderId),
+    },
+  ];
+  // Add useEffect for click outside handler
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showDropdown) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
+  // Create folder handler
+  function handleCreateFolder(e) {
+    e.preventDefault();
+    dispatch(
+      createFolder({ userId: user?.id, folderName: newFolderName })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchAllFolders(user?.id));
+        setNewFolderName("");
+        alert("Folder created successfully");
+        setIsAddFolderDialogOpen(false);
+        // reload the page
+        window.location.reload();
+      } else {
+        alert(data?.payload?.message);
+      }
+    });
+  }
+  // edit folder handler
+  function handleEditFolder(folderId) {
+    console.log("Rename folder with ID:", folderId);
+    setFolders(
+      folders.map((folder) =>
+        folder._id === folderId
+          ? { ...folder, folderName: newFolderName }
+          : folder
+      )
+    );
+  }
+
+  // delete folder handler
+  function handleDeleteFolder(folderId) {
+    dispatch(deleteFolder({ userId: user?.id, folderId: folderId })).then(
+      (data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchAllFolders(user?.id));
+          alert("Folder deleted successfully");
+          // reload the page
+          window.location.reload();
+        } else {
+          alert(data?.payload?.message);
+        }
+      }
+    );
+  }
+  // Create workflow handler
+  function handleCreateWorkflow() {
+    // Ensure the form data is valid before dispatching
+    console.log("workflowFormData", workflowFormData);
+    try {
+      dispatch(
+        createWorkflow({
+          userId: user?.id,
+          folderId: workflowFormData.folderId,
+          workflowName: workflowFormData.workflowName,
+        })
+      ).then((data) => {
+        if (data.payload.success) {
+          alert("Workflow created successfully");
+          setIsCreateWorkflowDialogOpen(false);
+          setWorkflowFormData({
+            userId: "",
+            workflowName: "",
+            folderId: "",
+          }); // Clear the form
+          navigate("/dashboard/workflows");
+        } else {
+          console.log("data", data);
+          alert(data.payload.message);
+        }
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+  // fetch all folders
+  useEffect(() => {
+    dispatch(fetchAllFolders(user?.id)).then((res) => {
+      if (res.payload.success) {
+        setFolders(res.payload.folders);
+      } else {
+        alert(res.payload.message);
+      }
+    });
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    dispatch(
+      getWorkflowCounts({ userId: user?.id, folderId: activeFolder })
+    ).then((res) => {
+      console.log("res", res);
+      setWorkflowCounts(res?.payload?.counts);
+    });
+  }, [dispatch, user, activeFolder]);
+
+  return (
+    <div className="bg-slate-100 p-1 sm:p-4 rounded-lg">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+        <div>
+          <h1 className="font-semibold text-2xl sm:text-3xl mb-2 sm:mb-0">
+            Dashboard
+          </h1>
+          <p className="text-gray-500 text-sm max-w-xl">
+            Create & manage all of your automation workflows in one place with
+            Selkey Automation Dashboard.
+          </p>
+        </div>
+        <Button
+          className="bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-auto mt-4 sm:mt-0"
+          onClick={() => setIsCreateWorkflowDialogOpen(true)}
+        >
+          Create Workflow
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Folders Section */}
+        <div className="bg-white p-4 rounded-lg shadow-sm ">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="font-semibold text-gray-800">Folders</h2>
+            <button
+              onClick={() => setIsAddFolderDialogOpen(true)}
+              className="text-blue-500 hover:bg-blue-50 p-1 rounded"
+            >
+              <Plus size={18} />
+            </button>
+          </div>
+          <hr className="border-gray-200 mb-4" />
+          <div className="p-2 overflow-y-auto h-[calc(100%-49px)]">
+            {/* Render Home folder */}
+            {folders.find((folder) => folder.folderName === "Home") && (
+              <div
+                className={`flex justify-between items-center p-2 rounded cursor-pointer ${
+                  activeFolder === "Home" ? "bg-blue-50" : ""
+                }`}
+                onClick={() => setActiveFolder("Home")}
+              >
+                <span className="font-bold">
+                  Home ({workflowCounts["Home"] || 0})
+                </span>
+              </div>
+            )}
+            {/* Render other folders */}
+            {folders
+              .filter(
+                (folder) =>
+                  folder.folderName !== "Home" && folder.folderName !== "Trash"
+              )
+              .map((folder) => (
+                <div
+                  key={folder._id}
+                  className={`flex justify-between items-center p-2 rounded cursor-pointer ${
+                    activeFolder === folder._id ? "bg-blue-50" : ""
+                  }`}
+                  onClick={() => {
+                    setActiveFolder(folder._id);
+                    setWorkflowFormData((prev) => ({
+                      ...prev,
+                      folderId: folder._id,
+                    }));
+                  }}
+                >
+                  <span>
+                    {folder.folderName} ({workflowCounts[folder._id] || 0})
+                  </span>
+                  <div className="relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDropdown((prev) => ({
+                          ...prev,
+                          [folder._id]: !prev[folder._id],
+                        }));
+                      }}
+                      className="p-1 rounded hover:bg-gray-100 text-gray-500"
+                    >
+                      <MoreVertical size={18} />
+                    </button>
+                    {showDropdown[folder._id] && (
+                      <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-50 py-1 border">
+                        {dropdownMenu(folder._id).map((item) => (
+                          <button
+                            key={item.name}
+                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              item.onClick();
+                              setShowDropdown((prev) => ({
+                                ...prev,
+                                [folder._id]: false,
+                              }));
+                            }}
+                          >
+                            {item.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            {/* Render Trash folder */}
+            {folders.find((folder) => folder.folderName === "Trash") && (
+              <div
+                className={`flex justify-between items-center p-2 rounded cursor-pointer ${
+                  activeFolder === "Trash" ? "bg-blue-50" : ""
+                }`}
+                onClick={() => setActiveFolder("Trash")}
+              >
+                <span className="font-bold">
+                  Trash ({workflowCounts["Trash"] || 0})
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tasks Summary Section */}
+        <div className="bg-white p-4 rounded-lg shadow-sm lg:col-span-2">
+          <h2 className="font-semibold text-lg mb-2">Tasks Summary</h2>
+          <hr className="border-gray-200 mb-4" />
+          <div className="space-y-2 mb-4">
+            <p className="text-lg font-semibold">Total Tasks: {18}</p>
+            <p className="text-sm text-gray-600">
+              Completed: 10, Pending: 5, In Progress: 3
+            </p>
+          </div>
+          <div className="h-48 sm:h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieChartData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  label
+                >
+                  {pieChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Dialogs */}
+      <Dialog
+        open={isCreateWorkflowDialogOpen}
+        onOpenChange={() => setIsCreateWorkflowDialogOpen(false)}
+      >
+        <DialogContent className="p-4 sm:p-6 w-[95vw] max-w-md mx-auto">
+          <h2 className="font-semibold text-xl mb-4">Create Workflow</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Workflow Name
+              </label>
+              <input
+                value={workflowFormData.workflowName}
+                onChange={(e) =>
+                  setWorkflowFormData({
+                    ...workflowFormData,
+                    workflowName: e.target.value,
+                  })
+                }
+                placeholder="Enter workflow name here"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Folder
+              </label>
+              <select
+                value={workflowFormData.folderId || folders[0]?._id} // Default to the first folder if none is selected
+                onChange={(e) =>
+                  setWorkflowFormData({
+                    ...workflowFormData,
+                    folderId: e.target.value,
+                  })
+                }
+                className="w-full mb-6 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {folders
+                  .filter((folder) => folder.folderName !== "Trash")
+                  .map((folder) => (
+                    <option key={folder._id} value={folder._id}>
+                      {folder.folderName}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <Button
+              className="w-full p-5 bg-blue-400 text-white hover:bg-blue-600"
+              onClick={handleCreateWorkflow}
+            >
+              Submit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isAddFolderDialogOpen}
+        onOpenChange={() => setIsAddFolderDialogOpen(false)}
+      >
+        <DialogContent className="p-4 sm:p-6 w-[95vw] max-w-md mx-auto">
+          <h2 className="font-semibold text-xl mb-4">Create Folder</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Folder Name
+              </label>
+              <input
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                placeholder="Enter folder name here"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <Button
+              className="w-full p-5 bg-blue-400 text-white hover:bg-blue-600"
+              onClick={handleCreateFolder}
+            >
+              Submit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+export default UserDashboard;
