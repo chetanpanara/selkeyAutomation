@@ -15,10 +15,9 @@ import { MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuItem, 
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { unwrapResult } from "@reduxjs/toolkit";
 
 const tabs = [
   { id: "appDetails", label: "App Details" },
