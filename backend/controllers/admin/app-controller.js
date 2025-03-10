@@ -136,27 +136,35 @@ const getAllApps = async (req, res) => {
 const deleteApp = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid app ID format",
+      });
+    }
+
     const app = await App.findById(id);
     if (!app) {
       return res.status(404).json({
         success: false,
         message: "App not found",
       });
-    } else {
-      await App.findByIdAndDelete({ _id: id });
-      res.status(200).json({
-        success: true,
-        message: "App deleted successfully",
-      });
     }
+
+    await App.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: "App deleted successfully",
+    });
   } catch (e) {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred while deleting app",
     });
   }
 };
+
 module.exports = {
   handleImageUpload,
   addNewApp,

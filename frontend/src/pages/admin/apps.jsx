@@ -4,14 +4,30 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { FaCopy, FaCog, FaPlus, FaMinus } from "react-icons/fa";
 import { IoMdCloudDone } from "react-icons/io";
 import AppImageUpload from "@/components/admin/image-upload";
-import { addNewApp, getAllApps, updateApp } from "@/store/slices/app-slice";
+import {
+  addNewApp,
+  deleteApp,
+  getAllApps,
+  updateApp,
+} from "@/store/slices/app-slice";
 import { useSelector, useDispatch } from "react-redux";
 import { MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const tabs = [
   { id: "appDetails", label: "App Details" },
   { id: "appStatus", label: "App Status" },
 ];
+
+const appMenu = {
+  id: "delete",
+  name: "Delete",
+};
 
 const authTypes = [
   { id: "noAuth", label: "No Auth" },
@@ -69,7 +85,7 @@ function Apps() {
 
   const { apps } = useSelector((state) => state.app);
   const dispatch = useDispatch();
-  const [activeApp, setActiveApp] = useState("");
+  const [activeAppId, setActiveAppId] = useState(null);
   const [showDropdown, setShowDropdown] = useState(null); // Changed from object to null
 
   // Effect to handle click outside
@@ -97,13 +113,6 @@ function Apps() {
   function handleAddAppDialogClose() {
     return setIsAddAppDialogOpen(false);
   }
-
-  // Function to handle saving app details
-  const handleSaveAppDetails = () => {
-    console.log("App details saved!");
-    console.log("Active app:", activeApp._id);
-    dispatch(updateApp({ appId: activeApp._id, formData: formDataApp }));
-  };
 
   // Function to handle checkbox change
   const handleAuthTypeChange = (authId) => {
@@ -134,7 +143,7 @@ function Apps() {
   // Function to handle removing an input field for Set Auth Params
   const handleRemoveSetAuthParam = (index) => {
     if (setAuthParams.length > 1) {
-      setSetAuthParams((prev) => prev.filter((_, i) => i !== index));
+      setAuthParams((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
@@ -162,10 +171,6 @@ function Apps() {
     setCurrentParamIndex(null);
   };
 
-  // Function to handle delete app
-  const handleDeleteApp = (appId) => {
-    console.log("delete is clicked", appId);
-  };
   // On click for create new app
   function onSubmitNewApp(event) {
     event.preventDefault();
@@ -184,6 +189,26 @@ function Apps() {
       }
     });
   }
+
+  // Function to handle saving app details
+  const handleSaveAppDetails = () => {
+    console.log("App details saved!");
+    console.log("Active app:", activeApp._id);
+    dispatch(updateApp({ appId: activeApp._id, formData: formDataApp }));
+  };
+
+  // Function to handle delete app
+  const handleDeleteApp = (appId) => {
+    if (window.confirm("Are you sure you want to delete this app?")) {
+      dispatch(deleteApp(appId)).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(getAllApps());
+          alert("App deleted successfully");
+          window.location.reload();
+        }
+      });
+    }
+  };
 
   useEffect(() => {
     dispatch(getAllApps());
@@ -263,52 +288,52 @@ function Apps() {
           <h2 className="text-md font-semibold mb-2">Apps</h2>
           <hr className="border-gray-300 mb-4" />
           {/* render Apps list here */}
-          {apps.map((app) => (
-            <div
-              key={app._id}
-              className={`flex justify-between items-center p-2 rounded cursor-pointer ${
-                activeApp === app._id ? "bg-blue-50" : ""
-              }`}
-              onClick={() => {
-                console.log("App clicked:", app);
-                setActiveApp(app._id);
-                setFormDataApp({
-                  appName: app.appName,
-                  description: app.description,
-                  appLogo: app.appLogo,
-                  authType: app.authType,
-                });
-              }}
-            >
-              <span>{app.appName}</span>
-              <div className="relative">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDropdown(showDropdown === app._id ? null : app._id);
-                  }}
-                  className="dropdown-trigger rounded hover:bg-gray-100 text-gray-500"
-                >
-                  <MoreVertical size={18} />
-                </button>
-                {showDropdown === app._id && (
-                  <div className="absolute right-0 mt-1 w-24 bg-white shadow-md text-black bg-muted rounded-md text-sm">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleDeleteApp(app._id);
-                        setShowDropdown(null);
+          {apps
+            .slice()
+            .sort((a, b) => a.appName.localeCompare(b.appName))
+            .map((app) => (
+              <div
+                key={app._id}
+                className={`flex justify-between items-center p-2 rounded cursor-pointer ${
+                  activeAppId === app._id ? "bg-blue-50" : ""
+                }`}
+                onClick={() => {
+                  console.log("App clicked:", app);
+                  setActiveAppId(app._id);
+                  console.log("Active app:", activeAppId);
+                  setFormDataApp({
+                    appName: app.appName,
+                    description: app.description,
+                    appLogo: app.appLogo,
+                    authType: app.authType,
+                  });
+                }}
+              >
+                <span>{app.appName}</span>
+                <div className="relative">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <MoreVertical className="w-6 h-6 text-gray-500 hover:cursor-pointer" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="top"
+                      className="w-24  bg-white rounded-md shadow-md"
+                      style={{
+                        backgroundColor: "white",
                       }}
-                      className="block w-full px-3 py-1.5 text-left hover:bg-gray-200"
                     >
-                      Delete
-                    </button>
-                  </div>
-                )}
+                      {appMenu.name === "Delete" && (
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteApp(app._id)}
+                        >
+                          {appMenu.name}
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         {/* Main Content Area */}
