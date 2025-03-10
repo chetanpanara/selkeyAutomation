@@ -7,6 +7,7 @@ import AppImageUpload from "@/components/admin/image-upload";
 import { addNewApp, getAllApps, updateApp } from "@/store/slices/app-slice";
 import { useSelector, useDispatch } from "react-redux";
 import { MoreVertical } from "lucide-react";
+
 const tabs = [
   { id: "appDetails", label: "App Details" },
   { id: "appStatus", label: "App Status" },
@@ -29,7 +30,9 @@ const authTypes = [
 function Apps() {
   const [isAddAppDialogOpen, setIsAddAppDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("appDetails");
-  const [checkedAuthTypes, setCheckedAuthTypes] = useState({});
+  const [checkedAuthTypes, setCheckedAuthTypes] = useState(
+    authTypes.reduce((acc, auth) => ({ ...acc, [auth.id]: false }), {})
+  );
   const [copied, setCopied] = useState(false);
   const [isHeaderPrefixChecked, setIsHeaderPrefixChecked] = useState(false);
   const [showSetAuthParams, setShowSetAuthParams] = useState(false);
@@ -67,21 +70,22 @@ function Apps() {
   const { apps } = useSelector((state) => state.app);
   const dispatch = useDispatch();
   const [activeApp, setActiveApp] = useState("");
-  const [showDropdown, setShowDropdown] = useState({});
+  const [showDropdown, setShowDropdown] = useState(null); // Changed from object to null
 
   // Effect to handle click outside
   useEffect(() => {
-    const handleClickOutside = () => {
-      if (showDropdown) {
-        setShowDropdown(false);
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".dropdown-trigger")) {
+        setShowDropdown(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDropdown]);
+  }, []);
 
+  // Function to copy text
   const handleCopy = (url) => {
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
@@ -89,8 +93,12 @@ function Apps() {
     });
   };
 
-  const handleAddAppDialogClose = () => setIsAddAppDialogOpen(false);
+  // Function to handle closing the Add App dialog
+  function handleAddAppDialogClose() {
+    return setIsAddAppDialogOpen(false);
+  }
 
+  // Function to handle saving app details
   const handleSaveAppDetails = () => {
     console.log("App details saved!");
     console.log("Active app:", activeApp._id);
@@ -154,13 +162,10 @@ function Apps() {
     setCurrentParamIndex(null);
   };
 
-  // Function to handle setting the popover content and closing the Popover
-  const handlePopoverChange = (version) => {
-    setCURLVersion(version);
-    setPopoverContent(version);
-    setPopoverOpen(false);
+  // Function to handle delete app
+  const handleDeleteApp = (appId) => {
+    console.log("delete is clicked", appId);
   };
-
   // On click for create new app
   function onSubmitNewApp(event) {
     event.preventDefault();
@@ -175,6 +180,7 @@ function Apps() {
         setFormDataApp({ appName: "" });
         setImageFile(null);
         alert("App created successfully");
+        window.location.reload();
       }
     });
   }
@@ -279,21 +285,23 @@ function Apps() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setShowDropdown((prev) => ({
-                      ...prev,
-                      [app._id]: !prev[app._id],
-                    }));
+                    setShowDropdown(showDropdown === app._id ? null : app._id);
                   }}
-                  className="p-1 rounded hover:bg-gray-100 text-gray-500"
+                  className="dropdown-trigger rounded hover:bg-gray-100 text-gray-500"
                 >
                   <MoreVertical size={18} />
                 </button>
-                {showDropdown[app._id] && (
-                  <div className="absolute right-0 mt-2 w-48 bg-slate-100 rounded-md">
-                    <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
-                      Edit
-                    </button>
-                    <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
+                {showDropdown === app._id && (
+                  <div className="absolute right-0 mt-1 w-24 bg-white shadow-md text-black bg-muted rounded-md text-sm">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDeleteApp(app._id);
+                        setShowDropdown(null);
+                      }}
+                      className="block w-full px-3 py-1.5 text-left hover:bg-gray-200"
+                    >
                       Delete
                     </button>
                   </div>
@@ -398,6 +406,7 @@ function Apps() {
                           name="auth-type"
                           value={auth.id}
                           className="mt-1 mr-2"
+                          checked={checkedAuthTypes[auth.id] || false}
                           onChange={() => handleAuthTypeChange(auth.id)}
                         />
                         <span className="text-sm">{auth.label}</span>
@@ -408,957 +417,174 @@ function Apps() {
                           Learn more
                         </a>
                       </div>
-                      {/* Conditionally render the new form below the checkbox if checked */}
-                      {checkedAuthTypes[auth.id] && (
-                        <div className="mt-2 ml-6 w-11/12">
-                          {/* Add a unique form for each auth type here */}
-                          {auth.id === "oauth2" && (
-                            <div className="space-y-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Grant Type
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <select
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                value={grantType}
-                                onChange={(e) => setGrantType(e.target.value)}
+                      <div
+                        className={`mt-2 ml-6 w-11/12 transition-all duration-300 ease-in-out transform origin-top ${
+                          checkedAuthTypes[auth.id]
+                            ? "scale-y-100 opacity-100 h-auto"
+                            : "scale-y-0 opacity-0 h-0"
+                        }`}
+                      >
+                        {/* Add a unique form for each auth type here */}
+                        {auth.id === "oauth2" && (
+                          <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Grant Type
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <select
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                              value={grantType}
+                              onChange={(e) => setGrantType(e.target.value)}
+                            >
+                              <option value="authorization_code">
+                                Authorization Code
+                              </option>
+                              <option value="authorization_code_pkce">
+                                Authorization Code with PKCE
+                              </option>
+                            </select>
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Redirect URL
+                            </label>
+                            <div className="flex items-center mb-3">
+                              <input
+                                type="text"
+                                className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                                placeholder="https://selkey.com/callback.url"
+                                value={oauth2RedirectUrl}
+                                onChange={(e) =>
+                                  setOauth2RedirectUrl(e.target.value)
+                                }
+                              />
+                              <button
+                                onClick={() => handleCopy(oauth2RedirectUrl)}
+                                className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+                                type="button"
                               >
-                                <option value="authorization_code">
-                                  Authorization Code
-                                </option>
-                                <option value="authorization_code_pkce">
-                                  Authorization Code with PKCE
-                                </option>
-                              </select>
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Redirect URL
-                              </label>
-                              <div className="flex items-center mb-3">
-                                <input
-                                  type="text"
-                                  className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
-                                  placeholder="https://selkey.com/callback.url"
-                                  value={oauth2RedirectUrl}
-                                  onChange={(e) =>
-                                    setOauth2RedirectUrl(e.target.value)
-                                  }
-                                />
-                                <button
-                                  onClick={() => handleCopy(oauth2RedirectUrl)}
-                                  className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                                  type="button"
-                                >
-                                  {copied ? (
-                                    <IoMdCloudDone className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
-                                  ) : (
-                                    <FaCopy className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
-                                  )}
-                                </button>
-                              </div>
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Authorize URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                placeholder="Authorize URL"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Token URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                placeholder="Token URL"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Refresh Token URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                placeholder="Refresh Token URL"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Scope{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                placeholder="Scope"
-                              />
-
-                              {/* New Checkboxes */}
-                              <div className="mt-1 pl-1 w-11/12">
-                                <label className="flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleHeaderPrefixChange}
-                                  />
-                                  Set Header Prefix before{" "}
-                                  <span className="font-semibold ml-1">
-                                    Access Token
-                                  </span>
-                                </label>
-                                {isHeaderPrefixChecked && (
-                                  <input
-                                    type="text"
-                                    className="w-[109%] rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300 mb-2"
-                                    placeholder="Enter header prefix e.g. Bearer"
-                                  />
+                                {copied ? (
+                                  <IoMdCloudDone className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
+                                ) : (
+                                  <FaCopy className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
                                 )}
-                                <label className="flex items-center">
-                                  <input type="checkbox" className="mr-2" />
-                                  Send Client Secret On{" "}
-                                  <span className="font-semibold ml-1">
-                                    Access Token
-                                  </span>
-                                </label>
-                                <label className="flex items-center">
-                                  <input type="checkbox" className="mr-2" />
-                                  Send Client Credentials On
-                                  <span className="font-semibold ml-1">
-                                    Refresh Token
-                                  </span>
-                                </label>
-                                <label className="flex items-center">
-                                  <input type="checkbox" className="mr-2" />
-                                  Enable User-Agent
-                                </label>
-                                <label className="flex items-center">
-                                  <input type="checkbox" className="mr-2" />
-                                  Refresh Access Token on Expiration
-                                </label>
-                              </div>
-
-                              {/* Client Authentication Dropdown */}
-                              <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Client Authentication{" "}
-                                  <span className="text-red-500">
-                                    (Required)
-                                  </span>
-                                </label>
-                                <select
-                                  className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                  value={basicAuthType}
-                                  onChange={(e) =>
-                                    setBasicAuthType(e.target.value)
-                                  }
-                                >
-                                  <option value="basicAuth">
-                                    Send as Basic Auth header
-                                  </option>
-                                  <option value="clientCredentials">
-                                    Send Client Credentials in body
-                                  </option>
-                                </select>
-                              </div>
-
-                              {/* Checkboxes and Input Fields */}
-                              <div className="mt-4 pl-2 w-11/12">
-                                <label className="flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleSetAuthParamsChange}
-                                  />
-                                  Set App Auth Parameters
-                                </label>
-                                {showSetAuthParams && (
-                                  <>
-                                    {setAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...setAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setSetAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-end ml-2">
-                                          <FaCog
-                                            className="cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleOpenSettingsModal(index)
-                                            }
-                                          />
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveSetAuthParam(index)
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddSetAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-
-                                <label className="flex items-center mt-4">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleReceivedAuthParamsChange}
-                                  />
-                                  Received App Auth Parameters
-                                </label>
-                                {showReceivedAuthParams && (
-                                  <>
-                                    {receivedAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...receivedAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setReceivedAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-center ml-6">
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveReceivedAuthParam(
-                                                index
-                                              )
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddReceivedAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-                              </div>
+                              </button>
                             </div>
-                          )}
-                          {auth.id === "oauth1" && (
-                            <div className="mt-1 space-y-4">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Redirect URL
-                              </label>
-                              <div className="flex items-center mb-3">
-                                <input
-                                  type="text"
-                                  className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
-                                  placeholder="https://selkey.com/callback.url"
-                                  value={oauth1RedirectUrl}
-                                  onChange={(e) =>
-                                    setOauth1RedirectUrl(e.target.value)
-                                  }
-                                />
-                                <button
-                                  onClick={() => handleCopy(oauth1RedirectUrl)}
-                                  className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                                  type="button"
-                                >
-                                  {copied ? (
-                                    <IoMdCloudDone className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
-                                  ) : (
-                                    <FaCopy className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
-                                  )}
-                                </button>
-                              </div>
 
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Authorize URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                placeholder="Authorize URL"
-                              />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Authorize URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                              placeholder="Authorize URL"
+                            />
 
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Request Token URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Request Token URL"
-                              />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Token URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                              placeholder="Token URL"
+                            />
 
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Access Token URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Access Token URL"
-                              />
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Consumer Key{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Consumer Key"
-                              />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Refresh Token URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                              placeholder="Refresh Token URL"
+                            />
 
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Consumer Secret{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Consumer Secret"
-                              />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Scope{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                              placeholder="Scope"
+                            />
 
-                              {/* New Checkbox for Encoding Parameters */}
-                              <div className="flex items-center">
+                            {/* New Checkboxes */}
+                            <div className="mt-1 pl-1 w-11/12">
+                              <label className="flex items-center">
                                 <input
                                   type="checkbox"
                                   className="mr-2"
-                                  // Add state handling if needed
+                                  onChange={handleHeaderPrefixChange}
                                 />
-                                <span className="text-sm">
-                                  Encode the parameters in the Authorization
-                                  header
+                                Set Header Prefix before{" "}
+                                <span className="font-semibold ml-1">
+                                  Access Token
                                 </span>
-                              </div>
-
-                              {/* New Dropdown for Signature Method */}
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Signature Method{" "}
-                                <span className="text-red-500">(Required)</span>
                               </label>
-                              <select className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300">
-                                <option value="HMAC-SHA1" selected>
-                                  HMAC-SHA1
-                                </option>
-                                {/* Add more options if needed */}
-                              </select>
-
-                              {/* Checkboxes and Input Fields for OAuth1 */}
-                              <div className="mt-4 pl-2 w-11/12">
-                                <label className="flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleSetAuthParamsChange}
-                                  />
-                                  Set App Auth Parameters
-                                </label>
-                                {showSetAuthParams && (
-                                  <>
-                                    {setAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...setAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setSetAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-end ml-2">
-                                          <FaCog
-                                            className="cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleOpenSettingsModal(index)
-                                            }
-                                          />
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveSetAuthParam(index)
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddSetAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-
-                                <label className="flex items-center mt-4">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleReceivedAuthParamsChange}
-                                  />
-                                  Received App Auth Parameters
-                                </label>
-                                {showReceivedAuthParams && (
-                                  <>
-                                    {receivedAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...receivedAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setReceivedAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-center ml-6">
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveReceivedAuthParam(
-                                                index
-                                              )
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddReceivedAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                          {auth.id === "basicAuth" && (
-                            <div className="mt-1 space-y-2">
-                              <label className="block text-sm font-medium text-gray-700">
-                                Username Label
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Username field label here e.g. API Key."
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700">
-                                Password Label
-                              </label>
-                              <input
-                                type="password"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Password field label here e.g. API Secret Key."
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Help Text
-                              </label>
-                              <textarea
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                rows="3"
-                                placeholder="Add Description Here..."
-                              />
-                            </div>
-                          )}
-                          {auth.id === "awsSignature" && (
-                            <div className="mt-1 space-y-3">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Redirect URL
-                              </label>
-                              <div className="flex items-center mb-3">
+                              {isHeaderPrefixChecked && (
                                 <input
                                   type="text"
-                                  className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
-                                  placeholder="https://selkey.com/callback-url"
-                                  value={awsRedirectUrl}
-                                  onChange={(e) =>
-                                    setAwsRedirectUrl(e.target.value)
-                                  }
+                                  className="w-[109%] rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300 mb-2"
+                                  placeholder="Enter header prefix e.g. Bearer"
                                 />
-                                <button
-                                  onClick={() => handleCopy(awsRedirectUrl)}
-                                  className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
-                                  type="button"
-                                >
-                                  {copied ? (
-                                    <IoMdCloudDone className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
-                                  ) : (
-                                    <FaCopy className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
-                                  )}
-                                </button>
-                              </div>
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Authorize URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Authorize URL here"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Token URL{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Token URL here"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Application ID{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Application ID here"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Access Key{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Access Key here"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Secret Key{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Secret Key here"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Client ID{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Client ID here"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Client Secret{" "}
-                                <span className="text-red-500">(Required)</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Client Secret here"
-                              />
-
+                              )}
                               <label className="flex items-center">
                                 <input type="checkbox" className="mr-2" />
-                                Send Client Secret On
-                                <span className="font-semibold ml-2">
+                                Send Client Secret On{" "}
+                                <span className="font-semibold ml-1">
                                   Access Token
                                 </span>
                               </label>
                               <label className="flex items-center">
                                 <input type="checkbox" className="mr-2" />
-                                Sent Client Credentials On
-                                <span className="font-semibold ml-2">
+                                Send Client Credentials On
+                                <span className="font-semibold ml-1">
                                   Refresh Token
                                 </span>
                               </label>
-
-                              {/* Client Authentication Dropdown */}
-                              <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Client Authentication{" "}
-                                  <span className="text-red-500">
-                                    (Required)
-                                  </span>
-                                </label>
-                                <select
-                                  className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-                                  value={selectedValue}
-                                  onChange={handleChange}
-                                >
-                                  <option value="basicAuth" selected>
-                                    Send as Basic Auth header
-                                  </option>
-                                  <option value="clientCredentials">
-                                    Send Client Credentials in body
-                                  </option>
-                                </select>
-                              </div>
-
-                              {/* Checkboxes and Input Fields */}
-                              <div className="mt-4 pl-2 w-11/12">
-                                <label className="flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleSetAuthParamsChange}
-                                  />
-                                  Set App Auth Parameters
-                                </label>
-                                {showSetAuthParams && (
-                                  <>
-                                    {setAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...setAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setSetAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-end ml-2">
-                                          <FaCog
-                                            className="cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleOpenSettingsModal(index)
-                                            }
-                                          />
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveSetAuthParam(index)
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddSetAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-
-                                <label className="flex items-center mt-4">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleReceivedAuthParamsChange}
-                                  />
-                                  Received App Auth Parameters
-                                </label>
-                                {showReceivedAuthParams && (
-                                  <>
-                                    {receivedAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...receivedAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setReceivedAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-center ml-6">
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveReceivedAuthParam(
-                                                index
-                                              )
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddReceivedAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-                              </div>
+                              <label className="flex items-center">
+                                <input type="checkbox" className="mr-2" />
+                                Enable User-Agent
+                              </label>
+                              <label className="flex items-center">
+                                <input type="checkbox" className="mr-2" />
+                                Refresh Access Token on Expiration
+                              </label>
                             </div>
-                          )}
-                          {auth.id === "basicAuthAccessResponseToken" && (
-                            <div className="mt-1 space-y-3">
-                              <label className="block text-sm font-medium text-gray-700 mt-2">
-                                Access Token URL{" "}
+
+                            {/* Client Authentication Dropdown */}
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Client Authentication{" "}
                                 <span className="text-red-500">(Required)</span>
                               </label>
-                              <input
-                                type="text"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                placeholder="Enter your Access Token URL here"
-                              />
-
-                              <label className="block text-sm font-medium text-gray-700 mt-2">
-                                Request Body Type (For Token)
-                              </label>
                               <select
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                value={selectedValue}
-                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                                value={basicAuthType}
+                                onChange={(e) =>
+                                  setBasicAuthType(e.target.value)
+                                }
                               >
-                                <option value="JSON">JSON</option>
-                                <option value="formData">Form data</option>
-                                <option value="encodedFormData">
-                                  Encoded Form Data
+                                <option value="basicAuth">
+                                  Send as Basic Auth header
                                 </option>
-                                <option value="text">Text</option>
-                                <option value="html">HTML</option>
-                                <option value="xml">XML</option>
+                                <option value="clientCredentials">
+                                  Send Client Credentials in body
+                                </option>
                               </select>
-                              <div className="mt-3 space-y-3">
-                                <label className="flex items-center">
-                                  <input type="checkbox" className="mr-2" />
-                                  <span>HTTP Headers. Learn more</span>
-                                </label>
-                                <label className="flex items-center mt-4">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleSetAuthParamsChange}
-                                  />
-                                  Set Body/Query/Path Parameters
-                                </label>
-                                {showSetAuthParams && (
-                                  <>
-                                    {setAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...setAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setSetAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-end ml-2">
-                                          <FaCog
-                                            className="cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleOpenSettingsModal(index)
-                                            }
-                                          />
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveSetAuthParam(index)
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddSetAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
+                            </div>
 
-                                <label className="flex items-center mt-4">
-                                  <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    onChange={handleReceivedAuthParamsChange}
-                                  />
-                                  Received Parameters
-                                </label>
-                                {showReceivedAuthParams && (
-                                  <>
-                                    {receivedAuthParams.map((param, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center mt-2"
-                                      >
-                                        <input
-                                          type="text"
-                                          className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                          placeholder="Enter parameter key e.g. subdomain"
-                                          value={param}
-                                          onChange={(e) => {
-                                            const newParams = [
-                                              ...receivedAuthParams,
-                                            ];
-                                            newParams[index] = e.target.value;
-                                            setReceivedAuthParams(newParams);
-                                          }}
-                                        />
-                                        <div className="flex items-center ml-6">
-                                          <FaMinus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={() =>
-                                              handleRemoveReceivedAuthParam(
-                                                index
-                                              )
-                                            }
-                                          />
-                                          <FaPlus
-                                            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                            onClick={handleAddReceivedAuthParam}
-                                          />
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-                                <label className="flex items-center">
-                                  <input type="checkbox" className="mr-2" />
-                                  <span>Encode credentials</span>
-                                </label>
-                              </div>
-                              <div className="mt-3 space-y-3">
-                                <label className="block text-sm font-medium text-gray-700">
-                                  Token Key Name (Send){" "}
-                                  <span className="text-red-500">
-                                    (Required)
-                                  </span>
-                                </label>
-                                <input
-                                  type="text"
-                                  className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                  placeholder="Enter access token key here e.g. access_token"
-                                />
-                                <label className="block text-sm font-medium text-gray-700">
-                                  Token Key Name (Received){" "}
-                                  <span className="text-red-500">
-                                    (Required)
-                                  </span>
-                                </label>
-                                <input
-                                  type="text"
-                                  className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                  placeholder="Enter access token key here e.g. access_token"
-                                />
-                              </div>
-                              <div className="mt-3">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                  Client Authentication (Required)
-                                </label>
-                                <select className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300">
-                                  <option value="header">
-                                    Send token in header
-                                  </option>
-                                  <option value="body">
-                                    Send token in body
-                                  </option>
-                                </select>
-                              </div>
-                              {/* checkbox */}
-                              <div className="mt-3">
-                                <input
-                                  type="checkbox"
-                                  onChange={() =>
-                                    setIsRequestBodyChecked((prev) => !prev)
-                                  }
-                                />
-                                <span className="text-sm ml-2">
-                                  Request Body (Raw JSON).{" "}
-                                  <a
-                                    href="#"
-                                    className="text-sm text-blue-500 hover:underline"
-                                  >
-                                    Learn more
-                                  </a>
-                                </span>
-                                {isRequestBodyChecked && (
-                                  <textarea
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300"
-                                    placeholder="{'key': 'value'}"
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          )}
-                          {auth.id === "bearerToken" && (
-                            <div className="mt-1 space-y-2">
-                              <label className="block mb-1">Help Text</label>
-                              <textarea
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                rows="3"
-                                placeholder="Add Description Here..."
-                              />
-                            </div>
-                          )}
-                          {auth.id === "parameters" && (
-                            <div className="mt-1 space-y-2">
-                              <label className="flex items-center mt-4">
+                            {/* Checkboxes and Input Fields */}
+                            <div className="mt-4 pl-2 w-11/12">
+                              <label className="flex items-center">
                                 <input
                                   type="checkbox"
                                   className="mr-2"
                                   onChange={handleSetAuthParamsChange}
                                 />
-                                Set Body/Query/Path Parameters
-                                <span className="text-red-500 ml-2">
-                                  (Required)
-                                </span>
+                                Set App Auth Parameters
                               </label>
                               {showSetAuthParams && (
                                 <>
@@ -1400,16 +626,776 @@ function Apps() {
                                   ))}
                                 </>
                               )}
-                              <label className="block mb-1">Help Text</label>
-                              <textarea
+
+                              <label className="flex items-center mt-4">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  onChange={handleReceivedAuthParamsChange}
+                                />
+                                Received App Auth Parameters
+                              </label>
+                              {showReceivedAuthParams && (
+                                <>
+                                  {receivedAuthParams.map((param, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center mt-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                        placeholder="Enter parameter key e.g. subdomain"
+                                        value={param}
+                                        onChange={(e) => {
+                                          const newParams = [
+                                            ...receivedAuthParams,
+                                          ];
+                                          newParams[index] = e.target.value;
+                                          setReceivedAuthParams(newParams);
+                                        }}
+                                      />
+                                      <div className="flex items-center ml-6">
+                                        <FaMinus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleRemoveReceivedAuthParam(index)
+                                          }
+                                        />
+                                        <FaPlus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={handleAddReceivedAuthParam}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {auth.id === "oauth1" && (
+                          <div className="mt-1 space-y-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Redirect URL
+                            </label>
+                            <div className="flex items-center mb-3">
+                              <input
+                                type="text"
+                                className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                                placeholder="https://selkey.com/callback.url"
+                                value={oauth1RedirectUrl}
+                                onChange={(e) =>
+                                  setOauth1RedirectUrl(e.target.value)
+                                }
+                              />
+                              <button
+                                onClick={() => handleCopy(oauth1RedirectUrl)}
+                                className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+                                type="button"
+                              >
+                                {copied ? (
+                                  <IoMdCloudDone className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
+                                ) : (
+                                  <FaCopy className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
+                                )}
+                              </button>
+                            </div>
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Authorize URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                              placeholder="Authorize URL"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Request Token URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Request Token URL"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Access Token URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Access Token URL"
+                            />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Consumer Key{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Consumer Key"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Consumer Secret{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Consumer Secret"
+                            />
+
+                            {/* New Checkbox for Encoding Parameters */}
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                className="mr-2"
+                                // Add state handling if needed
+                              />
+                              <span className="text-sm">
+                                Encode the parameters in the Authorization
+                                header
+                              </span>
+                            </div>
+
+                            {/* New Dropdown for Signature Method */}
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Signature Method{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <select className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300">
+                              <option value="HMAC-SHA1" selected>
+                                HMAC-SHA1
+                              </option>
+                              {/* Add more options if needed */}
+                            </select>
+
+                            {/* Checkboxes and Input Fields for OAuth1 */}
+                            <div className="mt-4 pl-2 w-11/12">
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  onChange={handleSetAuthParamsChange}
+                                />
+                                Set App Auth Parameters
+                              </label>
+                              {showSetAuthParams && (
+                                <>
+                                  {setAuthParams.map((param, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center mt-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                        placeholder="Enter parameter key e.g. subdomain"
+                                        value={param}
+                                        onChange={(e) => {
+                                          const newParams = [...setAuthParams];
+                                          newParams[index] = e.target.value;
+                                          setSetAuthParams(newParams);
+                                        }}
+                                      />
+                                      <div className="flex items-end ml-2">
+                                        <FaCog
+                                          className="cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleOpenSettingsModal(index)
+                                          }
+                                        />
+                                        <FaMinus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleRemoveSetAuthParam(index)
+                                          }
+                                        />
+                                        <FaPlus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={handleAddSetAuthParam}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+
+                              <label className="flex items-center mt-4">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  onChange={handleReceivedAuthParamsChange}
+                                />
+                                Received App Auth Parameters
+                              </label>
+                              {showReceivedAuthParams && (
+                                <>
+                                  {receivedAuthParams.map((param, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center mt-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                        placeholder="Enter parameter key e.g. subdomain"
+                                        value={param}
+                                        onChange={(e) => {
+                                          const newParams = [
+                                            ...receivedAuthParams,
+                                          ];
+                                          newParams[index] = e.target.value;
+                                          setReceivedAuthParams(newParams);
+                                        }}
+                                      />
+                                      <div className="flex items-center ml-6">
+                                        <FaMinus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleRemoveReceivedAuthParam(index)
+                                          }
+                                        />
+                                        <FaPlus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={handleAddReceivedAuthParam}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {auth.id === "basicAuth" && (
+                          <div className="mt-1 space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                              Username Label
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Username field label here e.g. API Key."
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700">
+                              Password Label
+                            </label>
+                            <input
+                              type="password"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Password field label here e.g. API Secret Key."
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Help Text
+                            </label>
+                            <textarea
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              rows="3"
+                              placeholder="Add Description Here..."
+                            />
+                          </div>
+                        )}
+                        {auth.id === "awsSignature" && (
+                          <div className="mt-1 space-y-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Redirect URL
+                            </label>
+                            <div className="flex items-center mb-3">
+                              <input
+                                type="text"
+                                className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                                placeholder="https://selkey.com/callback-url"
+                                value={awsRedirectUrl}
+                                onChange={(e) =>
+                                  setAwsRedirectUrl(e.target.value)
+                                }
+                              />
+                              <button
+                                onClick={() => handleCopy(awsRedirectUrl)}
+                                className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+                                type="button"
+                              >
+                                {copied ? (
+                                  <IoMdCloudDone className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
+                                ) : (
+                                  <FaCopy className="w-6 h-6 transition-transform duration-400 transform hover:scale-125" />
+                                )}
+                              </button>
+                            </div>
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Authorize URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Authorize URL here"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Token URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Token URL here"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Application ID{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Application ID here"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Access Key{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Access Key here"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Secret Key{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Secret Key here"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Client ID{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Client ID here"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Client Secret{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Client Secret here"
+                            />
+
+                            <label className="flex items-center">
+                              <input type="checkbox" className="mr-2" />
+                              Send Client Secret On
+                              <span className="font-semibold ml-2">
+                                Access Token
+                              </span>
+                            </label>
+                            <label className="flex items-center">
+                              <input type="checkbox" className="mr-2" />
+                              Sent Client Credentials On
+                              <span className="font-semibold ml-2">
+                                Refresh Token
+                              </span>
+                            </label>
+
+                            {/* Client Authentication Dropdown */}
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Client Authentication{" "}
+                                <span className="text-red-500">(Required)</span>
+                              </label>
+                              <select
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+                                value={selectedValue}
+                                onChange={handleChange}
+                              >
+                                <option value="basicAuth" selected>
+                                  Send as Basic Auth header
+                                </option>
+                                <option value="clientCredentials">
+                                  Send Client Credentials in body
+                                </option>
+                              </select>
+                            </div>
+
+                            {/* Checkboxes and Input Fields */}
+                            <div className="mt-4 pl-2 w-11/12">
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  onChange={handleSetAuthParamsChange}
+                                />
+                                Set App Auth Parameters
+                              </label>
+                              {showSetAuthParams && (
+                                <>
+                                  {setAuthParams.map((param, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center mt-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                        placeholder="Enter parameter key e.g. subdomain"
+                                        value={param}
+                                        onChange={(e) => {
+                                          const newParams = [...setAuthParams];
+                                          newParams[index] = e.target.value;
+                                          setSetAuthParams(newParams);
+                                        }}
+                                      />
+                                      <div className="flex items-end ml-2">
+                                        <FaCog
+                                          className="cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleOpenSettingsModal(index)
+                                          }
+                                        />
+                                        <FaMinus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleRemoveSetAuthParam(index)
+                                          }
+                                        />
+                                        <FaPlus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={handleAddSetAuthParam}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+
+                              <label className="flex items-center mt-4">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  onChange={handleReceivedAuthParamsChange}
+                                />
+                                Received App Auth Parameters
+                              </label>
+                              {showReceivedAuthParams && (
+                                <>
+                                  {receivedAuthParams.map((param, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center mt-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                        placeholder="Enter parameter key e.g. subdomain"
+                                        value={param}
+                                        onChange={(e) => {
+                                          const newParams = [
+                                            ...receivedAuthParams,
+                                          ];
+                                          newParams[index] = e.target.value;
+                                          setReceivedAuthParams(newParams);
+                                        }}
+                                      />
+                                      <div className="flex items-center ml-6">
+                                        <FaMinus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleRemoveReceivedAuthParam(index)
+                                          }
+                                        />
+                                        <FaPlus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={handleAddReceivedAuthParam}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {auth.id === "basicAuthAccessResponseToken" && (
+                          <div className="mt-1 space-y-3">
+                            <label className="block text-sm font-medium text-gray-700 mt-2">
+                              Access Token URL{" "}
+                              <span className="text-red-500">(Required)</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              placeholder="Enter your Access Token URL here"
+                            />
+
+                            <label className="block text-sm font-medium text-gray-700 mt-2">
+                              Request Body Type (For Token)
+                            </label>
+                            <select
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              value={selectedValue}
+                              onChange={handleChange}
+                            >
+                              <option value="JSON">JSON</option>
+                              <option value="formData">Form data</option>
+                              <option value="encodedFormData">
+                                Encoded Form Data
+                              </option>
+                              <option value="text">Text</option>
+                              <option value="html">HTML</option>
+                              <option value="xml">XML</option>
+                            </select>
+                            <div className="mt-3 space-y-3">
+                              <label className="flex items-center">
+                                <input type="checkbox" className="mr-2" />
+                                <span>HTTP Headers. Learn more</span>
+                              </label>
+                              <label className="flex items-center mt-4">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  onChange={handleSetAuthParamsChange}
+                                />
+                                Set Body/Query/Path Parameters
+                              </label>
+                              {showSetAuthParams && (
+                                <>
+                                  {setAuthParams.map((param, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center mt-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                        placeholder="Enter parameter key e.g. subdomain"
+                                        value={param}
+                                        onChange={(e) => {
+                                          const newParams = [...setAuthParams];
+                                          newParams[index] = e.target.value;
+                                          setSetAuthParams(newParams);
+                                        }}
+                                      />
+                                      <div className="flex items-end ml-2">
+                                        <FaCog
+                                          className="cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleOpenSettingsModal(index)
+                                          }
+                                        />
+                                        <FaMinus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleRemoveSetAuthParam(index)
+                                          }
+                                        />
+                                        <FaPlus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={handleAddSetAuthParam}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+
+                              <label className="flex items-center mt-4">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  onChange={handleReceivedAuthParamsChange}
+                                />
+                                Received Parameters
+                              </label>
+                              {showReceivedAuthParams && (
+                                <>
+                                  {receivedAuthParams.map((param, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center mt-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                        placeholder="Enter parameter key e.g. subdomain"
+                                        value={param}
+                                        onChange={(e) => {
+                                          const newParams = [
+                                            ...receivedAuthParams,
+                                          ];
+                                          newParams[index] = e.target.value;
+                                          setReceivedAuthParams(newParams);
+                                        }}
+                                      />
+                                      <div className="flex items-center ml-6">
+                                        <FaMinus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={() =>
+                                            handleRemoveReceivedAuthParam(index)
+                                          }
+                                        />
+                                        <FaPlus
+                                          className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                          onClick={handleAddReceivedAuthParam}
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                              <label className="flex items-center">
+                                <input type="checkbox" className="mr-2" />
+                                <span>Encode credentials</span>
+                              </label>
+                            </div>
+                            <div className="mt-3 space-y-3">
+                              <label className="block text-sm font-medium text-gray-700">
+                                Token Key Name (Send){" "}
+                                <span className="text-red-500">(Required)</span>
+                              </label>
+                              <input
+                                type="text"
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                rows="3"
-                                placeholder="Add Description Here..."
+                                placeholder="Enter access token key here e.g. access_token"
+                              />
+                              <label className="block text-sm font-medium text-gray-700">
+                                Token Key Name (Received){" "}
+                                <span className="text-red-500">(Required)</span>
+                              </label>
+                              <input
+                                type="text"
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                placeholder="Enter access token key here e.g. access_token"
                               />
                             </div>
-                          )}
-                        </div>
-                      )}
+                            <div className="mt-3">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Client Authentication (Required)
+                              </label>
+                              <select className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300">
+                                <option value="header">
+                                  Send token in header
+                                </option>
+                                <option value="body">Send token in body</option>
+                              </select>
+                            </div>
+                            {/* checkbox */}
+                            <div className="mt-3">
+                              <input
+                                type="checkbox"
+                                onChange={() =>
+                                  setIsRequestBodyChecked((prev) => !prev)
+                                }
+                              />
+                              <span className="text-sm ml-2">
+                                Request Body (Raw JSON).{" "}
+                                <a
+                                  href="#"
+                                  className="text-sm text-blue-500 hover:underline"
+                                >
+                                  Learn more
+                                </a>
+                              </span>
+                              {isRequestBodyChecked && (
+                                <textarea
+                                  className="w-full rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300"
+                                  placeholder="{'key': 'value'}"
+                                />
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {auth.id === "bearerToken" && (
+                          <div className="mt-1 space-y-2">
+                            <label className="block mb-1">Help Text</label>
+                            <textarea
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              rows="3"
+                              placeholder="Add Description Here..."
+                            />
+                          </div>
+                        )}
+                        {auth.id === "parameters" && (
+                          <div className="mt-1 space-y-2">
+                            <label className="flex items-center mt-4">
+                              <input
+                                type="checkbox"
+                                className="mr-2"
+                                onChange={handleSetAuthParamsChange}
+                              />
+                              Set Body/Query/Path Parameters
+                              <span className="text-red-500 ml-2">
+                                (Required)
+                              </span>
+                            </label>
+                            {showSetAuthParams && (
+                              <>
+                                {setAuthParams.map((param, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center mt-2"
+                                  >
+                                    <input
+                                      type="text"
+                                      className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                      placeholder="Enter parameter key e.g. subdomain"
+                                      value={param}
+                                      onChange={(e) => {
+                                        const newParams = [...setAuthParams];
+                                        newParams[index] = e.target.value;
+                                        setSetAuthParams(newParams);
+                                      }}
+                                    />
+                                    <div className="flex items-end ml-2">
+                                      <FaCog
+                                        className="cursor-pointer text-gray-500 hover:text-blue-600"
+                                        onClick={() =>
+                                          handleOpenSettingsModal(index)
+                                        }
+                                      />
+                                      <FaMinus
+                                        className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                        onClick={() =>
+                                          handleRemoveSetAuthParam(index)
+                                        }
+                                      />
+                                      <FaPlus
+                                        className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                        onClick={handleAddSetAuthParam}
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </>
+                            )}
+                            <label className="block mb-1">Help Text</label>
+                            <textarea
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                              rows="3"
+                              placeholder="Add Description Here..."
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

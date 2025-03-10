@@ -11,6 +11,7 @@ export const addNewApp = createAsyncThunk(
   "app/addNewApp",
   async ({ appName }) => {
     const response = await api.post("/api/apps/addApp", { appName });
+
     return response.data;
   }
 );
@@ -18,7 +19,7 @@ export const addNewApp = createAsyncThunk(
 export const updateApp = createAsyncThunk(
   "apps/updateApp",
   async (id, formData) => {
-    const result = await api.put(`/api/apps/updateApp/${id}`, formData);
+    const result = await api.put(`api/apps/updateApp/${id}`, formData);
 
     return result?.data;
   }
@@ -27,6 +28,14 @@ export const updateApp = createAsyncThunk(
 // Get all apps
 export const getAllApps = createAsyncThunk("apps/getAllApps", async () => {
   const result = await api.get("/api/apps/getAllApps");
+
+  return result?.data;
+});
+
+// delete a app
+export const deleteApp = createAsyncThunk("apps/deleteApp", async (id) => {
+  const result = await api.delete(`api/apps/deleteApp/${id}`);
+
   return result?.data;
 });
 
