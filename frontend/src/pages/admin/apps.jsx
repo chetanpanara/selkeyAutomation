@@ -15,7 +15,7 @@ import { MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem, 
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -198,22 +198,7 @@ function Apps() {
   };
 
   useEffect(() => {
-    dispatch(getAllApps()).then((res) => {
-      console.log(" auth Data:", res);
-      if (res.payload.success) {
-        // console log authenticationTypes of 0th index
-        console.log("auth Data:", res.payload.data[0]);
-        console.log("authTypes:", res.payload.data[0].authenticationType);
-        console.log(
-          "basic :",
-          res.payload.data[0].authenticationType.basicAuth
-        );
-        console.log(
-          "Oauth:",
-          res.payload.data[0].authenticationType.basicAuth.OAuth
-        );
-      }
-    });
+    dispatch(getAllApps());
   }, [dispatch]);
 
   // New handleChange function
@@ -290,6 +275,14 @@ function Apps() {
           <h2 className="text-md font-semibold mb-2">Apps</h2>
           <hr className="border-gray-300 mb-4" />
           {/* render Apps list here */}
+          {/* if no Apps not found */}
+          {apps.length === 0 && (
+            <div className="text-center text-gray-500">
+              No apps found. <br />
+              create a new app to get started.
+            </div>
+          )}
+          {/* render apps */}
           {apps
             .slice()
             .sort((a, b) => a.appName.localeCompare(b.appName))
@@ -1460,7 +1453,7 @@ function Apps() {
 
               <Button
                 className="w-full md:w-auto bg-blue-500 text-white hover:bg-blue-600"
-                onClick={handleSaveAppDetails}
+                onClick={handleSaveAppDetails(activeAppId)}
               >
                 Save
               </Button>
