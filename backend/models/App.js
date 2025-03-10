@@ -15,7 +15,7 @@ const AppSchema = new mongoose.Schema(
       default: "",
     },
     authenticationType: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       enum: ["NoAuth", "OAuth", "API Key", "Basic Auth"],
       default: "NoAuth",
     },

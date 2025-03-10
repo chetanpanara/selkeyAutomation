@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const tabs = [
   { id: "appDetails", label: "App Details" },
@@ -85,21 +86,7 @@ function Apps() {
 
   const { apps } = useSelector((state) => state.app);
   const dispatch = useDispatch();
-  const [activeAppId, setActiveAppId] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(null); // Changed from object to null
-
-  // Effect to handle click outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".dropdown-trigger")) {
-        setShowDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const [activeAppId, setActiveAppId] = useState("");
 
   // Function to copy text
   const handleCopy = (url) => {
@@ -190,11 +177,12 @@ function Apps() {
     });
   }
 
+  console.log(uploadedImageUrl);
+
   // Function to handle saving app details
   const handleSaveAppDetails = () => {
     console.log("App details saved!");
-    console.log("Active app:", activeApp._id);
-    dispatch(updateApp({ appId: activeApp._id, formData: formDataApp }));
+    console.log("Active app:", activeAppId._id);
   };
 
   // Function to handle delete app
@@ -211,7 +199,22 @@ function Apps() {
   };
 
   useEffect(() => {
-    dispatch(getAllApps());
+    dispatch(getAllApps()).then((res) => {
+      console.log(" auth Data:", res);
+      if (res.payload.success) {
+        // console log authenticationTypes of 0th index
+        console.log("auth Data:", res.payload.data[0]);
+        console.log("authTypes:", res.payload.data[0].authenticationType);
+        console.log(
+          "basic :",
+          res.payload.data[0].authenticationType.basicAuth
+        );
+        console.log(
+          "Oauth:",
+          res.payload.data[0].authenticationType.basicAuth.OAuth
+        );
+      }
+    });
   }, [dispatch]);
 
   // New handleChange function

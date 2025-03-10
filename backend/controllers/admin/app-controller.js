@@ -4,7 +4,6 @@ const App = require("../../models/App");
 // handle image upload
 const handleImageUpload = async (req, res) => {
   try {
-    console.log("upload image called");
     if (!req.file) {
       return res
         .status(400)
@@ -46,6 +45,7 @@ const addNewApp = async (req, res) => {
       description: "",
       appLogo: "",
       authType: "",
+      authConfig: null,
     });
 
     await newCreatedApp.save();
@@ -136,7 +136,7 @@ const getAllApps = async (req, res) => {
 const deleteApp = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id || typeof id !== 'string') {
+    if (!id || typeof id !== "string") {
       return res.status(400).json({
         success: false,
         message: "Invalid app ID format",

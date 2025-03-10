@@ -10,7 +10,6 @@ function AppImageUpload({
   imageFile,
   setImageFile,
   imageLoadingState,
-  uploadedImageUrl,
   setUploadedImageUrl,
   setImageLoadingState,
   isEditMode,
