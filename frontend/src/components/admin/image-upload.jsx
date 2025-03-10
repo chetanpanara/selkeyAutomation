@@ -52,7 +52,7 @@ function AppImageUpload({
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        timeout: 60000, // Increase timeout to 60 seconds
+        timeout: 10000, // Increase timeout to 10 seconds
       });
       console.log(response, "response");
 
