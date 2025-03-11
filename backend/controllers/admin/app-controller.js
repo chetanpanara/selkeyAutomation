@@ -31,8 +31,6 @@ const handleImageUpload = async (req, res) => {
 const addNewApp = async (req, res) => {
   try {
     const { appName } = req.body;
-    console.log("appName :", appName);
-
     if (!appName) {
       return res.status(400).json({
         success: false,
@@ -40,11 +38,20 @@ const addNewApp = async (req, res) => {
       });
     }
 
+    const app = await App.findOne({ appName });
+
+    if (app) {
+      return res.status(400).json({
+        success: false,
+        message: "App already exists",
+      });
+    }
+
     const newCreatedApp = new App({
       appName: appName,
       description: "",
-      appLogo: "",
-      authType: "",
+      logoUrl: "",
+      authenticationType: "",
       authConfig: null,
     });
 
@@ -117,7 +124,7 @@ const getAllApps = async (req, res) => {
   try {
     const apps = await App.find(
       {},
-      "_id appName description appLogo authenticationType authConfig"
+      "_id appName description logoUrl authenticationType authConfig"
     );
     res.status(200).json({
       success: true,

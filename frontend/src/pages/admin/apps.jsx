@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { data } from "react-router-dom";
 
 const tabs = [
   { id: "appDetails", label: "App Details" },
@@ -87,6 +88,20 @@ function Apps() {
   const dispatch = useDispatch();
   const [activeAppId, setActiveAppId] = useState("");
 
+  useEffect(() => {
+    dispatch(getAllApps()).then((res) => {
+      if (res?.payload?.success) {
+        console.log(res.payload.data);
+        setActiveAppId(res.payload.data[0]._id);
+        setFormDataApp({
+          appName: res.payload.data[0].appName || "",
+          description: res.payload.data[0].appName || "",
+          appLogo: res.payload.data[0].appName || "",
+        });
+      }
+    });
+  }, [dispatch]);
+
   // Function to copy text
   const handleCopy = (url) => {
     navigator.clipboard.writeText(url).then(() => {
@@ -94,7 +109,6 @@ function Apps() {
       setTimeout(() => setCopied(false), 2000);
     });
   };
-
   // Function to handle closing the Add App dialog
   function handleAddAppDialogClose() {
     return setIsAddAppDialogOpen(false);
@@ -109,11 +123,6 @@ function Apps() {
   };
   const handleHeaderPrefixChange = () => {
     setIsHeaderPrefixChecked((prev) => !prev);
-  };
-
-  // Function to handle checkbox change for Set App Auth Parameters
-  const handleSetAuthParamsChange = () => {
-    setShowSetAuthParams((prev) => !prev);
   };
 
   // Function to handle checkbox change for Received App Auth Parameters
@@ -164,24 +173,29 @@ function Apps() {
       toast.error("App name is required");
       return;
     }
-    dispatch(addNewApp({ appName: formDataApp.appName })).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(getAllApps());
-        setIsAddAppDialogOpen(false);
-        setFormDataApp({ appName: "" });
-        setImageFile(null);
-        alert("App created successfully");
-        window.location.reload();
-      }
-    });
+    try {
+      dispatch(addNewApp({ appName: formDataApp.appName })).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(getAllApps());
+          setIsAddAppDialogOpen(false);
+          setFormDataApp({ appName: "" });
+          setImageFile(null);
+          alert("App created successfully");
+          window.location.reload();
+        } else {
+          // Handle error print message from server response
+          alert(data.payload.message);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+      alert(e);
+    }
   }
-
-  console.log(uploadedImageUrl);
-
   // Function to handle saving app details
   const handleSaveAppDetails = () => {
     console.log("App details saved!");
-    console.log("Active app:", activeAppId._id);
+    console.log("Active app:", activeAppId);
   };
 
   // Function to handle delete app
@@ -196,11 +210,6 @@ function Apps() {
       });
     }
   };
-
-  useEffect(() => {
-    dispatch(getAllApps());
-  }, [dispatch]);
-
   // New handleChange function
   const handleChange = (e) => {
     setSelectedValue(e.target.value);
@@ -293,7 +302,6 @@ function Apps() {
                   activeAppId === app._id ? "bg-blue-50" : ""
                 }`}
                 onClick={() => {
-                  console.log("App clicked:", app);
                   setActiveAppId(app._id);
                   console.log("Active app:", activeAppId);
                   setFormDataApp({
@@ -1453,7 +1461,7 @@ function Apps() {
 
               <Button
                 className="w-full md:w-auto bg-blue-500 text-white hover:bg-blue-600"
-                onClick={handleSaveAppDetails(activeAppId)}
+                onClick={handleSaveAppDetails}
               >
                 Save
               </Button>
