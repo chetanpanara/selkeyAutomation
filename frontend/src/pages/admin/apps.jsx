@@ -18,7 +18,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { data } from "react-router-dom";
 
 const tabs = [
   { id: "appDetails", label: "App Details" },
