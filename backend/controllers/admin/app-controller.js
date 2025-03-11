@@ -74,14 +74,13 @@ const addNewApp = async (req, res) => {
 const updateApp = async (req, res) => {
   try {
     const { id } = req.params;
-    const { appName, description, logoUrl, authenticationType, authConfig } =
-      req.body;
+    const { appName, description, appLogo, authType, authConfig } = req.body;
 
     console.log("id :", id);
     console.log("appName :", appName);
     console.log("description :", description);
-    console.log("logoUrl :", logoUrl);
-    console.log("authenticationType :", authenticationType);
+    console.log("logoUrl :", appLogo);
+    console.log("authenticationType :", authType);
     console.log("authConfig :", authConfig);
 
     const app = await App.findById(id);
@@ -98,8 +97,8 @@ const updateApp = async (req, res) => {
       {
         appName: appName || app.appName,
         description: description || app.description,
-        logoUrl: logoUrl || app.logoUrl,
-        authenticationType: authenticationType || app.authenticationType,
+        logoUrl: appLogo || app.appLogo,
+        authenticationType: authType || app.authType,
         authConfig: authConfig || app.authConfig,
       },
       { new: true, select: " -_id -createdAt -updatedAt -__v" }

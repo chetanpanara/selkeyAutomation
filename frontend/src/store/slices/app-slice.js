@@ -19,6 +19,7 @@ export const addNewApp = createAsyncThunk(
 export const updateApp = createAsyncThunk(
   "apps/updateApp",
   async ({ id, formData }) => {
+    console.log(id, formData);
     const result = await api.put(`api/apps/updateApp/${id}`, formData);
 
     return result?.data;
