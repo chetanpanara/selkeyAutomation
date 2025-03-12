@@ -1,31 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { ChevronDownIcon, Plus } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FaQuestionCircle } from "react-icons/fa";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Check } from "lucide-react";
 
 function Triggers() {
   const [isAddTriggerDialogOpen, setIsAddTriggerDialogOpen] = useState(false);
-
-  const [triggerFormData, setTriggerFormData] = useState({});
-  const [openTriggerType, setOpenTriggerType] = useState(false);
-  const [openResponseType, setOpenResponseType] = useState(false);
   const [triggerType, setTriggerType] = useState("");
   const [responseType, setResponseType] = useState("");
 
@@ -44,7 +24,7 @@ function Triggers() {
           details.
         </span>
         <Button
-           className="bg-blue-500 text-white hover:bg-blue-600 lg:float-right mt-4 lg:mt-0 block"
+          className="bg-blue-500 text-white hover:bg-blue-600 lg:float-right mt-4 lg:mt-0 block"
           onClick={() => setIsAddTriggerDialogOpen(true)}
         >
           Create New Trigger
@@ -209,7 +189,7 @@ function Triggers() {
                 ></textarea>
 
                 <label className="font-medium text-sm text-gray-700">
-                  Important Help Text 
+                  Important Help Text
                 </label>
                 <textarea
                   className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
@@ -217,7 +197,6 @@ function Triggers() {
                 ></textarea>
               </div>
             </div>
-
 
             <div className="mt-3">
               <Button className="bg-blue-500 text-white hover:bg-blue-600">

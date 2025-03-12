@@ -89,7 +89,7 @@ function AdminSidebar({ open, setOpen }) {
       </Sheet>
       <aside className="hidden w-64 flex-col border-r bg-background p-6 lg:flex">
         <div
-          onClick={() => navigate("/admin")}
+          onClick={() => navigate("/apps")}
           className="flex cursor-pointer items-center gap-2"
         >
           <img src={logo} alt="logo" className="w-10 h-10" />
