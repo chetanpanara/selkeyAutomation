@@ -36,7 +36,7 @@ const dashboardSidebarMenuItems = [
     name: "Inbuilt Actions",
     to: "/apps/in-built-actions",
     icons: <HiMenuAlt1 />,
-  }
+  },
 ];
 
 function MenuItems({ setOpen }) {
@@ -53,7 +53,9 @@ function MenuItems({ setOpen }) {
             setOpen ? setOpen(false) : null;
           }}
           className={`flex cursor-pointer text-xl items-center gap-2 rounded-md px-3 py-2 ${
-            location.pathname === menuItem.to ? "bg-blue-200 text-blue-800" : "text-muted-foreground hover:bg-blue-100 hover:text-blue-700"
+            location.pathname === menuItem.to
+              ? "bg-blue-200 text-blue-800"
+              : "text-muted-foreground hover:bg-blue-100 hover:text-blue-700"
           }`}
         >
           {menuItem.icons}
@@ -66,7 +68,7 @@ function MenuItems({ setOpen }) {
 
 function AdminSidebar({ open, setOpen }) {
   const navigate = useNavigate();
-  
+
   return (
     <Fragment>
       <Sheet open={open} onOpenChange={setOpen}>
@@ -76,7 +78,9 @@ function AdminSidebar({ open, setOpen }) {
               <SheetTitle className="flex gap-2 mt-5 mb-5">
                 <div className="flex items-center gap-2">
                   <img src={logo} alt="logo" className="w-10 h-10" />
-                  <span className="text-md font-semibold">SelKey Automation</span>
+                  <span className="text-md font-semibold">
+                    SelKey Automation
+                  </span>
                 </div>
               </SheetTitle>
               <SheetDescription className="sr-only">
