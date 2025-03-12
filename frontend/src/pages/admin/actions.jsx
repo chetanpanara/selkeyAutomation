@@ -6,7 +6,8 @@ import { FaQuestionCircle } from "react-icons/fa";
 
 function Actions() {
   const [isAddActionDialogOpen, setIsAddActionDialogOpen] = useState(false);
-  const [ActionType, setActionType] = useState("");
+  const [actionName, setActionName] = useState("");
+  const [actionEventDescription, setActionEventDescription] = useState("");
   const [formData, setFormData] = useState({
     actionEventName: "",
     actionEventDescription: "",
@@ -22,6 +23,14 @@ function Actions() {
   const handleAddActionDialogClose = () => {
     setIsAddActionDialogOpen(false);
   };
+
+  // onsubmit new action
+  function onSubmit(e) {
+    e.preventDefault();
+    console.log("Action name :", actionName);
+    console.log("Action description :", actionEventDescription);
+    handleAddActionDialogClose();
+  }
 
   return (
     <div className="bg-slate-100 p-4 rounded-lg">
@@ -54,18 +63,21 @@ function Actions() {
             type="text"
             className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
             placeholder="Enter Action event name"
+            onChange={(e) => setActionName(e.target.value)}
+            required
           />
           <Label className="block text-sm font-medium text-gray-700 mb-1">
-            Action Event Description
+            Action Event Description (Optional)
           </Label>
           <textarea
             className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
             rows={3}
+            onChange={(e) => setActionEventDescription(e.target.value)}
             placeholder="Enter Action event description"
           ></textarea>
           <Button
             className="bg-blue-500 text-white hover:bg-blue-600"
-            onClick={handleAddActionDialogClose}
+            onClick={onSubmit}
           >
             Save
           </Button>

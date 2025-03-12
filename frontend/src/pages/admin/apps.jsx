@@ -104,7 +104,7 @@ function Apps() {
       sendClientSecretOn: false,
       sendClientCredentialsOnRefresh: false,
       enableUserAgent: false,
-      refreshTokenOnExpiration: false
+      refreshTokenOnExpiration: false,
     },
     oauth1: {
       enabled: false,
@@ -115,13 +115,13 @@ function Apps() {
       consumerKey: "",
       consumerSecret: "",
       encodeParameters: false,
-      signatureMethod: "HMAC-SHA1"
+      signatureMethod: "HMAC-SHA1",
     },
     basicAuth: {
       enabled: false,
       usernameLabel: "",
       passwordLabel: "",
-      helpText: ""
+      helpText: "",
     },
     awsSignature: {
       enabled: false,
@@ -135,7 +135,7 @@ function Apps() {
       clientSecret: "",
       sendClientSecretOn: false,
       sendClientCredentialsOnRefresh: false,
-      clientAuth: "basicAuth"
+      clientAuth: "basicAuth",
     },
     basicAuthAccessResponseToken: {
       enabled: false,
@@ -145,16 +145,16 @@ function Apps() {
       tokenKeyNameReceived: "",
       clientAuth: "header",
       encodeCredentials: false,
-      requestBody: ""
+      requestBody: "",
     },
     bearerToken: {
       enabled: false,
-      helpText: ""
+      helpText: "",
     },
     parameters: {
       enabled: false,
-      helpText: ""
-    }
+      helpText: "",
+    },
   });
 
   // Fetch all apps on component mount
@@ -185,16 +185,16 @@ function Apps() {
 
   // Function to handle checkbox change
   function handleAuthTypeChange(authId) {
-    setAuthConfig(prev => {
+    setAuthConfig((prev) => {
       // Create copy of previous state
       const newConfig = { ...prev };
-      
+
       // Toggle the enabled state for this auth type
       newConfig[authId] = {
         ...newConfig[authId],
-        enabled: !newConfig[authId].enabled
+        enabled: !newConfig[authId].enabled,
       };
-      
+
       return newConfig;
     });
   }
@@ -292,8 +292,8 @@ function Apps() {
         appLogo: uploadedImageUrl,
         authConfig: {
           enabledTypes: Object.keys(enabledAuthConfigs),
-          configurations: enabledAuthConfigs
-        }
+          configurations: enabledAuthConfigs,
+        },
       };
 
       console.log("Form data:", formdata);
@@ -332,12 +332,12 @@ function Apps() {
 
   // Update form input handlers for auth configuration
   const updateAuthConfig = (authType, field, value) => {
-    setAuthConfig(prev => ({
+    setAuthConfig((prev) => ({
       ...prev,
       [authType]: {
         ...prev[authType],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
@@ -371,7 +371,6 @@ function Apps() {
                 App Name
               </label>
               <input
-                value={formDataApp.appName}
                 onChange={(e) =>
                   setFormDataApp({ ...formDataApp, appName: e.target.value })
                 }
@@ -589,7 +588,13 @@ function Apps() {
                             <select
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                               value={authConfig.oauth2.grantType}
-                              onChange={(e) => updateAuthConfig('oauth2', 'grantType', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth2",
+                                  "grantType",
+                                  e.target.value
+                                )
+                              }
                             >
                               <option value="authorization_code">
                                 Authorization Code
@@ -608,10 +613,18 @@ function Apps() {
                                 className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
                                 placeholder="https://selkey.com/callback.url"
                                 value={authConfig.oauth2.redirectUrl}
-                                onChange={(e) => updateAuthConfig('oauth2', 'redirectUrl', e.target.value)}
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "oauth2",
+                                    "redirectUrl",
+                                    e.target.value
+                                  )
+                                }
                               />
                               <button
-                                onClick={() => handleCopy(authConfig.oauth2.redirectUrl)}
+                                onClick={() =>
+                                  handleCopy(authConfig.oauth2.redirectUrl)
+                                }
                                 className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
                                 type="button"
                               >
@@ -632,7 +645,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                               placeholder="Authorize URL"
                               value={authConfig.oauth2.authorizeUrl}
-                              onChange={(e) => updateAuthConfig('oauth2', 'authorizeUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth2",
+                                  "authorizeUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -644,7 +663,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                               placeholder="Token URL"
                               value={authConfig.oauth2.tokenUrl}
-                              onChange={(e) => updateAuthConfig('oauth2', 'tokenUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth2",
+                                  "tokenUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -656,7 +681,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                               placeholder="Refresh Token URL"
                               value={authConfig.oauth2.refreshTokenUrl}
-                              onChange={(e) => updateAuthConfig('oauth2', 'refreshTokenUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth2",
+                                  "refreshTokenUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -668,7 +699,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                               placeholder="Scope"
                               value={authConfig.oauth2.scope}
-                              onChange={(e) => updateAuthConfig('oauth2', 'scope', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth2",
+                                  "scope",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             {/* New Checkboxes */}
@@ -678,7 +715,13 @@ function Apps() {
                                   type="checkbox"
                                   className="mr-2"
                                   checked={authConfig.oauth2.headerPrefix}
-                                  onChange={() => updateAuthConfig('oauth2', 'headerPrefix', !authConfig.oauth2.headerPrefix)}
+                                  onChange={() =>
+                                    updateAuthConfig(
+                                      "oauth2",
+                                      "headerPrefix",
+                                      !authConfig.oauth2.headerPrefix
+                                    )
+                                  }
                                 />
                                 Set Header Prefix before{" "}
                                 <span className="font-semibold ml-1">
@@ -691,7 +734,13 @@ function Apps() {
                                   className="w-[109%] rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300 mb-2"
                                   placeholder="Enter header prefix e.g. Bearer"
                                   value={authConfig.oauth2.headerPrefixValue}
-                                  onChange={(e) => updateAuthConfig('oauth2', 'headerPrefixValue', e.target.value)}
+                                  onChange={(e) =>
+                                    updateAuthConfig(
+                                      "oauth2",
+                                      "headerPrefixValue",
+                                      e.target.value
+                                    )
+                                  }
                                 />
                               )}
                               <label className="flex items-center">
@@ -699,7 +748,13 @@ function Apps() {
                                   type="checkbox"
                                   className="mr-2"
                                   checked={authConfig.oauth2.sendClientSecretOn}
-                                  onChange={() => updateAuthConfig('oauth2', 'sendClientSecretOn', !authConfig.oauth2.sendClientSecretOn)}
+                                  onChange={() =>
+                                    updateAuthConfig(
+                                      "oauth2",
+                                      "sendClientSecretOn",
+                                      !authConfig.oauth2.sendClientSecretOn
+                                    )
+                                  }
                                 />
                                 Send Client Secret On{" "}
                                 <span className="font-semibold ml-1">
@@ -710,8 +765,18 @@ function Apps() {
                                 <input
                                   type="checkbox"
                                   className="mr-2"
-                                  checked={authConfig.oauth2.sendClientCredentialsOnRefresh}
-                                  onChange={() => updateAuthConfig('oauth2', 'sendClientCredentialsOnRefresh', !authConfig.oauth2.sendClientCredentialsOnRefresh)}
+                                  checked={
+                                    authConfig.oauth2
+                                      .sendClientCredentialsOnRefresh
+                                  }
+                                  onChange={() =>
+                                    updateAuthConfig(
+                                      "oauth2",
+                                      "sendClientCredentialsOnRefresh",
+                                      !authConfig.oauth2
+                                        .sendClientCredentialsOnRefresh
+                                    )
+                                  }
                                 />
                                 Send Client Credentials On
                                 <span className="font-semibold ml-1">
@@ -723,7 +788,13 @@ function Apps() {
                                   type="checkbox"
                                   className="mr-2"
                                   checked={authConfig.oauth2.enableUserAgent}
-                                  onChange={() => updateAuthConfig('oauth2', 'enableUserAgent', !authConfig.oauth2.enableUserAgent)}
+                                  onChange={() =>
+                                    updateAuthConfig(
+                                      "oauth2",
+                                      "enableUserAgent",
+                                      !authConfig.oauth2.enableUserAgent
+                                    )
+                                  }
                                 />
                                 Enable User-Agent
                               </label>
@@ -731,8 +802,17 @@ function Apps() {
                                 <input
                                   type="checkbox"
                                   className="mr-2"
-                                  checked={authConfig.oauth2.refreshTokenOnExpiration}
-                                  onChange={() => updateAuthConfig('oauth2', 'refreshTokenOnExpiration', !authConfig.oauth2.refreshTokenOnExpiration)}
+                                  checked={
+                                    authConfig.oauth2.refreshTokenOnExpiration
+                                  }
+                                  onChange={() =>
+                                    updateAuthConfig(
+                                      "oauth2",
+                                      "refreshTokenOnExpiration",
+                                      !authConfig.oauth2
+                                        .refreshTokenOnExpiration
+                                    )
+                                  }
                                 />
                                 Refresh Access Token on Expiration
                               </label>
@@ -747,7 +827,13 @@ function Apps() {
                               <select
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                                 value={authConfig.oauth2.clientAuth}
-                                onChange={(e) => updateAuthConfig('oauth2', 'clientAuth', e.target.value)}
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "oauth2",
+                                    "clientAuth",
+                                    e.target.value
+                                  )
+                                }
                               >
                                 <option value="basicAuth">
                                   Send as Basic Auth header
@@ -867,10 +953,18 @@ function Apps() {
                                 className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
                                 placeholder="https://selkey.com/callback.url"
                                 value={authConfig.oauth1.redirectUrl}
-                                onChange={(e) => updateAuthConfig('oauth1', 'redirectUrl', e.target.value)}
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "oauth1",
+                                    "redirectUrl",
+                                    e.target.value
+                                  )
+                                }
                               />
                               <button
-                                onClick={() => handleCopy(authConfig.oauth1.redirectUrl)}
+                                onClick={() =>
+                                  handleCopy(authConfig.oauth1.redirectUrl)
+                                }
                                 className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
                                 type="button"
                               >
@@ -891,7 +985,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                               placeholder="Authorize URL"
                               value={authConfig.oauth1.authorizeUrl}
-                              onChange={(e) => updateAuthConfig('oauth1', 'authorizeUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth1",
+                                  "authorizeUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -903,7 +1003,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Request Token URL"
                               value={authConfig.oauth1.requestTokenUrl}
-                              onChange={(e) => updateAuthConfig('oauth1', 'requestTokenUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth1",
+                                  "requestTokenUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -915,7 +1021,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Access Token URL"
                               value={authConfig.oauth1.accessTokenUrl}
-                              onChange={(e) => updateAuthConfig('oauth1', 'accessTokenUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth1",
+                                  "accessTokenUrl",
+                                  e.target.value
+                                )
+                              }
                             />
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Consumer Key{" "}
@@ -926,7 +1038,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Consumer Key"
                               value={authConfig.oauth1.consumerKey}
-                              onChange={(e) => updateAuthConfig('oauth1', 'consumerKey', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth1",
+                                  "consumerKey",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -938,7 +1056,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Consumer Secret"
                               value={authConfig.oauth1.consumerSecret}
-                              onChange={(e) => updateAuthConfig('oauth1', 'consumerSecret', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth1",
+                                  "consumerSecret",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             {/* New Checkbox for Encoding Parameters */}
@@ -947,7 +1071,13 @@ function Apps() {
                                 type="checkbox"
                                 className="mr-2"
                                 checked={authConfig.oauth1.encodeParameters}
-                                onChange={() => updateAuthConfig('oauth1', 'encodeParameters', !authConfig.oauth1.encodeParameters)}
+                                onChange={() =>
+                                  updateAuthConfig(
+                                    "oauth1",
+                                    "encodeParameters",
+                                    !authConfig.oauth1.encodeParameters
+                                  )
+                                }
                               />
                               <span className="text-sm">
                                 Encode the parameters in the Authorization
@@ -963,7 +1093,13 @@ function Apps() {
                             <select
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                               value={authConfig.oauth1.signatureMethod}
-                              onChange={(e) => updateAuthConfig('oauth1', 'signatureMethod', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "oauth1",
+                                  "signatureMethod",
+                                  e.target.value
+                                )
+                              }
                             >
                               <option value="HMAC-SHA1">HMAC-SHA1</option>
                               {/* Add more options if needed */}
@@ -1077,7 +1213,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Username field label here e.g. API Key."
                               value={authConfig.basicAuth.usernameLabel}
-                              onChange={(e) => updateAuthConfig('basicAuth', 'usernameLabel', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "basicAuth",
+                                  "usernameLabel",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700">
@@ -1088,7 +1230,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Password field label here e.g. API Secret Key."
                               value={authConfig.basicAuth.passwordLabel}
-                              onChange={(e) => updateAuthConfig('basicAuth', 'passwordLabel', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "basicAuth",
+                                  "passwordLabel",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1099,7 +1247,13 @@ function Apps() {
                               rows="3"
                               placeholder="Add Description Here..."
                               value={authConfig.basicAuth.helpText}
-                              onChange={(e) => updateAuthConfig('basicAuth', 'helpText', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "basicAuth",
+                                  "helpText",
+                                  e.target.value
+                                )
+                              }
                             />
                           </div>
                         )}
@@ -1114,10 +1268,20 @@ function Apps() {
                                 className="w-full border border-gray-300 px-3 py-2 rounded-l-md outline-none focus:outline-blue-300 focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
                                 placeholder="https://selkey.com/callback-url"
                                 value={authConfig.awsSignature.redirectUrl}
-                                onChange={(e) => updateAuthConfig('awsSignature', 'redirectUrl', e.target.value)}
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "awsSignature",
+                                    "redirectUrl",
+                                    e.target.value
+                                  )
+                                }
                               />
                               <button
-                                onClick={() => handleCopy(authConfig.awsSignature.redirectUrl)}
+                                onClick={() =>
+                                  handleCopy(
+                                    authConfig.awsSignature.redirectUrl
+                                  )
+                                }
                                 className="inline-flex items-center py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-r-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
                                 type="button"
                               >
@@ -1138,7 +1302,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Authorize URL here"
                               value={authConfig.awsSignature.authorizeUrl}
-                              onChange={(e) => updateAuthConfig('awsSignature', 'authorizeUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "awsSignature",
+                                  "authorizeUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1150,7 +1320,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Token URL here"
                               value={authConfig.awsSignature.tokenUrl}
-                              onChange={(e) => updateAuthConfig('awsSignature', 'tokenUrl', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "awsSignature",
+                                  "tokenUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1162,7 +1338,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Application ID here"
                               value={authConfig.awsSignature.applicationId}
-                              onChange={(e) => updateAuthConfig('awsSignature', 'applicationId', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "awsSignature",
+                                  "applicationId",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1174,7 +1356,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Access Key here"
                               value={authConfig.awsSignature.accessKey}
-                              onChange={(e) => updateAuthConfig('awsSignature', 'accessKey', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "awsSignature",
+                                  "accessKey",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1186,7 +1374,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Secret Key here"
                               value={authConfig.awsSignature.secretKey}
-                              onChange={(e) => updateAuthConfig('awsSignature', 'secretKey', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "awsSignature",
+                                  "secretKey",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1198,7 +1392,13 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Client ID here"
                               value={authConfig.awsSignature.clientId}
-                              onChange={(e) => updateAuthConfig('awsSignature', 'clientId', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "awsSignature",
+                                  "clientId",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1210,15 +1410,29 @@ function Apps() {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Client Secret here"
                               value={authConfig.awsSignature.clientSecret}
-                              onChange={(e) => updateAuthConfig('awsSignature', 'clientSecret', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "awsSignature",
+                                  "clientSecret",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="flex items-center">
                               <input
                                 type="checkbox"
                                 className="mr-2"
-                                checked={authConfig.awsSignature.sendClientSecretOn}
-                                onChange={() => updateAuthConfig('awsSignature', 'sendClientSecretOn', !authConfig.awsSignature.sendClientSecretOn)}
+                                checked={
+                                  authConfig.awsSignature.sendClientSecretOn
+                                }
+                                onChange={() =>
+                                  updateAuthConfig(
+                                    "awsSignature",
+                                    "sendClientSecretOn",
+                                    !authConfig.awsSignature.sendClientSecretOn
+                                  )
+                                }
                               />
                               Send Client Secret On
                               <span className="font-semibold ml-2">
@@ -1229,8 +1443,18 @@ function Apps() {
                               <input
                                 type="checkbox"
                                 className="mr-2"
-                                checked={authConfig.awsSignature.sendClientCredentialsOnRefresh}
-                                onChange={() => updateAuthConfig('awsSignature', 'sendClientCredentialsOnRefresh', !authConfig.awsSignature.sendClientCredentialsOnRefresh)}
+                                checked={
+                                  authConfig.awsSignature
+                                    .sendClientCredentialsOnRefresh
+                                }
+                                onChange={() =>
+                                  updateAuthConfig(
+                                    "awsSignature",
+                                    "sendClientCredentialsOnRefresh",
+                                    !authConfig.awsSignature
+                                      .sendClientCredentialsOnRefresh
+                                  )
+                                }
                               />
                               Sent Client Credentials On
                               <span className="font-semibold ml-2">
@@ -1247,7 +1471,13 @@ function Apps() {
                               <select
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
                                 value={authConfig.awsSignature.clientAuth}
-                                onChange={(e) => updateAuthConfig('awsSignature', 'clientAuth', e.target.value)}
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "awsSignature",
+                                    "clientAuth",
+                                    e.target.value
+                                  )
+                                }
                               >
                                 <option value="basicAuth">
                                   Send as Basic Auth header
@@ -1366,8 +1596,17 @@ function Apps() {
                               type="text"
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                               placeholder="Enter your Access Token URL here"
-                              value={authConfig.basicAuthAccessResponseToken.accessTokenUrl}
-                              onChange={(e) => updateAuthConfig('basicAuthAccessResponseToken', 'accessTokenUrl', e.target.value)}
+                              value={
+                                authConfig.basicAuthAccessResponseToken
+                                  .accessTokenUrl
+                              }
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "basicAuthAccessResponseToken",
+                                  "accessTokenUrl",
+                                  e.target.value
+                                )
+                              }
                             />
 
                             <label className="block text-sm font-medium text-gray-700 mt-2">
@@ -1375,8 +1614,17 @@ function Apps() {
                             </label>
                             <select
                               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                              value={authConfig.basicAuthAccessResponseToken.requestBodyType}
-                              onChange={(e) => updateAuthConfig('basicAuthAccessResponseToken', 'requestBodyType', e.target.value)}
+                              value={
+                                authConfig.basicAuthAccessResponseToken
+                                  .requestBodyType
+                              }
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "basicAuthAccessResponseToken",
+                                  "requestBodyType",
+                                  e.target.value
+                                )
+                              }
                             >
                               <option value="JSON">JSON</option>
                               <option value="formData">Form data</option>
@@ -1499,8 +1747,17 @@ function Apps() {
                                 type="text"
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                                 placeholder="Enter access token key here e.g. access_token"
-                                value={authConfig.basicAuthAccessResponseToken.tokenKeyNameSend}
-                                onChange={(e) => updateAuthConfig('basicAuthAccessResponseToken', 'tokenKeyNameSend', e.target.value)}
+                                value={
+                                  authConfig.basicAuthAccessResponseToken
+                                    .tokenKeyNameSend
+                                }
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "basicAuthAccessResponseToken",
+                                    "tokenKeyNameSend",
+                                    e.target.value
+                                  )
+                                }
                               />
                               <label className="block text-sm font-medium text-gray-700">
                                 Token Key Name (Received){" "}
@@ -1510,8 +1767,17 @@ function Apps() {
                                 type="text"
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                                 placeholder="Enter access token key here e.g. access_token"
-                                value={authConfig.basicAuthAccessResponseToken.tokenKeyNameReceived}
-                                onChange={(e) => updateAuthConfig('basicAuthAccessResponseToken', 'tokenKeyNameReceived', e.target.value)}
+                                value={
+                                  authConfig.basicAuthAccessResponseToken
+                                    .tokenKeyNameReceived
+                                }
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "basicAuthAccessResponseToken",
+                                    "tokenKeyNameReceived",
+                                    e.target.value
+                                  )
+                                }
                               />
                             </div>
                             <div className="mt-3">
@@ -1520,8 +1786,17 @@ function Apps() {
                               </label>
                               <select
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                value={authConfig.basicAuthAccessResponseToken.clientAuth}
-                                onChange={(e) => updateAuthConfig('basicAuthAccessResponseToken', 'clientAuth', e.target.value)}
+                                value={
+                                  authConfig.basicAuthAccessResponseToken
+                                    .clientAuth
+                                }
+                                onChange={(e) =>
+                                  updateAuthConfig(
+                                    "basicAuthAccessResponseToken",
+                                    "clientAuth",
+                                    e.target.value
+                                  )
+                                }
                               >
                                 <option value="header">
                                   Send token in header
@@ -1533,8 +1808,18 @@ function Apps() {
                             <div className="mt-3">
                               <input
                                 type="checkbox"
-                                checked={authConfig.basicAuthAccessResponseToken.requestBody}
-                                onChange={() => updateAuthConfig('basicAuthAccessResponseToken', 'requestBody', !authConfig.basicAuthAccessResponseToken.requestBody)}
+                                checked={
+                                  authConfig.basicAuthAccessResponseToken
+                                    .requestBody
+                                }
+                                onChange={() =>
+                                  updateAuthConfig(
+                                    "basicAuthAccessResponseToken",
+                                    "requestBody",
+                                    !authConfig.basicAuthAccessResponseToken
+                                      .requestBody
+                                  )
+                                }
                               />
                               <span className="text-sm ml-2">
                                 Request Body (Raw JSON).{" "}
@@ -1545,12 +1830,22 @@ function Apps() {
                                   Learn more
                                 </a>
                               </span>
-                              {authConfig.basicAuthAccessResponseToken.requestBody && (
+                              {authConfig.basicAuthAccessResponseToken
+                                .requestBody && (
                                 <textarea
                                   className="w-full rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300"
                                   placeholder="{'key': 'value'}"
-                                  value={authConfig.basicAuthAccessResponseToken.requestBody}
-                                  onChange={(e) => updateAuthConfig('basicAuthAccessResponseToken', 'requestBody', e.target.value)}
+                                  value={
+                                    authConfig.basicAuthAccessResponseToken
+                                      .requestBody
+                                  }
+                                  onChange={(e) =>
+                                    updateAuthConfig(
+                                      "basicAuthAccessResponseToken",
+                                      "requestBody",
+                                      e.target.value
+                                    )
+                                  }
                                 />
                               )}
                             </div>
@@ -1564,7 +1859,13 @@ function Apps() {
                               rows="3"
                               placeholder="Add Description Here..."
                               value={authConfig.bearerToken.helpText}
-                              onChange={(e) => updateAuthConfig('bearerToken', 'helpText', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "bearerToken",
+                                  "helpText",
+                                  e.target.value
+                                )
+                              }
                             />
                           </div>
                         )}
@@ -1627,7 +1928,13 @@ function Apps() {
                               rows="3"
                               placeholder="Add Description Here..."
                               value={authConfig.parameters.helpText}
-                              onChange={(e) => updateAuthConfig('parameters', 'helpText', e.target.value)}
+                              onChange={(e) =>
+                                updateAuthConfig(
+                                  "parameters",
+                                  "helpText",
+                                  e.target.value
+                                )
+                              }
                             />
                           </div>
                         )}
