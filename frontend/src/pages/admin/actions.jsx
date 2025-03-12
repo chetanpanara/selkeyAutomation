@@ -12,13 +12,10 @@ function Actions() {
     actionEventName: "",
     actionEventDescription: "",
     documentationLink: "",
-    actionType: "",
-    actionResponseType: "",
-    actionSetupInstructions: "",
-    importantHelpText: "",
     responseType: "",
+    importantHelpText: "",
+    actionResponseType: "",
   });
-  const [responseType, setResponseType] = useState("");
 
   const handleAddActionDialogClose = () => {
     setIsAddActionDialogOpen(false);
@@ -29,8 +26,19 @@ function Actions() {
     e.preventDefault();
     console.log("Action name :", actionName);
     console.log("Action description :", actionEventDescription);
+    console.log(formData);
+    // call api to save action
     handleAddActionDialogClose();
   }
+
+  // onsubmit save data
+  function onSubmitSaveData(e) {
+    e.preventDefault();
+    console.log("Form Data :", formData);
+    // reload the page
+    // window.location.reload();
+  }
+  console.log("Form Data :", formData);
 
   return (
     <div className="bg-slate-100 p-4 rounded-lg">
@@ -118,7 +126,15 @@ function Actions() {
                 </div>
                 <input
                   type="text"
+                  value={formData.actionEventName}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      actionEventName: e.target.value,
+                    })
+                  }
                   className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
+                  placeholder="Enter action event name"
                   required
                 />
               </div>
@@ -131,8 +147,15 @@ function Actions() {
                 </div>
                 {/* <Button className=" bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
                 <textarea
+                  value={formData.actionEventDescription}
                   className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
                   rows="3"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      actionEventDescription: e.target.value,
+                    })
+                  }
                   placeholder="Enter description"
                   required
                 ></textarea>
@@ -145,6 +168,13 @@ function Actions() {
                 </div>
                 <input
                   type="text"
+                  value={formData.documentationLink}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      documentationLink: e.target.value,
+                    })
+                  }
                   className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
                   required
                 />
@@ -157,6 +187,13 @@ function Actions() {
                 </div>
                 <input
                   type="text"
+                  value={formData.responseType}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      responseType: e.target.value,
+                    })
+                  }
                   className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
                   placeholder="Enter response type"
                   required
@@ -166,6 +203,14 @@ function Actions() {
                     Important Help Text
                   </label>
                   <textarea
+                    value={formData.importantHelpText}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        importantHelpText: e.target.value,
+                      })
+                    }
+                    placeholder="Enter important help text"
                     className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
                     rows="3"
                   ></textarea>
@@ -179,8 +224,13 @@ function Actions() {
                   <p className="text-red-500 ml-2">(Required)</p>
                 </div>
                 <select
-                  value={responseType}
-                  onChange={(e) => setResponseType(e.target.value)}
+                  value={formData.actionResponseType}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      actionResponseType: e.target.value,
+                    });
+                  }}
                   className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
                   required
                 >
@@ -190,7 +240,10 @@ function Actions() {
               </div>
 
               <div className="mt-3">
-                <Button className="bg-blue-500 text-white hover:bg-blue-600">
+                <Button
+                  className="bg-blue-500 text-white hover:bg-blue-600"
+                  onClick={onSubmitSaveData}
+                >
                   Save
                 </Button>
               </div>
