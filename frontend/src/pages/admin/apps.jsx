@@ -325,10 +325,6 @@ function Apps() {
       });
     }
   };
-  // New handleChange function
-  const handleChange = (e) => {
-    setSelectedValue(e.target.value);
-  };
 
   // Update form input handlers for auth configuration
   const updateAuthConfig = (authType, field, value) => {
