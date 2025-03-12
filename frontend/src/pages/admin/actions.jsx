@@ -7,6 +7,16 @@ import { FaQuestionCircle } from "react-icons/fa";
 function Actions() {
   const [isAddActionDialogOpen, setIsAddActionDialogOpen] = useState(false);
   const [ActionType, setActionType] = useState("");
+  const [formData, setFormData] = useState({
+    actionEventName: "",
+    actionEventDescription: "",
+    documentationLink: "",
+    actionType: "",
+    actionResponseType: "",
+    actionSetupInstructions: "",
+    importantHelpText: "",
+    responseType: "",
+  });
   const [responseType, setResponseType] = useState("");
 
   const handleAddActionDialogClose = () => {
@@ -85,124 +95,94 @@ function Actions() {
               </div>
               <hr className="border-gray-300 w-full" />
             </div>
-            <div className=" mt-4">
-              <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Action Event Name
-                </label>
-                <p className="text-red-500 ml-2">(Required)</p>
-                {/* <Button className="bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
+            <form className="mt-4">
+              <div className=" mt-4">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Action Event Name
+                  </label>
+                  <p className="text-red-500 ml-2">(Required)</p>
+                  {/* <Button className="bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
+                </div>
+                <input
+                  type="text"
+                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
+                  required
+                />
               </div>
-              <input
-                type="text"
-                className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
-                required
-              />
-            </div>
-            <div className="mt-4">
-              <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Action Event Description
-                </label>
-                <p className="text-red-500 ml-2">(Required)</p>
-              </div>
-              {/* <Button className=" bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
-              <textarea
-                className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
-                rows="3"
-                placeholder="Enter description"
-                required
-              ></textarea>
-            </div>
-            <div className="mt-3">
-              <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Documentation/YouTube Tutorial Link
-                </label>
-              </div>
-              <input
-                type="text"
-                className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
-                required
-              />
-            </div>
-            <div className="mt-3">
-              <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Action Type
-                </label>
-                <p className="text-red-500 ml-2">(Required)</p>
-              </div>
-              <select
-                value={ActionType}
-                onChange={(e) => setActionType(e.target.value)}
-                className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
-                required
-              >
-                <option value="webhooks_instructions">
-                  Webhooks Setup by Instructions (Highly Recommended)
-                </option>
-                <option value="webhooks_api_request">
-                  Webhooks Setup by API Request (Recommended)
-                </option>
-                <option value="polling_check">
-                  Polling to Check New Data (Not Recommended)
-                </option>
-              </select>
-            </div>
-            <div className="mt-3">
-              <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Action Response Type
-                </label>
-                <p className="text-red-500 ml-2">(Required)</p>
-              </div>
-              <select
-                value={responseType}
-                onChange={(e) => setResponseType(e.target.value)}
-                className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
-                required
-              >
-                <option value="simple">Simple (Default)</option>
-                <option value="advance">Advance</option>
-              </select>
-            </div>
-            <div className="mt-3">
-              <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Response type
-                </label>
-              </div>
-              <input
-                type="text"
-                className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
-                placeholder="Enter response type"
-                required
-              />
-              <div className="mt-3 space-y-2">
-                <label className="font-medium text-sm text-gray-700">
-                  Action Setup Instructions (Shown In Front)
-                </label>
+              <div className="mt-4">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Action Event Description
+                  </label>
+                  <p className="text-red-500 ml-2">(Required)</p>
+                </div>
+                {/* <Button className=" bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
                 <textarea
                   className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
                   rows="3"
-                ></textarea>
-
-                <label className="font-medium text-sm text-gray-700">
-                  Important Help Text
-                </label>
-                <textarea
-                  className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
-                  rows="3"
+                  placeholder="Enter description"
+                  required
                 ></textarea>
               </div>
-            </div>
+              <div className="mt-3">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Documentation/YouTube Tutorial Link
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="mt-3">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Response type
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
+                  placeholder="Enter response type"
+                  required
+                />
+                <div className="mt-3 space-y-2">
+                  <label className="font-medium text-sm text-gray-700">
+                    Important Help Text
+                  </label>
+                  <textarea
+                    className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
+                    rows="3"
+                  ></textarea>
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Action Response Type
+                  </label>
+                  <p className="text-red-500 ml-2">(Required)</p>
+                </div>
+                <select
+                  value={responseType}
+                  onChange={(e) => setResponseType(e.target.value)}
+                  className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
+                  required
+                >
+                  <option value="simple">Simple (Default)</option>
+                  <option value="advance">Advance</option>
+                </select>
+              </div>
 
-            <div className="mt-3">
-              <Button className="bg-blue-500 text-white hover:bg-blue-600">
-                Save
-              </Button>
-            </div>
+              <div className="mt-3">
+                <Button className="bg-blue-500 text-white hover:bg-blue-600">
+                  Save
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
