@@ -74,14 +74,8 @@ const addNewApp = async (req, res) => {
 const updateApp = async (req, res) => {
   try {
     const { id } = req.params;
-    const { appName, description, appLogo, authType, authConfig } = req.body;
-
-    console.log("id :", id);
-    console.log("appName :", appName);
-    console.log("description :", description);
-    console.log("logoUrl :", appLogo);
-    console.log("authenticationType :", authType);
-    console.log("authConfig :", authConfig);
+    const { appName, description, appLogo, authenticationType, authConfig } =
+      req.body;
 
     const app = await App.findById(id);
 
@@ -92,13 +86,24 @@ const updateApp = async (req, res) => {
       });
     }
 
+    const apps = await App.find({ appName: { $ne: app.appName } }, "appName");
+
+    for (let i = 0; i < apps.length; i++) {
+      if (appName === apps[i].appName) {
+        return res.status(400).json({
+          success: false,
+          message: "With this name app already exists",
+        });
+      }
+    }
+
     const updatedApp = await App.findByIdAndUpdate(
       id,
       {
         appName: appName || app.appName,
         description: description || app.description,
         logoUrl: appLogo || app.appLogo,
-        authenticationType: authType || app.authType,
+        authenticationType: authenticationType || app.authenticationType,
         authConfig: authConfig || app.authConfig,
       },
       { new: true, select: " -_id -createdAt -updatedAt -__v" }

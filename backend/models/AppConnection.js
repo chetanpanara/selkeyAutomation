@@ -17,7 +17,7 @@ const AppConnectionSchema = new mongoose.Schema(
       required: true,
     },
     authenticationData: {
-      type: Object,
+      type: mongoose.Schema.Types.Mixed,
     }, // Stores OAuth tokens or API keys
   },
   { timestamps: true }
