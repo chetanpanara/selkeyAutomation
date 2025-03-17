@@ -180,20 +180,23 @@ const Myaccount = () => {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
     try {
-      console.log(" data", data, " user id", user.id);
       dispatch(updateUserData({ userId: user.id, data }))
         .unwrap()
         .then((res) => {
-          if (res) {
-            // reload the page
+          if (res.success) {
+            alert(res.message || 'Profile updated successfully');
             window.location.reload();
+          } else {
+            alert(res.message || 'Failed to update profile');
           }
         })
         .catch((error) => {
-          console.log(error);
+          alert(error?.message || 'Something went wrong while updating profile');
+          console.error('Profile update error:', error);
         });
     } catch (error) {
-      console.log(error);
+      alert(error?.message || 'Something went wrong while updating profile');
+      console.error('Profile update error:', error);
     }
   }
 
@@ -201,17 +204,30 @@ const Myaccount = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
-    console.log(data);
+    
+    if (data.newPassword !== data.confirmPassword) {
+      alert("New password and confirm password do not match!");
+      return;
+    }
+
     try {
-      dispatch(updateUserPassword({ userId: user.id, data }))
-        .unwrap()
-        .then(() => {
-          alert("Password updated successfully");
-          clearFormData();
-        })
-        .catch((error) => alert(error));
+      const response = await dispatch(updateUserPassword({ 
+        userId: user.id, 
+        data: {
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword
+        }
+      })).unwrap();
+      
+      if (response.success) {
+        alert(response.message || 'Password updated successfully');
+        clearFormData();
+      } else {
+        alert(response.message || 'Failed to update password');
+      }
     } catch (error) {
-      console.log(error);
+      alert(error?.message || 'Something went wrong while updating password');
+      console.error('Password update error:', error);
     }
   }
 

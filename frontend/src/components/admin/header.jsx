@@ -76,25 +76,23 @@ function AdminHeader({ setOpen }) {
           <DropdownMenuTrigger asChild>
             <Avatar className="hover:cursor-pointer h-10 w-10">
               <AvatarFallback className="bg-emerald-200 border border-black text-black font-bold text-lg">
-                {userData?.userFirstName?.charAt(0).toUpperCase() || ''}
-                {userData?.userLastName?.charAt(0).toUpperCase() || ''}
+                {userData?.userFirstName?.charAt(0).toUpperCase() || ""}
+                {userData?.userLastName?.charAt(0).toUpperCase() || ""}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             side="bottom"
-            className="w-60 mt-2 bg-white"
+            className="w-60 mt-2 mr-4 bg-white"
             style={{
               backgroundColor: "white",
             }}
           >
             <DropdownMenuLabel className="flex flex-col gap-1">
               <span className="text-lg font-semibold">
-                {userData?.userFirstName || ''} {userData?.userLastName || ''}
+                {userData?.userFirstName || ""} {userData?.userLastName || ""}
               </span>
-              <span className="text-sm text-gray-500">
-                {user?.email || ''}
-              </span>
+              <span className="text-sm text-gray-500">{user?.email || ""}</span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             {profileMenus.map((menu) => (

@@ -1,11 +1,258 @@
-import React from 'react'
+import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { FaQuestionCircle } from "react-icons/fa";
 
 function InBuiltActions() {
+  const [isAddActionDialogOpen, setIsAddActionDialogOpen] = useState(false);
+  const [actionName, setActionName] = useState("");
+  const [actionEventDescription, setActionEventDescription] = useState("");
+  const [formData, setFormData] = useState({
+    actionEventName: "",
+    actionEventDescription: "",
+    documentationLink: "",
+    responseType: "",
+    importantHelpText: "",
+    actionResponseType: "",
+  });
+
+  const handleAddActionDialogClose = () => {
+    setIsAddActionDialogOpen(false);
+  };
+
+  // onsubmit new action
+  function onSubmit(e) {
+    e.preventDefault();
+    console.log("Action name :", actionName);
+    console.log("Action description :", actionEventDescription);
+    console.log(formData);
+    // call api to save action
+    handleAddActionDialogClose();
+  }
+
+  // onsubmit save data
+  function onSubmitSaveData(e) {
+    e.preventDefault();
+    console.log("Form Data :", formData);
+    // reload the page
+    // window.location.reload();
+  }
+  console.log("Form Data :", formData);
+
   return (
-    <div>
-      <h1>In Built Actions</h1>
+    <div className="bg-slate-100 p-4 rounded-lg">
+      <div className="block">
+        <p className="font-semibold text-2xl mb-4">Actions</p>
+      </div>
+      <div className="block">
+        <span className="text-gray-500 text-sm ">
+          Configure your app Action details like name, description, and API
+          details.
+        </span>
+        <Button
+          className="bg-blue-500 text-white hover:bg-blue-600 lg:float-right mt-4 lg:mt-0 block"
+          onClick={() => setIsAddActionDialogOpen(true)}
+        >
+          Create New Action
+        </Button>
+      </div>
+
+      <Dialog
+        open={isAddActionDialogOpen}
+        onOpenChange={handleAddActionDialogClose}
+      >
+        <DialogContent className="p-6 max-w-md bg-white shadow-lg rounded-lg">
+          <h2 className="font-semibold text-xl mb-4">Create New Action</h2>
+          <Label className="block text-sm font-medium text-gray-700 mb-1">
+            Action Event Name
+          </Label>
+          <input
+            type="text"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+            placeholder="Enter Action event name"
+            onChange={(e) => setActionName(e.target.value)}
+            required
+          />
+          <Label className="block text-sm font-medium text-gray-700 mb-1">
+            Action Event Description (Optional)
+          </Label>
+          <textarea
+            className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
+            rows={3}
+            onChange={(e) => setActionEventDescription(e.target.value)}
+            placeholder="Enter Action event description"
+          ></textarea>
+          <Button
+            className="bg-blue-500 text-white hover:bg-blue-600"
+            onClick={onSubmit}
+          >
+            Save
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      <div className="block mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4">
+          <div className="bg-white p-4 col-span-1 h-64">
+            <div className="block">
+              <div className="border-b border-gray-300 mt-2">
+                <h1 className="text-md font-semibold mt-4 mb-4">Actions</h1>
+              </div>
+              <hr className="border-gray-300" />
+            </div>
+            <div className="block mt-2">Hello</div>
+          </div>
+          <div className="bg-white p-4 mr-2 lg:mr-0 col-span-3">
+            <div className="block">
+              <div className="border-b border-gray-300 mt-2">
+                <h1 className="text-md font-semibold mt-4 mb-4">
+                  Action Details{" "}
+                  <span className="inline-flex items-center">
+                    {<FaQuestionCircle />}
+                  </span>
+                </h1>
+              </div>
+              <hr className="border-gray-300 w-full" />
+            </div>
+            <form className="mt-4">
+              <div className=" mt-4">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Action Event Name
+                  </label>
+                  <p className="text-red-500 ml-2">(Required)</p>
+                  {/* <Button className="bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
+                </div>
+                <input
+                  type="text"
+                  value={formData.actionEventName}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      actionEventName: e.target.value,
+                    })
+                  }
+                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
+                  placeholder="Enter action event name"
+                  required
+                />
+              </div>
+              <div className="mt-4">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Action Event Description
+                  </label>
+                  <p className="text-red-500 ml-2">(Required)</p>
+                </div>
+                {/* <Button className=" bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
+                <textarea
+                  value={formData.actionEventDescription}
+                  className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
+                  rows="3"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      actionEventDescription: e.target.value,
+                    })
+                  }
+                  placeholder="Enter description"
+                  required
+                ></textarea>
+              </div>
+              <div className="mt-3">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Documentation/YouTube Tutorial Link
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  value={formData.documentationLink}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      documentationLink: e.target.value,
+                    })
+                  }
+                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
+                  required
+                />
+              </div>
+              <div className="mt-3">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Response type
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  value={formData.responseType}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      responseType: e.target.value,
+                    })
+                  }
+                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
+                  placeholder="Enter response type"
+                  required
+                />
+                <div className="mt-3 space-y-2">
+                  <label className="font-medium text-sm text-gray-700">
+                    Important Help Text
+                  </label>
+                  <textarea
+                    value={formData.importantHelpText}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        importantHelpText: e.target.value,
+                      })
+                    }
+                    placeholder="Enter important help text"
+                    className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
+                    rows="3"
+                  ></textarea>
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Action Response Type
+                  </label>
+                  <p className="text-red-500 ml-2">(Required)</p>
+                </div>
+                <select
+                  value={formData.actionResponseType}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      actionResponseType: e.target.value,
+                    });
+                  }}
+                  className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
+                  required
+                >
+                  <option value="simple">Simple (Default)</option>
+                  <option value="advance">Advance</option>
+                </select>
+              </div>
+
+              <div className="mt-3">
+                <Button
+                  className="bg-blue-500 text-white hover:bg-blue-600"
+                  onClick={onSubmitSaveData}
+                >
+                  Save
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
 export default InBuiltActions;
