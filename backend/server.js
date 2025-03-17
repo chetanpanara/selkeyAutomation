@@ -46,7 +46,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("<h1>Hello World</h1>");
+  res.send("<h1>Hello Developer</h1>");
 });
 
 app.use("/api/auth", authRouter);

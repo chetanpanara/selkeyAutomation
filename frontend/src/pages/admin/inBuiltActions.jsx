@@ -9,12 +9,8 @@ function InBuiltActions() {
   const [actionName, setActionName] = useState("");
   const [actionEventDescription, setActionEventDescription] = useState("");
   const [formData, setFormData] = useState({
-    actionEventName: "",
-    actionEventDescription: "",
-    documentationLink: "",
-    responseType: "",
-    importantHelpText: "",
-    actionResponseType: "",
+    InBuiltActionName: "",
+    InBuiltActionsDescription: "",
   });
 
   const handleAddActionDialogClose = () => {
@@ -43,7 +39,7 @@ function InBuiltActions() {
   return (
     <div className="bg-slate-100 p-4 rounded-lg">
       <div className="block">
-        <p className="font-semibold text-2xl mb-4">Actions</p>
+        <p className="font-semibold text-2xl mb-4">Inbuilt Actions</p>
       </div>
       <div className="block">
         <span className="text-gray-500 text-sm ">
@@ -97,7 +93,9 @@ function InBuiltActions() {
           <div className="bg-white p-4 col-span-1 h-64">
             <div className="block">
               <div className="border-b border-gray-300 mt-2">
-                <h1 className="text-md font-semibold mt-4 mb-4">Actions</h1>
+                <h1 className="text-md font-semibold mt-4 mb-4">
+                  Inbuilt Actions
+                </h1>
               </div>
               <hr className="border-gray-300" />
             </div>
@@ -107,7 +105,7 @@ function InBuiltActions() {
             <div className="block">
               <div className="border-b border-gray-300 mt-2">
                 <h1 className="text-md font-semibold mt-4 mb-4">
-                  Action Details{" "}
+                  Inbuilt Action Detail{" "}
                   <span className="inline-flex items-center">
                     {<FaQuestionCircle />}
                   </span>
@@ -119,7 +117,7 @@ function InBuiltActions() {
               <div className=" mt-4">
                 <div className="flex items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Action Event Name
+                    Inbuilt Action Name
                   </label>
                   <p className="text-red-500 ml-2">(Required)</p>
                   {/* <Button className="bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
@@ -138,14 +136,50 @@ function InBuiltActions() {
                   required
                 />
               </div>
-              <div className="mt-4">
+              {/* inbuilt action type dropdown */}
+              <div className="mt-3">
                 <div className="flex items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Action Event Description
+                    Inbuilt Action Type
                   </label>
                   <p className="text-red-500 ml-2">(Required)</p>
                 </div>
-                {/* <Button className=" bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
+                <select
+                  value={formData.actionType}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      actionType: e.target.value,
+                    });
+                  }}
+                  className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
+                  required
+                >
+                  <option value="dropdown">
+                    Dropdown & Custom Fields (Default)
+                  </option>
+                  <option value="multi-step">Multi-Step</option>
+                  <option value="app-auth-validator">App Auth Validator</option>
+                  <option value="webhook-validator">Webhook Validator</option>
+                  <option value="delete-webhook">Delete Webhook</option>
+                </select>
+
+                <p className="text-gray-500 text-sm mt-2 bg-yellow-100 p-2 rounded-md">
+                  After creating the In-built the action. Make sure to add this
+                  in-built action to the main action where you want this
+                  in-built action values to appear.{" "}
+                  <a href="#" className="text-blue-500">
+                    Learn more
+                  </a>
+                </p>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Inbuilt Action Event Description
+                  </label>
+                  <p className="text-red-500 ml-2">(Required)</p>
+                </div>
                 <textarea
                   value={formData.actionEventDescription}
                   className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
@@ -160,85 +194,6 @@ function InBuiltActions() {
                   required
                 ></textarea>
               </div>
-              <div className="mt-3">
-                <div className="flex items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Documentation/YouTube Tutorial Link
-                  </label>
-                </div>
-                <input
-                  type="text"
-                  value={formData.documentationLink}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      documentationLink: e.target.value,
-                    })
-                  }
-                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
-                  required
-                />
-              </div>
-              <div className="mt-3">
-                <div className="flex items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Response type
-                  </label>
-                </div>
-                <input
-                  type="text"
-                  value={formData.responseType}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      responseType: e.target.value,
-                    })
-                  }
-                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
-                  placeholder="Enter response type"
-                  required
-                />
-                <div className="mt-3 space-y-2">
-                  <label className="font-medium text-sm text-gray-700">
-                    Important Help Text
-                  </label>
-                  <textarea
-                    value={formData.importantHelpText}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        importantHelpText: e.target.value,
-                      })
-                    }
-                    placeholder="Enter important help text"
-                    className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
-                    rows="3"
-                  ></textarea>
-                </div>
-              </div>
-              <div className="mt-3">
-                <div className="flex items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Action Response Type
-                  </label>
-                  <p className="text-red-500 ml-2">(Required)</p>
-                </div>
-                <select
-                  value={formData.actionResponseType}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      actionResponseType: e.target.value,
-                    });
-                  }}
-                  className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
-                  required
-                >
-                  <option value="simple">Simple (Default)</option>
-                  <option value="advance">Advance</option>
-                </select>
-              </div>
-
               <div className="mt-3">
                 <Button
                   className="bg-blue-500 text-white hover:bg-blue-600"
