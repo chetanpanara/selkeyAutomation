@@ -57,10 +57,6 @@ function Apps() {
   const [receivedAuthParams, setReceivedAuthParams] = useState([""]);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [currentParamIndex, setCurrentParamIndex] = useState(null);
-  const [isRequestBodyChecked, setIsRequestBodyChecked] = useState(false);
-  const [oauth2RedirectUrl, setOauth2RedirectUrl] = useState("");
-  const [oauth1RedirectUrl, setOauth1RedirectUrl] = useState("");
-  const [awsRedirectUrl, setAwsRedirectUrl] = useState("");
   const [CURLVersion, setCURLVersion] = useState("default");
 
   // image upload
