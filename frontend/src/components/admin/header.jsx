@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { AlignJustify, Check, LogOut } from "lucide-react";
+import { AlignJustify, ChevronsUpDown, LogOut } from "lucide-react";
 import { UserCog } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
@@ -24,6 +24,9 @@ import {
 import { useEffect, useState } from "react";
 import { logoutUser } from "@/store/slices/auth-slice";
 import { getUserData } from "@/store/slices/user-slice";
+import { Input } from "../ui/input";
+import { GrDown } from "react-icons/gr";
+import { getAllApps } from "@/store/slices/app-slice";
 
 const profileMenus = [
   {
@@ -42,15 +45,19 @@ const profileMenus = [
 function AdminHeader({ setOpen }) {
   const { user } = useSelector((state) => state.auth);
   const { userData } = useSelector((state) => state.user);
+  const { apps } = useSelector((state) => state.app);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [opendropdown, setOpendropdown] = useState(false);
+  const [value, setValue] = useState("");
   useEffect(() => {
+    dispatch(getAllApps());
     if (user?.id) {
       dispatch(getUserData(user.id));
     }
   }, []);
-
+  console.log(apps);
   const handleLogout = async () => {
     try {
       const result = await dispatch(logoutUser()).unwrap();
@@ -66,12 +73,48 @@ function AdminHeader({ setOpen }) {
     <header className="flex items-center justify-between px-4 py-3 border-b">
       <Button
         onClick={() => setOpen(true)}
-        className="lg:hidden sm:block hover:cursor-pointer bg-background hover:bg-slate-200 text-black  text-lg"
+        className="lg:hidden sm:block hover:cursor-pointer bg-background hover:bg-slate-200 text-black text-lg"
       >
         <AlignJustify className="h-6 w-6" />
         <span className="sr-only">Toggle Menu</span>
       </Button>
-      <div className="flex flex-1 justify-end">
+      <div className="flex items-center justify-center flex-1 md:justify-start lg:justify-start md:ml-6 lg:ml-6">
+        <Popover open={opendropdown} onOpenChange={setOpendropdown}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={opendropdown}
+              className="w-[250px] md:w-[300px] lg:w-[300px] justify-between"
+            >
+              {value || "Search App..."}
+              <GrDown className="opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[250px] md:w-[300px] lg:w-[300px] p-0">
+            <Command>
+              <CommandInput placeholder="Search framework..." className="h-9" />
+              <CommandList>
+                <CommandEmpty>No App found.</CommandEmpty>
+                <CommandGroup>
+                  {apps.map((app) => (
+                    <CommandItem
+                      key={app._id}
+                      onSelect={() => {
+                        setValue(app.appName);
+                        setOpendropdown(false);
+                      }}
+                    >
+                      {app.appName}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
+      <div className="flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="hover:cursor-pointer h-10 w-10">

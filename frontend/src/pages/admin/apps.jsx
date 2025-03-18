@@ -46,9 +46,6 @@ const authTypes = [
 function Apps() {
   const [isAddAppDialogOpen, setIsAddAppDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("appDetails");
-  const [checkedAuthTypes, setCheckedAuthTypes] = useState(
-    authTypes.reduce((acc, auth) => ({ ...acc, [auth.id]: false }), {})
-  );
   const [copied, setCopied] = useState(false);
   const [isHeaderPrefixChecked, setIsHeaderPrefixChecked] = useState(false);
   const [showSetAuthParams, setShowSetAuthParams] = useState(false);
@@ -72,13 +69,6 @@ function Apps() {
     appLogo: "",
     authType: "",
   });
-
-  // New state for selected value
-  const [selectedValue, setSelectedValue] = useState("default_value");
-  // Add these new state variables
-  const [grantType, setGrantType] = useState("authorization_code");
-  const [basicAuthType, setBasicAuthType] = useState("basicAuth");
-
   const { apps } = useSelector((state) => state.app);
   const dispatch = useDispatch();
   const [activeAppId, setActiveAppId] = useState("");
@@ -157,7 +147,6 @@ function Apps() {
   useEffect(() => {
     dispatch(getAllApps()).then((res) => {
       if (res?.payload?.success) {
-        console.log(res.payload.data);
         setActiveAppId(res.payload.data[0]._id);
         setFormDataApp({
           appName: res.payload.data[0].appName || "",
