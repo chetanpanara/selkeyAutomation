@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   apps: [],
+  activeAppId: null, // Add activeAppId to the initial state
   isLoading: false,
 };
 
@@ -44,7 +45,11 @@ export const deleteApp = createAsyncThunk("apps/deleteApp", async (id) => {
 const appSlice = createSlice({
   name: "apps",
   initialState,
-  reducers: {},
+  reducers: {
+    setActiveAppId(state, action) {
+      state.activeAppId = action.payload; // Add the setActiveAppId reducer
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllApps.pending, (state) => {
@@ -60,5 +65,7 @@ const appSlice = createSlice({
       });
   },
 });
+
+export const { setActiveAppId } = appSlice.actions; // Export the action
 
 export default appSlice.reducer;

@@ -26,7 +26,7 @@ import { logoutUser } from "@/store/slices/auth-slice";
 import { getUserData } from "@/store/slices/user-slice";
 import { Input } from "../ui/input";
 import { GrDown } from "react-icons/gr";
-import { getAllApps } from "@/store/slices/app-slice";
+import { getAllApps, setActiveAppId } from "@/store/slices/app-slice";
 
 const profileMenus = [
   {
@@ -46,17 +46,17 @@ function AdminHeader({ setOpen }) {
   const { user } = useSelector((state) => state.auth);
   const { userData } = useSelector((state) => state.user);
   const { apps } = useSelector((state) => state.app);
+  const activeAppId = useSelector((state) => state.app.activeAppId);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [opendropdown, setOpendropdown] = useState(false);
   const [value, setValue] = useState("");
-  const [activeAppId, setActiveAppId] = useState(null);
 
   useEffect(() => {
     dispatch(getAllApps()).then((res) => {
       if (res?.payload?.success) {
-        setActiveAppId(res.payload.data[0]._id);
+        dispatch(setActiveAppId(res.payload.data[0]._id));
         setValue(res.payload.data[0].appName);
       }
     });
@@ -68,8 +68,12 @@ function AdminHeader({ setOpen }) {
   useEffect(() => {
     if (activeAppId !== null) {
       console.log(activeAppId);
+      const activeApp = apps.find((app) => app._id === activeAppId);
+      if (activeApp) {
+        setValue(activeApp.appName);
+      }
     }
-  }, [activeAppId]);
+  }, [activeAppId, apps]);
 
   const handleLogout = async () => {
     try {
@@ -106,7 +110,7 @@ function AdminHeader({ setOpen }) {
           </PopoverTrigger>
           <PopoverContent className="w-[250px] md:w-[300px] lg:w-[300px] p-0">
             <Command>
-              <CommandInput placeholder="Search framework..." className="h-9" />
+              <CommandInput placeholder="Search App..." className="h-9" />
               <CommandList>
                 <CommandEmpty>No App found.</CommandEmpty>
                 <CommandGroup>
@@ -121,7 +125,7 @@ function AdminHeader({ setOpen }) {
                       <CommandItem
                         key={app._id}
                         onSelect={() => {
-                          setActiveAppId(app._id);
+                          dispatch(setActiveAppId(app._id));
                           setValue(app.appName);
                           setOpendropdown(false);
                         }}

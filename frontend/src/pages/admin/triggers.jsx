@@ -3,15 +3,23 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { FaQuestionCircle } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 function Triggers() {
   const [isAddTriggerDialogOpen, setIsAddTriggerDialogOpen] = useState(false);
   const [triggerType, setTriggerType] = useState("");
   const [responseType, setResponseType] = useState("");
+  const activeAppId = useSelector((state) => state.app.activeAppId); // Get activeAppId from Redux store
 
   const handleAddTriggerDialogClose = () => {
     setIsAddTriggerDialogOpen(false);
   };
+
+  useEffect(() => {
+    if (activeAppId) {
+      console.log("Active App ID in Triggers:", activeAppId);
+    }
+  }, [activeAppId]);
 
   return (
     <div className="bg-slate-100 p-4 rounded-lg">

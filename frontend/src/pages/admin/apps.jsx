@@ -9,6 +9,7 @@ import {
   deleteApp,
   getAllApps,
   updateApp,
+  setActiveAppId,
 } from "@/store/slices/app-slice";
 import { useSelector, useDispatch } from "react-redux";
 import { MoreVertical } from "lucide-react";
@@ -18,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import AdminHeader from "@/components/admin/header";
 
 const tabs = [
   { id: "appDetails", label: "App Details" },
@@ -71,7 +73,7 @@ function Apps() {
   });
   const { apps } = useSelector((state) => state.app);
   const dispatch = useDispatch();
-  const [activeAppId, setActiveAppId] = useState("");
+  const activeAppId = useSelector((state) => state.app.activeAppId); // Get activeAppId from Redux store
 
   // Add new state for auth configuration
   const [authConfig, setAuthConfig] = useState({
@@ -147,7 +149,7 @@ function Apps() {
   useEffect(() => {
     dispatch(getAllApps()).then((res) => {
       if (res?.payload?.success) {
-        setActiveAppId(res.payload.data[0]._id);
+        dispatch(setActiveAppId(res.payload.data[0]._id)); // Update activeAppId in Redux store
         setFormDataApp({
           appName: res.payload.data[0].appName || "",
           description: res.payload.data[0].description || "",
@@ -414,7 +416,7 @@ function Apps() {
                   activeAppId === app._id ? "bg-blue-50" : ""
                 }`}
                 onClick={() => {
-                  setActiveAppId(app._id);
+                  dispatch(setActiveAppId(app._id)); // Update activeAppId in Redux store
                   setImageFile(null);
                   setFormDataApp({
                     appName: app.appName,
