@@ -156,6 +156,12 @@ function Apps() {
     });
   }, [dispatch]);
 
+  useEffect(() => {
+    if (activeAppId) {
+      console.log(activeAppId);
+    }
+  }, [activeAppId]);
+
   // Function to copy text
   const handleCopy = (url) => {
     navigator.clipboard.writeText(url).then(() => {
@@ -188,10 +194,6 @@ function Apps() {
   const handleSetAuthParamsChange = () => {
     setShowSetAuthParams((prev) => !prev);
   };
-  const handleHeaderPrefixChange = () => {
-    setIsHeaderPrefixChecked((prev) => !prev);
-  };
-
   // Function to handle checkbox change for Received App Auth Parameters
   const handleReceivedAuthParamsChange = () => {
     setShowReceivedAuthParams((prev) => !prev);
@@ -400,7 +402,11 @@ function Apps() {
           {/* render apps */}
           {apps
             .slice()
-            .sort((a, b) => a.appName.localeCompare(b.appName))
+            .sort((a, b) => {
+              if (a._id === activeAppId) return -1;
+              if (b._id === activeAppId) return 1;
+              return a.appName.localeCompare(b.appName);
+            })
             .map((app) => (
               <div
                 key={app._id}
@@ -410,7 +416,6 @@ function Apps() {
                 onClick={() => {
                   setActiveAppId(app._id);
                   setImageFile(null);
-                  console.log("Active app:", activeAppId);
                   setFormDataApp({
                     appName: app.appName,
                     description: app.description,

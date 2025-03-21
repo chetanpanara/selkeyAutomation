@@ -51,13 +51,26 @@ function AdminHeader({ setOpen }) {
   const dispatch = useDispatch();
   const [opendropdown, setOpendropdown] = useState(false);
   const [value, setValue] = useState("");
+  const [activeAppId, setActiveAppId] = useState(null);
+
   useEffect(() => {
-    dispatch(getAllApps());
+    dispatch(getAllApps()).then((res) => {
+      if (res?.payload?.success) {
+        setActiveAppId(res.payload.data[0]._id);
+        setValue(res.payload.data[0].appName);
+      }
+    });
     if (user?.id) {
       dispatch(getUserData(user.id));
     }
-  }, []);
-  console.log(apps);
+  }, [dispatch, user?.id]);
+
+  useEffect(() => {
+    if (activeAppId !== null) {
+      console.log(activeAppId);
+    }
+  }, [activeAppId]);
+
   const handleLogout = async () => {
     try {
       const result = await dispatch(logoutUser()).unwrap();
@@ -97,17 +110,25 @@ function AdminHeader({ setOpen }) {
               <CommandList>
                 <CommandEmpty>No App found.</CommandEmpty>
                 <CommandGroup>
-                  {apps.map((app) => (
-                    <CommandItem
-                      key={app._id}
-                      onSelect={() => {
-                        setValue(app.appName);
-                        setOpendropdown(false);
-                      }}
-                    >
-                      {app.appName}
-                    </CommandItem>
-                  ))}
+                  {apps
+                    .slice()
+                    .sort((a, b) => {
+                      if (a._id === activeAppId) return -1;
+                      if (b._id === activeAppId) return 1;
+                      return a.appName.localeCompare(b.appName);
+                    })
+                    .map((app) => (
+                      <CommandItem
+                        key={app._id}
+                        onSelect={() => {
+                          setActiveAppId(app._id);
+                          setValue(app.appName);
+                          setOpendropdown(false);
+                        }}
+                      >
+                        {app.appName}
+                      </CommandItem>
+                    ))}
                 </CommandGroup>
               </CommandList>
             </Command>
