@@ -45,7 +45,6 @@ function Triggers() {
   useEffect(() => {
     if (activeAppId) {
       dispatch(getTriggers(activeAppId));
-      console.log("Active App ID in Triggers:", activeAppId);
     }
   }, [activeAppId, dispatch]);
 
@@ -60,6 +59,7 @@ function Triggers() {
         console.log("Trigger name saved successfully");
       }
       alert("Trigger name saved successfully!");
+      window.location.reload();
     });
 
     handleAddTriggerDialogClose();

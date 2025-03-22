@@ -11,7 +11,6 @@ export const getTriggers = createAsyncThunk(
   "triggers/getTriggers",
   async (id) => {
     const result = await api.get(`/api/triggers/getTriggers/${id}`);
-    console.log(result.data);
 
     return result?.data;
   }
