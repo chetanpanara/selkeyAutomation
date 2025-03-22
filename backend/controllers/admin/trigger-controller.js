@@ -1,16 +1,43 @@
+const App = require("../../models/App");
 const Trigger = require("../../models/Trigger");
 
 // create new trigger
 const createTrigger = async (req, res) => {
   try {
-    const { appId } = req.params;
-    const { triggerName } = req.body;
+    const { id } = req.params;
+    const {
+      triggerName,
+      description,
+      triggerType,
+      apiEndpoint,
+      requestHeaders,
+      requestParams,
+      sampleResponse,
+      appId,
+    } = req.body;
+
     console.log("appId :", appId);
-    console.log("triggerName :", triggerName);
+    const findTrigger = await Trigger.findOne({
+      appId: appId,
+      triggerName: triggerName,
+    });
+
+    if (findTrigger) {
+      return res.status(400).json({
+        success: false,
+        message: "Trigger already exists with this name",
+      });
+    }
 
     const trigger = await Trigger.create({
       appId: appId,
-      triggerName: triggerName,
+      triggerName,
+      description: description || "",
+      triggerType: triggerType || "Webhook",
+      apiEndpoint: apiEndpoint || "",
+      requestHeaders: requestHeaders || {},
+      requestParams: requestParams || {},
+      sampleResponse: sampleResponse || {},
     });
 
     res.status(201).json({
@@ -22,7 +49,7 @@ const createTrigger = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Error occured",
+      message: "Error occurred",
     });
   }
 };
@@ -106,7 +133,10 @@ const deleteTrigger = async (req, res) => {
 // get triggers
 const getTriggers = async (req, res) => {
   try {
+    console.log("getTriggers called");
     const { appId } = req.params;
+
+    console.log("appId :", appId);
     if (!appId) {
       return res.status(400).json({
         success: false,
@@ -116,6 +146,7 @@ const getTriggers = async (req, res) => {
     const triggers = await Trigger.find({ appId: appId }).select(
       "-createdAt -updatedAt -__v"
     );
+    console.log("Triggers :", triggers);
 
     if (triggers.length === 0) {
       return res.status(404).json({
@@ -127,7 +158,7 @@ const getTriggers = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Triggers fetched successfully",
-      data: triggers,
+      triggers,
     });
   } catch (e) {
     console.log(e);

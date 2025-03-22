@@ -3,13 +3,40 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { FaQuestionCircle } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createTrigger,
+  getTriggers,
+  deleteTrigger,
+} from "@/store/slices/trigger-slice";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical } from "lucide-react";
+
+const triggerMenu = [
+  {
+    id: "delete",
+    name: "Delete",
+  },
+];
 
 function Triggers() {
   const [isAddTriggerDialogOpen, setIsAddTriggerDialogOpen] = useState(false);
+  const [triggerNewData, setTriggerNewData] = useState({
+    triggerName: "",
+    description: "",
+  });
+
   const [triggerType, setTriggerType] = useState("");
   const [responseType, setResponseType] = useState("");
   const activeAppId = useSelector((state) => state.app.activeAppId); // Get activeAppId from Redux store
+  const { triggers = [] } = useSelector((state) => state.trigger); // Get triggers from Redux store with default value
+
+  const dispatch = useDispatch();
 
   const handleAddTriggerDialogClose = () => {
     setIsAddTriggerDialogOpen(false);
@@ -17,9 +44,41 @@ function Triggers() {
 
   useEffect(() => {
     if (activeAppId) {
+      dispatch(getTriggers(activeAppId));
       console.log("Active App ID in Triggers:", activeAppId);
     }
-  }, [activeAppId]);
+  }, [activeAppId, dispatch]);
+
+  function SaveTriggerName() {
+    dispatch(
+      createTrigger({
+        triggerData: { ...triggerNewData, appId: activeAppId },
+        id: activeAppId,
+      })
+    ).then((res) => {
+      if (res.payload.success) {
+        console.log("Trigger name saved successfully");
+      }
+      alert("Trigger name saved successfully!");
+    });
+
+    handleAddTriggerDialogClose();
+  }
+
+  // Function to handle delete trigger
+  const handleDeleteTrigger = (triggerId) => {
+    if (window.confirm("Are you sure you want to delete this trigger?")) {
+      dispatch(deleteTrigger({ id: triggerId })).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(getTriggers(activeAppId));
+          alert("Trigger deleted successfully");
+          window.location.reload();
+        }
+      });
+    }
+  };
+
+  console.log("Triggers:", triggers);
 
   return (
     <div className="bg-slate-100 p-4 rounded-lg">
@@ -50,6 +109,13 @@ function Triggers() {
           </Label>
           <input
             type="text"
+            value={triggerNewData.triggerName}
+            onChange={(e) =>
+              setTriggerNewData({
+                ...triggerNewData,
+                triggerName: e.target.value,
+              })
+            }
             className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
             placeholder="Enter trigger event name"
           />
@@ -57,13 +123,20 @@ function Triggers() {
             Trigger Event Description
           </Label>
           <textarea
+            value={triggerNewData.description}
+            onChange={(e) =>
+              setTriggerNewData({
+                ...triggerNewData,
+                description: e.target.value,
+              })
+            }
             className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
             rows={3}
             placeholder="Enter trigger event description"
           ></textarea>
           <Button
             className="bg-blue-500 text-white hover:bg-blue-600"
-            onClick={handleAddTriggerDialogClose}
+            onClick={SaveTriggerName}
           >
             Save
           </Button>
@@ -79,7 +152,45 @@ function Triggers() {
               </div>
               <hr className="border-gray-300" />
             </div>
-            <div className="block mt-2">Hello</div>
+            {/* Display Trigger list */}
+            {triggers.length === 0 && (
+              <div className="text-center text-gray-500">
+                No Trigger found. <br />
+              </div>
+            )}
+            {triggers.map((trigger) => (
+              <div
+                key={trigger._id}
+                className={`flex justify-between items-center p-2 rounded cursor-pointer ${
+                  activeAppId === trigger._id ? "bg-blue-50" : ""
+                }`}
+                onClick={() => {
+                  console.log("Trigger Clicked:", trigger);
+                }}
+              >
+                <span>{trigger.triggerName}</span>
+                <div className="relative">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <MoreVertical className="w-6 h-6 text-gray-500 hover:cursor-pointer" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="top"
+                      className="w-24  bg-white rounded-md shadow-md"
+                      style={{
+                        backgroundColor: "white",
+                      }}
+                    >
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteTrigger(trigger._id)}
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ))}
           </div>
           <div className="bg-white p-4 mr-2 lg:mr-0 col-span-3">
             <div className="block">
