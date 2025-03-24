@@ -149,17 +149,41 @@ function Apps() {
   useEffect(() => {
     dispatch(getAllApps()).then((res) => {
       if (res?.payload?.success) {
-        dispatch(setActiveAppId(res.payload.data[0]._id)); // Update activeAppId in Redux store
-        setFormDataApp({
-          appName: res.payload.data[0].appName || "",
-          description: res.payload.data[0].description || "",
-        });
+        const appsData = res.payload.data;
+        if (appsData.length > 0) {
+          const storedActiveAppId = localStorage.getItem("activeAppId");
+          const activeAppExists = appsData.some(
+            (app) => app._id === storedActiveAppId
+          );
+
+          if (storedActiveAppId && activeAppExists) {
+            dispatch(setActiveAppId(storedActiveAppId));
+            const activeApp = appsData.find(
+              (app) => app._id === storedActiveAppId
+            );
+            setFormDataApp({
+              appName: activeApp.appName || "",
+              description: activeApp.description || "",
+              appLogo: activeApp.appLogo || "",
+              authType: activeApp.authType || "",
+            });
+          } else {
+            dispatch(setActiveAppId(appsData[0]._id));
+            setFormDataApp({
+              appName: appsData[0].appName || "",
+              description: appsData[0].description || "",
+              appLogo: appsData[0].appLogo || "",
+              authType: appsData[0].authType || "",
+            });
+          }
+        }
       }
     });
   }, [dispatch]);
 
   useEffect(() => {
     if (activeAppId) {
+      localStorage.setItem("activeAppId", activeAppId);
       console.log(activeAppId);
     }
   }, [activeAppId]);
@@ -307,7 +331,18 @@ function Apps() {
     if (window.confirm("Are you sure you want to delete this app?")) {
       dispatch(deleteApp(appId)).then((data) => {
         if (data?.payload?.success) {
-          dispatch(getAllApps());
+          dispatch(getAllApps()).then((res) => {
+            if (res?.payload?.success) {
+              const appsData = res.payload.data;
+              if (appsData.length > 0) {
+                const newActiveAppId = appsData[0]._id;
+                dispatch(setActiveAppId(newActiveAppId));
+                localStorage.setItem("activeAppId", newActiveAppId);
+              } else {
+                localStorage.removeItem("activeAppId");
+              }
+            }
+          });
           alert("App deleted successfully");
           window.location.reload();
         }

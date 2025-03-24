@@ -56,8 +56,24 @@ function AdminHeader({ setOpen }) {
   useEffect(() => {
     dispatch(getAllApps()).then((res) => {
       if (res?.payload?.success) {
-        dispatch(setActiveAppId(res.payload.data[0]._id));
-        setValue(res.payload.data[0].appName);
+        const appsData = res.payload.data;
+        if (appsData.length > 0) {
+          const storedActiveAppId = localStorage.getItem("activeAppId");
+          const activeAppExists = appsData.some(
+            (app) => app._id === storedActiveAppId
+          );
+
+          if (storedActiveAppId && activeAppExists) {
+            dispatch(setActiveAppId(storedActiveAppId));
+            const activeApp = appsData.find(
+              (app) => app._id === storedActiveAppId
+            );
+            setValue(activeApp.appName);
+          } else {
+            dispatch(setActiveAppId(appsData[0]._id));
+            setValue(appsData[0].appName);
+          }
+        }
       }
     });
     if (user?.id) {
@@ -67,6 +83,7 @@ function AdminHeader({ setOpen }) {
 
   useEffect(() => {
     if (activeAppId !== null) {
+      localStorage.setItem("activeAppId", activeAppId);
       console.log(activeAppId);
       const activeApp = apps.find((app) => app._id === activeAppId);
       if (activeApp) {
