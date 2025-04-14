@@ -97,6 +97,7 @@ const updateApp = async (req, res) => {
       }
     }
 
+    // if any of the fields are not provided, use the existing values
     const updatedApp = await App.findByIdAndUpdate(
       id,
       {
@@ -129,7 +130,7 @@ const getAllApps = async (req, res) => {
     const apps = await App.find(
       {},
       "_id appName description logoUrl authenticationType authConfig"
-    );
+    ).lean(); // Use lean to improve performance
     res.status(200).json({
       success: true,
       data: apps,

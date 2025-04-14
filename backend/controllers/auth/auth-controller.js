@@ -74,7 +74,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const checkUser = await User.findOne({ email });
+    const checkUser = await User.findOne({ email }).lean();
     if (!checkUser) {
       return res.status(400).json({
         success: false,

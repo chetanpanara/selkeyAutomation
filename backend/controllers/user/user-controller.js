@@ -8,7 +8,9 @@ const fetchUserData = async (req, res) => {
     const { userId } = req.params;
 
     // fetch user data but not  _id
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findOne({ _id: userId }).select(
+      "-_id firstName lastName email"
+    ).lean(); 
     if (!user) {
       return res.status(404).json({
         message: "User not found",
