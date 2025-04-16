@@ -1,175 +1,137 @@
 import { useState, useEffect } from 'react';
-import { Search, MessageSquare, Activity, ChevronUp, MoreVertical, X } from 'lucide-react';
+import { Search, ChevronUp, MoreVertical } from 'lucide-react';
 
-export default function AppSelector() {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function TriggerAppSelector() {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedApp, setSelectedApp] = useState(null);
-  const [searchEventTerm, setSearchEventTerm] = useState('');
+  const [searchEvents, setSearchEvents] = useState("");
 
   const apps = [
-    { id: 1, name: 'Kit', icon: '🛠️' },
-    { id: 2, name: 'Router (Pabbly)', icon: '📍' },
-    { id: 3, name: 'Iterator (Pabbly)', icon: '🔄' },
-    { id: 4, name: 'Delay (Pabbly)', icon: '⌛' },
-    { id: 5, name: 'API (Pabbly)', icon: '🔌' },
-    { id: 6, name: 'Pabbly Email Marketing', icon: '📧' },
-    { id: 7, name: 'Mailchimp', icon: '🐵' },
-    { id: 8, name: 'Trello', icon: '📋' },
-    { id: 9, name: 'SendFox', icon: '🦊' },
-    { id: 10, name: 'MailerLite Classic', icon: '✉️' },
-    { id: 11, name: 'Moosend', icon: '📬' },
-    { id: 12, name: 'Twilio', icon: '📱' },
-    { id: 13, name: 'Vonage', icon: '📞' },
+    { id: 1, name: 'WhatsApp Cloud API', icon: '💬', color: 'bg-green-500', logoClass: 'bg-green-50 text-green-600' },
+    { id: 2, name: 'Router (Pabbly)', icon: '🔴', color: 'bg-pink-500' },
+    { id: 3, name: 'Iterator (Pabbly)', icon: '🔄', color: 'bg-blue-500' },
+    { id: 4, name: 'Delay (Pabbly)', icon: '⌛', color: 'bg-amber-500' },
+    { id: 5, name: 'API (Pabbly)', icon: '🔌', color: 'bg-purple-500' },
+    { id: 6, name: 'Pabbly Email Marketing', icon: '✉️', color: 'bg-blue-400' },
+    { id: 7, name: 'Mailchimp', icon: '🐵', color: 'bg-red-500' },
+    { id: 8, name: 'Trello', icon: '📋', color: 'bg-orange-400' },
+    { id: 9, name: 'SendFox', icon: '🦊', color: 'bg-orange-500' },
+    { id: 10, name: 'MailerLite Classic', icon: '📧', color: 'bg-purple-400' },
+    { id: 11, name: 'Moosend', icon: '📬', color: 'bg-blue-600' },
+    { id: 12, name: 'Twilio', icon: '📱', color: 'bg-blue-800' },
+    { id: 13, name: 'Vonage', icon: '📞', color: 'bg-red-600' },
+    { id: 14, name: 'Kit', icon: '🔧', color: 'bg-gray-400' },
   ];
 
-  // Filter apps based on search term - always returns all apps when searchTerm is empty
-  const filteredApps = searchTerm.trim() === ''
-    ? apps
-    : apps.filter(app => app.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  // Filter apps based on search query
+  const filteredApps = apps.filter(app =>
+    app.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const handleAppSelect = (app) => {
-    setSelectedApp(app);
-    setSearchTerm('');
-  };
-
-  const clearSearch = () => {
-    setSearchTerm('');
-    // No need for additional logic - the filteredApps will update automatically
-  };
-
-  const clearEventSearch = () => {
-    setSearchEventTerm('');
-  };
-
-  const goBackToAppSelection = () => {
+  // Clear search and reset selection
+  const handleGoBack = () => {
+    setSearchQuery("");
     setSelectedApp(null);
-    setSearchTerm('');
-    setSearchEventTerm('');
   };
+
+  // Reset search events when changing apps
+  useEffect(() => {
+    setSearchEvents("");
+  }, [selectedApp]);
 
   return (
-    <div className="p-6 max-w-8xl mx-auto">
-      <div className="bg-white border border-yellow-300 rounded-lg shadow-md p-4">
-        {selectedApp ? (
-          <>
-            <div className="flex items-center mb-4">
-              <div className="rounded-full p-2 mr-3" style={{ backgroundColor: "#f1f8e9" }}>
-                <MessageSquare color={selectedApp.logoColor} size={20} />
-              </div>
-              <div>
-                <h2 className="text-amber-800 text-sm font-medium">Trigger : When this happens ...</h2>
-                <h1 className="text-lg font-bold">{selectedApp.name}</h1>
-              </div>
-              <div className="ml-auto flex">
-                <button className="p-2" onClick={goBackToAppSelection}>
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
-                </button>
-                <button className="p-2">
-                  <MoreVertical className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
-            </div>
+    <div className="border border-gray-200 rounded-lg p-4 mt-4 max-w-8xl mx-auto bg-white shadow-sm">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedApp ? selectedApp.logoClass || 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-500'}`}>
+            <div className="w-6 h-6">{selectedApp ? selectedApp.icon : '⚡'}</div>
+          </div>
+          <div>
+            <p className="text-yellow-700 text-sm">Trigger : When this happens ...</p>
+            <h2 className="text-lg font-semibold">{selectedApp ? selectedApp.name : 'Select an app'}</h2>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
+            <ChevronUp className={`w-5 h-5 text-gray-500 ${isExpanded ? '' : 'transform rotate-180'}`} />
+          </button>
+          <button className="p-2 hover:bg-gray-100 rounded-full">
+            <MoreVertical className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+      </div>
 
-            <div className="mb-4">
-              <h3 className="text-sm font-medium mb-2">Select trigger app</h3>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      {isExpanded && (
+        <div>
+          {!selectedApp ? (
+            // App selection screen
+            <>
+              <p className="text-gray-700 mb-2">Select trigger app</p>
+              <div className="relative mb-4">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Search triggers..."
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                {filteredApps.map((app) => (
+                  <div
+                    key={app.id}
+                    className="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-yellow-400 cursor-pointer transition-all"
+                    onClick={() => setSelectedApp(app)}
+                  >
+                    <div className="mb-2 text-2xl">{app.icon}</div>
+                    <div className="text-center text-sm">{app.name}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            // Trigger event selection screen
+            <>
+              <p className="text-gray-700 mb-2">Select trigger app</p>
+              <div className="relative mb-4">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder={selectedApp.name}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                   value={selectedApp.name}
                   readOnly
+                  onClick={handleGoBack}
                 />
               </div>
-            </div>
 
-            <div className="mb-4">
-              <h3 className="text-sm font-medium mb-2">Select trigger event</h3>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <p className="text-gray-700 mb-2">Select trigger event</p>
+              <div className="relative mb-4">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Search events..."
-                  value={searchEventTerm}
-                  onChange={(e) => setSearchEventTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  value={searchEvents}
+                  onChange={(e) => setSearchEvents(e.target.value)}
                 />
-                {searchEventTerm && (
-                  <button
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={clearEventSearch}
-                  >
-                    <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  </button>
-                )}
               </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex items-center mb-4">
-              <div className="bg-yellow-100 rounded-full p-2 mr-3">
-                <Activity className="text-yellow-500" size={20} />
-              </div>
-              <div>
-                <h2 className="text-amber-800 text-sm font-medium">Trigger : When this happens ...</h2>
-                <h1 className="text-lg font-bold">Select an app</h1>
-              </div>
-              <div className="ml-auto flex">
-                <button className="p-2">
-                  <ChevronUp className="h-5 w-5 text-gray-500" />
-                </button>
-                <button className="p-2">
-                  <MoreVertical className="h-5 w-5 text-gray-500" />
-                </button>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="text-sm font-medium mb-2">Select trigger app</h3>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Search triggers..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                {searchTerm && (
-                  <button
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={clearSearch}
-                  >
-                    <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-              {filteredApps.map((app) => (
-                <button
-                  key={app.id}
-                  className="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                  onClick={() => handleAppSelect(app)}
-                >
-                  <div className="mb-2">
-                    {app.icon}
-                  </div>
-                  <span className="text-xs text-center">{app.name}</span>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
