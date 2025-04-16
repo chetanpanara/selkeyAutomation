@@ -76,6 +76,7 @@ function App() {
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>
+        {/* Admin panel */}
         <Route
           path="/apps"
           element={
@@ -91,6 +92,7 @@ function App() {
           <Route path="profile" element={<Myaccount />} />
           <Route path="*" element={<NotFound />} />
         </Route>
+        {/* user panel */}
         <Route
           path="/dashboard"
           element={

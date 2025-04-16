@@ -21,6 +21,7 @@ import {
   getWorkflowCounts,
 } from "@/store/slices/workflow-slice";
 import { useNavigate } from "react-router-dom";
+import WorkflowTable from "./WorkflowTable";
 
 function UserDashboard() {
   // State variables
@@ -166,22 +167,24 @@ function UserDashboard() {
 
   return (
     <div className="bg-slate-100 p-1 sm:p-4 rounded-lg">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-        <div>
-          <h1 className="font-semibold text-2xl sm:text-3xl mb-2 sm:mb-0">
-            Dashboard
-          </h1>
-          <p className="text-gray-500 text-sm max-w-xl">
-            Create & manage all of your automation workflows in one place with
-            Selkey Automation Dashboard.
-          </p>
+    
+      <div className="container  max-w-full p-4">
+        <div className="grid grid-cols-1">
+          <div className="block">
+            <p className="font-semibold text-3xl mb-4">Dashboard</p>
+            <span className="text-gray-500 text-sm ">
+              Create & manage all of your automation workflows in one place
+              with Pabbly Connect Dashboard.
+            </span>
+
+            <button
+              onClick={() => setIsCreateWorkflowDialogOpen(true)}
+              className="text-white float-end bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-fit"
+            >
+              Create Workflow
+            </button>
+          </div>
         </div>
-        <Button
-          className="bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-auto mt-4 sm:mt-0"
-          onClick={() => setIsCreateWorkflowDialogOpen(true)}
-        >
-          Create Workflow
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -405,6 +408,8 @@ function UserDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <WorkflowTable/>
     </div>
   );
 }
