@@ -42,12 +42,12 @@ function UserHeader({ setOpen }) {
   const { userData } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
   useEffect(() => {
     if (user?.id) {
       dispatch(getUserData(user.id));
     }
-  }, [dispatch, user?.id]);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -74,8 +74,8 @@ function UserHeader({ setOpen }) {
           <DropdownMenuTrigger asChild>
             <Avatar className="hover:cursor-pointer h-10 w-10">
               <AvatarFallback className="bg-emerald-200 border border-black text-black font-bold text-lg">
-                {userData?.userFirstName?.charAt(0).toUpperCase() || ''}
-                {userData?.userLastName?.charAt(0).toUpperCase() || ''}
+                {userData?.firstName?.charAt(0).toUpperCase() || ''}
+                {userData?.lastName?.charAt(0).toUpperCase() || ''}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>

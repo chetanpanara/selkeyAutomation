@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { AlignJustify, ChevronsUpDown, LogOut } from "lucide-react";
+import { AlignJustify, LogOut } from "lucide-react";
 import { UserCog } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
@@ -24,7 +24,6 @@ import {
 import { useEffect, useState } from "react";
 import { logoutUser } from "@/store/slices/auth-slice";
 import { getUserData } from "@/store/slices/user-slice";
-import { Input } from "../ui/input";
 import { GrDown } from "react-icons/gr";
 import { getAllApps, setActiveAppId } from "@/store/slices/app-slice";
 
@@ -79,7 +78,7 @@ function AdminHeader({ setOpen }) {
     if (user?.id) {
       dispatch(getUserData(user.id));
     }
-  }, [dispatch, user?.id]);
+  }, []);
 
   useEffect(() => {
     if (activeAppId !== null) {
@@ -90,7 +89,7 @@ function AdminHeader({ setOpen }) {
         setValue(activeApp.appName);
       }
     }
-  }, [activeAppId, apps]);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -161,8 +160,8 @@ function AdminHeader({ setOpen }) {
           <DropdownMenuTrigger asChild>
             <Avatar className="hover:cursor-pointer h-10 w-10">
               <AvatarFallback className="bg-emerald-200 border border-black text-black font-bold text-lg">
-                {userData?.userFirstName?.charAt(0).toUpperCase() || ""}
-                {userData?.userLastName?.charAt(0).toUpperCase() || ""}
+                {userData?.firstName?.charAt(0).toUpperCase() || ""}
+                {userData?.lastName?.charAt(0).toUpperCase() || ""}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
@@ -175,7 +174,7 @@ function AdminHeader({ setOpen }) {
           >
             <DropdownMenuLabel className="flex flex-col gap-1">
               <span className="text-lg font-semibold">
-                {userData?.userFirstName || ""} {userData?.userLastName || ""}
+                {userData?.firstName || ""} {userData?.lastName || ""}
               </span>
               <span className="text-sm text-gray-500">{user?.email || ""}</span>
             </DropdownMenuLabel>

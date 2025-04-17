@@ -111,6 +111,35 @@ const Myaccount = () => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    try {
+      dispatch(getUserData(user?.id))
+        .unwrap()
+        .then((res) => {
+          if (res.success && res.data) {
+            const newFormData = {
+              firstName: res.data?.firstName || "",
+              lastName: res.data?.lastName || "",
+              address: res.data?.address || "",
+              city: res.data?.city || "",
+              state: res.data?.state || "",
+              country: res.data?.country || "",
+              contact: res.data?.contact || "",
+            };
+            setFormData(newFormData);
+            // Set available states based on the country from API
+            if (res.data.userProfile?.country) {
+              setAvailableStates(
+                countryStates[res.data.userProfile.country] || []
+              );
+            }
+          }
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     localStorage.setItem("activeTab", tabId);
