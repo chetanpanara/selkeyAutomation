@@ -24,10 +24,38 @@ export default function TriggerAppSelector() {
     { id: 14, name: 'Kit', icon: '🔧', color: 'bg-gray-400' },
   ];
 
+  // App-specific events
+  const appEvents = {
+    'WhatsApp Cloud API': [
+      { name: 'Send Template Message', description: 'Send a pre-approved message template' },
+      { name: 'Send Text Message', description: 'Send a simple text message' },
+      { name: 'Send Media Message', description: 'Send images, videos, or documents' },
+      { name: 'Send Location', description: 'Share a location' },
+      { name: 'Send Contact', description: 'Share a contact card' }
+    ],
+    'Router (Pabbly)': [
+      { name: 'Route A', description: 'First routing path' },
+      { name: 'Route B', description: 'Second routing path' },
+      { name: 'Custom Route', description: 'Define custom routing logic' }
+    ],
+    'Iterator (Pabbly)': [
+      { name: 'Loop Items', description: 'Iterate through a list of items' },
+      { name: 'Map Data', description: 'Transform data while iterating' },
+      { name: 'Filter Items', description: 'Filter items based on conditions' }
+    ]
+  };
+
   // Filter apps based on search query
   const filteredApps = apps.filter(app =>
     app.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Filter events based on search query and selected app
+  const filteredEvents = selectedApp && appEvents[selectedApp.name] ?
+    appEvents[selectedApp.name].filter(event =>
+      event.name.toLowerCase().includes(searchEvents.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchEvents.toLowerCase())
+    ) : [];
 
   // Clear search and reset selection
   const handleGoBack = () => {
@@ -127,6 +155,24 @@ export default function TriggerAppSelector() {
                   value={searchEvents}
                   onChange={(e) => setSearchEvents(e.target.value)}
                 />
+              </div>
+
+              {/* Event list */}
+              <div className="space-y-2">
+                {filteredEvents.map((event, index) => (
+                  <div
+                    key={index}
+                    className="p-3 border border-gray-200 rounded-lg hover:border-yellow-400 cursor-pointer transition-all"
+                  >
+                    <div className="font-medium">{event.name}</div>
+                    <div className="text-sm text-gray-500">{event.description}</div>
+                  </div>
+                ))}
+                {filteredEvents.length === 0 && searchEvents && (
+                  <div className="text-center py-4 text-gray-500">
+                    No events found matching "{searchEvents}"
+                  </div>
+                )}
               </div>
             </>
           )}

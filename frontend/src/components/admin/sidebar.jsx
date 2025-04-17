@@ -78,7 +78,7 @@ function AdminSidebar({ open, setOpen }) {
               <SheetTitle className="flex gap-2 mt-5 mb-5">
                 <div className="flex items-center gap-2">
                   <img src={logo} alt="logo" className="w-10 h-10" />
-                  <span className="text-md font-semibold">
+                  <span className="text-lg font-semibold">
                     SelKey Automation
                   </span>
                 </div>
@@ -97,7 +97,7 @@ function AdminSidebar({ open, setOpen }) {
           className="flex cursor-pointer items-center gap-2"
         >
           <img src={logo} alt="logo" className="w-10 h-10" />
-          <h1 className="text-md font-semibold">SelKey Automation</h1>
+          <h1 className="text-lg font-semibold">SelKey Automation</h1>
         </div>
         <MenuItems />
       </aside>
