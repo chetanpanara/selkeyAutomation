@@ -4,14 +4,13 @@ const User = require("../../models/User");
 const Folder = require("../../models/Folder");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
-const UserProfile = require("../../models/UserProfile");
 dotenv.config();
 
 //register user
 const registerUser = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   try {
-    const checkUser = await User.findOne({ email });
+    const checkUser = await User.findOne({ email }).lean();
     if (checkUser) {
       return res.status(400).json({
         success: false,
@@ -25,42 +24,21 @@ const registerUser = async (req, res) => {
         message: "Password must be at least 8 characters long",
       });
     }
-    // password must contain at least one uppercase letter, one lowercase letter, and one number
-    if (
-      !/[A-Z]/.test(password) ||
-      !/[a-z]/.test(password) ||
-      !/[0-9]/.test(password)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-      });
-    } else {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
-      });
-      // save new user
-      const savedUser = await newUser.save();
 
-      const profile = await UserProfile.findOne({ userId: savedUser._id });
-      if (!profile) {
-        // create user profile
-        const userProfile = new UserProfile({
-          userId: savedUser._id,
-        });
-        await userProfile.save();
-      }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+    // save new user
+    await newUser.save();
 
-      return res.status(200).json({
-        success: true,
-        message: "User registration successful",
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      message: "User registration successful",
+    });
   } catch (error) {
     console.log("Error during registration:", error.message);
     return res.status(500).json({
@@ -94,11 +72,11 @@ const loginUser = async (req, res) => {
     let homeFolder = await Folder.findOne({
       userId: checkUser._id,
       folderName: "Home",
-    });
+    }).lean();
     let trashFolder = await Folder.findOne({
       userId: checkUser._id,
       folderName: "Trash",
-    });
+    }).lean();
 
     if (!homeFolder && checkUser.role === "user") {
       homeFolder = new Folder({
@@ -127,7 +105,7 @@ const loginUser = async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: 182.5 * 24 * 60 * 60 * 1000, //convert 182.5 days into milliseconds from current time
+        expiresIn: 30 * 24 * 60 * 60 * 1000, //convert 30 days into milliseconds from current time
       }
     );
 
@@ -135,8 +113,8 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       secure: true,
       // max age or expiry date of the token in cookies
-      // 182.5 days from current time
-      maxAge: 182.5 * 24 * 60 * 60 * 1000,
+      // 30 days from current time
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({

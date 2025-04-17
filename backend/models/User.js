@@ -25,6 +25,26 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    address: {
+      type: String,
+      default: "",
+    },
+    city: {
+      type: String,
+      default: "",
+    },
+    state: {
+      type: String,
+      default: "",
+    },
+    country: {
+      type: String,
+      default: "",
+    },
+    contact: {
+      type: String,
+      default: null, // Changed from "" to null for better consistency
+    },
     resetPasswordOTP: {
       type: String,
       default: null,

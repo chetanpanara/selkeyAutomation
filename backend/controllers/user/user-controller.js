@@ -1,44 +1,26 @@
 const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
-const UserProfile = require("../../models/UserProfile");
 
 //get user data
 const fetchUserData = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // fetch user data but not  _id
-    const user = await User.findOne({ _id: userId }).select(
-      "-_id firstName lastName email"
-    ).lean(); 
+    // fetch user data
+    const user = await User.findOne({ _id: userId }).lean();
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
         success: false,
       });
-    } else {
-      // fetch user firstName and last name from User
-      const userFirstName = user.firstName;
-      const userLastName = user.lastName;
-
-      // fetch user profile data
-      const userProfile = await UserProfile.findOne({ userId: userId }).select(
-        "address city state country contact -_id"
-      );
-
-      if (!userProfile) {
-        return res.status(404).json({
-          message: "User profile not found",
-          success: false,
-        });
-      }
-      // send response
-      res.status(200).json({
-        message: "User data fetched successfully",
-        success: true,
-        data: { userFirstName, userLastName, userProfile },
-      });
     }
+    // send response
+    res.status(200).json({
+      message: "User data fetched successfully",
+      success: true,
+      data: user,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -55,7 +37,7 @@ const updateUserData = async (req, res) => {
     const { firstName, lastName, address, city, state, country, contact } =
       req.body;
 
-    // update user data
+    // Find user Data
     const user = await User.findOne({ _id: userId });
 
     // check if user exists
@@ -64,31 +46,18 @@ const updateUserData = async (req, res) => {
         message: "User not found",
         success: false,
       });
-    } else {
-      // update user
-      await User.findOneAndUpdate(
-        { _id: userId },
-        { firstName, lastName },
-        { new: true }
-      );
-      // update userProfile data
-      await UserProfile.findOneAndUpdate(
-        { userId: userId },
-        {
-          address,
-          city,
-          state,
-          country,
-          contact,
-        },
-        { new: true }
-      );
-      // send response
-      res.status(200).json({
-        message: "Profile updated successfully",
-        success: true,
-      });
     }
+    // update user
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { firstName, lastName, address, city, state, country, contact },
+      { new: true }
+    );
+    // send response
+    res.status(200).json({
+      message: "Profile updated successfully",
+      success: true,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({

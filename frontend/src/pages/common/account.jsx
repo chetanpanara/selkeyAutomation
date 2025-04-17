@@ -84,7 +84,6 @@ const Myaccount = () => {
   //fetch user data
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { userData } = useSelector((state) => state.user);
   const [availableStates, setAvailableStates] = useState([]);
   const [activeTab, setActiveTab] = useState("profile");
   const [formData, setFormData] = useState(initialFormData);
@@ -110,35 +109,6 @@ const Myaccount = () => {
       setActiveTab(storedTab);
     }
     setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    try {
-      dispatch(getUserData(user?.id))
-        .unwrap()
-        .then((res) => {
-          if (res.success && res.data) {
-            const newFormData = {
-              firstName: res.data.userFirstName || "",
-              lastName: res.data.userLastName || "",
-              address: res.data.userProfile?.address || "",
-              city: res.data.userProfile?.city || "",
-              state: res.data.userProfile?.state || "",
-              country: res.data.userProfile?.country || "",
-              contact: res.data.userProfile?.contact || "",
-            };
-            setFormData(newFormData);
-            // Set available states based on the country from API
-            if (res.data.userProfile?.country) {
-              setAvailableStates(
-                countryStates[res.data.userProfile.country] || []
-              );
-            }
-          }
-        });
-    } catch (e) {
-      console.log(e);
-    }
   }, []);
 
   const handleTabChange = (tabId) => {
@@ -184,19 +154,21 @@ const Myaccount = () => {
         .unwrap()
         .then((res) => {
           if (res.success) {
-            alert(res.message || 'Profile updated successfully');
+            alert(res.message || "Profile updated successfully");
             window.location.reload();
           } else {
-            alert(res.message || 'Failed to update profile');
+            alert(res.message || "Failed to update profile");
           }
         })
         .catch((error) => {
-          alert(error?.message || 'Something went wrong while updating profile');
-          console.error('Profile update error:', error);
+          alert(
+            error?.message || "Something went wrong while updating profile"
+          );
+          console.error("Profile update error:", error);
         });
     } catch (error) {
-      alert(error?.message || 'Something went wrong while updating profile');
-      console.error('Profile update error:', error);
+      alert(error?.message || "Something went wrong while updating profile");
+      console.error("Profile update error:", error);
     }
   }
 
@@ -204,30 +176,32 @@ const Myaccount = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
-    
+
     if (data.newPassword !== data.confirmPassword) {
       alert("New password and confirm password do not match!");
       return;
     }
 
     try {
-      const response = await dispatch(updateUserPassword({ 
-        userId: user.id, 
-        data: {
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword
-        }
-      })).unwrap();
-      
+      const response = await dispatch(
+        updateUserPassword({
+          userId: user.id,
+          data: {
+            currentPassword: data.currentPassword,
+            newPassword: data.newPassword,
+          },
+        })
+      ).unwrap();
+
       if (response.success) {
-        alert(response.message || 'Password updated successfully');
+        alert(response.message || "Password updated successfully");
         clearFormData();
       } else {
-        alert(response.message || 'Failed to update password');
+        alert(response.message || "Failed to update password");
       }
     } catch (error) {
-      alert(error?.message || 'Something went wrong while updating password');
-      console.error('Password update error:', error);
+      alert(error?.message || "Something went wrong while updating password");
+      console.error("Password update error:", error);
     }
   }
 
