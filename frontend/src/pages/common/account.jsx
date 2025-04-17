@@ -283,7 +283,6 @@ const Myaccount = () => {
                       <input
                         type="text"
                         name="firstName"
-                        required
                         className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         placeholder="First Name"
                         value={formData.firstName}
@@ -299,7 +298,6 @@ const Myaccount = () => {
                       <input
                         type="text"
                         name="lastName"
-                        required
                         className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         placeholder="Last Name"
                         value={formData.lastName}
@@ -314,7 +312,6 @@ const Myaccount = () => {
                     <input
                       type="text"
                       name="address"
-                      required
                       className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                       placeholder="Address"
                       value={formData.address}
@@ -329,7 +326,6 @@ const Myaccount = () => {
                       <input
                         type="text"
                         name="city"
-                        required
                         className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         placeholder="City"
                         value={formData.city}
@@ -341,7 +337,6 @@ const Myaccount = () => {
                     <div className="relative z-0 w-full mb-5 group">
                       <select
                         name="country"
-                        required
                         className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         onChange={handleCountryChange}
                         value={formData.country}
@@ -360,7 +355,6 @@ const Myaccount = () => {
                     <div className="relative z-0 w-full mb-5 group">
                       <select
                         name="state"
-                        required
                         className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={formData.state}
                         onChange={(e) =>
@@ -382,7 +376,6 @@ const Myaccount = () => {
                       <input
                         type="text"
                         name="contact"
-                        required
                         className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         placeholder="Contact Number"
                         value={formData.contact}
