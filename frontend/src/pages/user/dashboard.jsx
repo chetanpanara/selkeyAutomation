@@ -35,11 +35,9 @@ function UserDashboard() {
   const [showDropdown, setShowDropdown] = useState({});
   const [activeFolder, setActiveFolder] = useState("");
   const [workflowCounts, setWorkflowCounts] = useState({});
-  const pieChartData = [
-    { name: "Completed", value: 10, color: "#36A2EB" },
-    { name: "Pending", value: 5, color: "#FF6384" },
-    { name: "In Progress", value: 3, color: "#FFCE56" },
-  ];
+
+  // Static folder names
+  const STATIC_FOLDERS = ["Home", "Trash"];
 
   const dropdownMenu = (folderId) => [
     {
@@ -83,30 +81,43 @@ function UserDashboard() {
   }
   // edit folder handler
   function handleEditFolder(folderId) {
-    console.log("Rename folder with ID:", folderId);
-    setFolders(
-      folders.map((folder) =>
-        folder._id === folderId
-          ? { ...folder, folderName: newFolderName }
-          : folder
-      )
-    );
+    const folderToEdit = folders.find((folder) => folder._id === folderId);
+    if (STATIC_FOLDERS.includes(folderToEdit.folderName)) {
+      alert("You cannot rename static folders.");
+      return;
+    }
+    const newName = prompt("Enter new folder name:", folderToEdit.folderName);
+    if (newName && newName.trim() !== "") {
+      setFolders(
+        folders.map((folder) =>
+          folder._id === folderId ? { ...folder, folderName: newName } : folder
+        )
+      );
+      // Dispatch update folder action here if needed
+    }
   }
 
   // delete folder handler
   function handleDeleteFolder(folderId) {
-    dispatch(deleteFolder({ userId: user?.id, folderId: folderId })).then(
-      (data) => {
-        if (data?.payload?.success) {
-          dispatch(fetchAllFolders(user?.id));
-          alert("Folder deleted successfully");
-          // reload the page
-          window.location.reload();
-        } else {
-          alert(data?.payload?.message);
+    const folderToDelete = folders.find((folder) => folder._id === folderId);
+    if (STATIC_FOLDERS.includes(folderToDelete.folderName)) {
+      alert("You cannot delete static folders.");
+      return;
+    }
+    if (window.confirm("Are you sure you want to delete this folder?")) {
+      dispatch(deleteFolder({ userId: user?.id, folderId: folderId })).then(
+        (data) => {
+          if (data?.payload?.success) {
+            dispatch(fetchAllFolders(user?.id));
+            alert("Folder deleted successfully");
+            // reload the page
+            window.location.reload();
+          } else {
+            alert(data?.payload?.message);
+          }
         }
-      }
-    );
+      );
+    }
   }
   // Create workflow handler
   function handleCreateWorkflow() {
@@ -195,23 +206,18 @@ function UserDashboard() {
           <hr className="border-gray-200 mb-4" />
           <div className="p-2 overflow-y-auto h-[calc(100%-49px)]">
             {/* Render Home folder */}
-            {folders.find((folder) => folder.folderName === "Home") && (
-              <div
-                className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeFolder === "Home" ? "bg-blue-50" : ""
-                  }`}
-                onClick={() => setActiveFolder("Home")}
-              >
-                <span className="font-bold">
-                  Home ({workflowCounts["Home"] || 0})
-                </span>
-              </div>
-            )}
+            <div
+              className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeFolder === "Home" ? "bg-blue-50" : ""
+                }`}
+              onClick={() => setActiveFolder("Home")}
+            >
+              <span className="font-bold">
+                Home ({workflowCounts["Home"] || 0})
+              </span>
+            </div>
             {/* Render other folders */}
             {folders
-              .filter(
-                (folder) =>
-                  folder.folderName !== "Home" && folder.folderName !== "Trash"
-              )
+              .filter((folder) => !STATIC_FOLDERS.includes(folder.folderName))
               .map((folder) => (
                 <div
                   key={folder._id}
@@ -265,17 +271,15 @@ function UserDashboard() {
                 </div>
               ))}
             {/* Render Trash folder */}
-            {folders.find((folder) => folder.folderName === "Trash") && (
-              <div
-                className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeFolder === "Trash" ? "bg-blue-50" : ""
-                  }`}
-                onClick={() => setActiveFolder("Trash")}
-              >
-                <span className="font-bold">
-                  Trash ({workflowCounts["Trash"] || 0})
-                </span>
-              </div>
-            )}
+            <div
+              className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeFolder === "Trash" ? "bg-blue-50" : ""
+                }`}
+              onClick={() => setActiveFolder("Trash")}
+            >
+              <span className="font-bold">
+                Trash ({workflowCounts["Trash"] || 0})
+              </span>
+            </div>
           </div>
         </div>
 
@@ -360,7 +364,7 @@ function UserDashboard() {
                 onChange={(e) => setNewFolderName(e.target.value)}
                 placeholder="Enter folder name here"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-               
+
               />
             </div>
             <Button
