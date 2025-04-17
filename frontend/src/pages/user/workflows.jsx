@@ -18,6 +18,9 @@ function workflows() {
         <div className="flex flex-col w-full gap-2 md:flex-row md:items-center md:justify-between">
           <h1 className="text-xl md:text-2xl font-semibold">Workflows</h1>
         </div>
+        <span className="text-gray-500 text-sm ">
+          Create automation workflow below.
+        </span>
       </div>
       {/* main grid */}
      <ToggleComponent/>

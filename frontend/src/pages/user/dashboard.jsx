@@ -2,14 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, MoreVertical } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Legend,
-  Tooltip,
-} from "recharts";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllFolders,
@@ -22,6 +14,7 @@ import {
 } from "@/store/slices/workflow-slice";
 import { useNavigate } from "react-router-dom";
 import WorkflowTable from "./WorkflowTable";
+import Chart from "./Chart";
 
 function UserDashboard() {
   // State variables
@@ -167,7 +160,7 @@ function UserDashboard() {
 
   return (
     <div className="bg-slate-100 p-1 sm:p-4 rounded-lg">
-    
+
       <div className="container  max-w-full p-4">
         <div className="grid grid-cols-1">
           <div className="block">
@@ -204,9 +197,8 @@ function UserDashboard() {
             {/* Render Home folder */}
             {folders.find((folder) => folder.folderName === "Home") && (
               <div
-                className={`flex justify-between items-center p-2 rounded cursor-pointer ${
-                  activeFolder === "Home" ? "bg-blue-50" : ""
-                }`}
+                className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeFolder === "Home" ? "bg-blue-50" : ""
+                  }`}
                 onClick={() => setActiveFolder("Home")}
               >
                 <span className="font-bold">
@@ -223,9 +215,8 @@ function UserDashboard() {
               .map((folder) => (
                 <div
                   key={folder._id}
-                  className={`flex justify-between items-center p-2 rounded cursor-pointer ${
-                    activeFolder === folder._id ? "bg-blue-50" : ""
-                  }`}
+                  className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeFolder === folder._id ? "bg-blue-50" : ""
+                    }`}
                   onClick={() => {
                     setActiveFolder(folder._id);
                     setWorkflowFormData((prev) => ({
@@ -276,9 +267,8 @@ function UserDashboard() {
             {/* Render Trash folder */}
             {folders.find((folder) => folder.folderName === "Trash") && (
               <div
-                className={`flex justify-between items-center p-2 rounded cursor-pointer ${
-                  activeFolder === "Trash" ? "bg-blue-50" : ""
-                }`}
+                className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeFolder === "Trash" ? "bg-blue-50" : ""
+                  }`}
                 onClick={() => setActiveFolder("Trash")}
               >
                 <span className="font-bold">
@@ -290,41 +280,13 @@ function UserDashboard() {
         </div>
 
         {/* Tasks Summary Section */}
-        <div className="bg-white p-4 rounded-lg shadow-sm lg:col-span-2">
-          <h2 className="font-semibold text-lg mb-2">Tasks Summary</h2>
-          <hr className="border-gray-200 mb-4" />
-          <div className="space-y-2 mb-4">
-            <p className="text-lg font-semibold">Total Tasks: {18}</p>
-            <p className="text-sm text-gray-600">
-              Completed: 10, Pending: 5, In Progress: 3
-            </p>
-          </div>
-          <div className="h-48 sm:h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieChartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  label
-                >
-                  {pieChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+        <div className="bg-white rounded-lg shadow-sm lg:col-span-2">
+          <Chart />
         </div>
+
       </div>
 
-      {/* Dialogs */}
+      {/*create workflow Dialogs */}
       <Dialog
         open={isCreateWorkflowDialogOpen}
         onOpenChange={() => setIsCreateWorkflowDialogOpen(false)}
@@ -381,6 +343,7 @@ function UserDashboard() {
         </DialogContent>
       </Dialog>
 
+      {/*create Folder Dialogs */}
       <Dialog
         open={isAddFolderDialogOpen}
         onOpenChange={() => setIsAddFolderDialogOpen(false)}
@@ -397,6 +360,7 @@ function UserDashboard() {
                 onChange={(e) => setNewFolderName(e.target.value)}
                 placeholder="Enter folder name here"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+               
               />
             </div>
             <Button
@@ -408,8 +372,6 @@ function UserDashboard() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <WorkflowTable/>
     </div>
   );
 }
