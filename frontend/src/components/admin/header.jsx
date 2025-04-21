@@ -158,8 +158,8 @@ function AdminHeader({ setOpen }) {
       <div className="flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="hover:cursor-pointer h-10 w-10">
-              <AvatarFallback className="bg-emerald-200 border border-black text-black font-bold text-lg">
+            <Avatar className="hover:cursor-pointer h-11 w-11">
+              <AvatarFallback className="bg-sky-500 border rounded-full  text-white font-bold text-lg">
                 {userData?.firstName?.charAt(0).toUpperCase() || ""}
                 {userData?.lastName?.charAt(0).toUpperCase() || ""}
               </AvatarFallback>
@@ -172,7 +172,7 @@ function AdminHeader({ setOpen }) {
               backgroundColor: "white",
             }}
           >
-            <DropdownMenuLabel className="flex flex-col gap-1">
+            <DropdownMenuLabel className="flex flex-col">
               <span className="text-lg font-semibold">
                 {userData?.firstName || ""} {userData?.lastName || ""}
               </span>
