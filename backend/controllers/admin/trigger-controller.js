@@ -15,7 +15,6 @@ const createTrigger = async (req, res) => {
       sampleResponse,
     } = req.body;
 
-    console.log("App ID:", appId);
     const findTrigger = await Trigger.findOne({
       appId: appId,
       triggerName: triggerName,
