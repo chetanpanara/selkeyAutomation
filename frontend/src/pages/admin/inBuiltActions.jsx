@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Button } from "@/components/ui/button";
-
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 
 function inBuiltActions() {
-
 
   // State for the list of actions
   const [inbuiltactions] = useState([
@@ -21,8 +23,20 @@ function inBuiltActions() {
     name: '',
     responseType: 'Dropdown & Custom Fields (Default)',
     description: '',
-    
   });
+
+  // Add dialog state  
+  const [isAddInbuiltActionDialogOpen, setIsAddInbuiltActionDialogOpen] = useState(false);
+
+  // Handle dialog close
+  const handleAddInbuiltActionDialogClose = () => {
+    setIsAddInbuiltActionDialogOpen(false);
+    setFormData({
+      name: '',
+      responseType: 'Dropdown & Custom Fields (Default)',
+      description: '',
+    });
+  };
 
   // Toggle dropdown function
   const toggleDropdown = (id) => {
@@ -56,10 +70,8 @@ function inBuiltActions() {
     console.log('Form submitted:', formData);
   };
 
-
   return (
     <>
-
       <div className="bg-white p-2 rounded-lg">
         <div className="block">
           <p className="font-semibold text-2xl mb-4">Inbuilt Actions</p>
@@ -70,6 +82,7 @@ function inBuiltActions() {
           </span>
           <Button
             className="bg-blue-500 text-white hover:bg-blue-600 lg:float-right mt-4 lg:mt-0 block"
+            onClick={() => setIsAddInbuiltActionDialogOpen(true)}
           >
             Create Inbuilt Action
           </Button>
@@ -132,9 +145,7 @@ function inBuiltActions() {
               <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div className="flex items-center">
                   <h2 className="text-lg font-medium">Inbuilt Action Detail</h2>
-                  
                 </div>
-
               </div>
 
               <form onSubmit={handleSubmit} className="p-4">
@@ -230,6 +241,32 @@ function inBuiltActions() {
         </div>
       </div>
 
+      {/* Add Dialog Component */} 
+      <Dialog open={isAddInbuiltActionDialogOpen} onOpenChange={handleAddInbuiltActionDialogClose}>
+        <DialogContent className="p-4 sm:p-6 w-[95vw] max-w-md mx-auto">
+          <h2 className="font-semibold text-xl mb-2">Create Inbuilt Action</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Inbuilt Action Name
+              </label>
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter inbuilt action name here" 
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <Button
+              className="w-full p-5 bg-blue-400 text-white hover:bg-blue-600"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

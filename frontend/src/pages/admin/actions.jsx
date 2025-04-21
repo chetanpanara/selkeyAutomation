@@ -2,7 +2,10 @@
 import { useState } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Button } from "@/components/ui/button";
-
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 
 function actions() {
 
@@ -24,6 +27,9 @@ function actions() {
     responseType: 'Simple (Default)',
     helpText: '',
   });
+
+  // Add dialog state
+  const [isAddActionDialogOpen, setIsAddActionDialogOpen] = useState(false);
 
   // Toggle dropdown function
   const toggleDropdown = (id) => {
@@ -57,6 +63,17 @@ function actions() {
     console.log('Form submitted:', formData);
   };
 
+  // Handle dialog close
+  const handleAddActionDialogClose = () => {
+    setIsAddActionDialogOpen(false);
+    setFormData({
+      name: '',
+      description: '',
+      tutorialLink: '',
+      responseType: 'Simple (Default)', 
+      helpText: ''
+    });
+  };
 
   return (
     <>
@@ -71,11 +88,39 @@ function actions() {
           </span>
           <Button
             className="bg-blue-500 text-white hover:bg-blue-600 lg:float-right mt-4 lg:mt-0 block"
+            onClick={() => setIsAddActionDialogOpen(true)}
           >
             Create New Action
           </Button>
         </div>
       </div>
+
+      {/* Add Dialog Component */}
+      <Dialog open={isAddActionDialogOpen} onOpenChange={handleAddActionDialogClose}>
+        <DialogContent className="p-4 sm:p-6 w-[95vw] max-w-md mx-auto">
+          <h2 className="font-semibold text-xl mb-2">Create Action</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Action Name
+              </label>
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter action name here"
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <Button
+              className="w-full p-5 bg-blue-400 text-white hover:bg-blue-600"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex min-h-screen bg-gray-50">
         <div className="flex flex-col md:flex-row w-full p-1 md:p-2 gap-4">
