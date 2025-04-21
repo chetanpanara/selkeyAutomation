@@ -1,213 +1,237 @@
+// actions.jsx
+import { useState } from 'react';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Button } from "@/components/ui/button";
-import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { FaQuestionCircle } from "react-icons/fa";
 
-function InBuiltActions() {
-  const [isAddActionDialogOpen, setIsAddActionDialogOpen] = useState(false);
-  const [actionName, setActionName] = useState("");
-  const [actionEventDescription, setActionEventDescription] = useState("");
+
+function inBuiltActions() {
+
+
+  // State for the list of actions
+  const [inbuiltactions] = useState([
+    { id: 1, name: 'Inbuilt Actions' },
+    { id: 2, name: 'new inbuilt actions' },
+  ]);
+
+  // State for the dropdown menu
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  // Form data state
   const [formData, setFormData] = useState({
-    InBuiltActionName: "",
-    InBuiltActionsDescription: "",
+    name: '',
+    responseType: 'Dropdown & Custom Fields (Default)',
+    description: '',
+    
   });
 
-  const handleAddActionDialogClose = () => {
-    setIsAddActionDialogOpen(false);
+  // Toggle dropdown function
+  const toggleDropdown = (id) => {
+    setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  // onsubmit new action
-  function onSubmit(e) {
-    e.preventDefault();
-    console.log("Action name :", actionName);
-    console.log("Action description :", actionEventDescription);
-    console.log(formData);
-    // call api to save action
-    handleAddActionDialogClose();
-  }
+  // Handle clone function
+  const handleClone = (id) => {
+    console.log('Clone actions:', id);
+    setOpenDropdownId(null);
+  };
 
-  // onsubmit save data
-  function onSubmitSaveData(e) {
+  // Handle delete function
+  const handleDelete = (id) => {
+    console.log('Delete actions:', id);
+    setOpenDropdownId(null);
+  };
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Data :", formData);
-    // reload the page
-    // window.location.reload();
-  }
-  console.log("Form Data :", formData);
+    console.log('Form submitted:', formData);
+  };
+
 
   return (
-    <div className="bg-slate-100 p-4 rounded-lg">
-      <div className="block">
-        <p className="font-semibold text-2xl mb-4">Inbuilt Actions</p>
-      </div>
-      <div className="block">
-        <span className="text-gray-500 text-sm ">
-          Configure your app Action details like name, description, and API
-          details.
-        </span>
-        <Button
-          className="bg-blue-500 text-white hover:bg-blue-600 lg:float-right mt-4 lg:mt-0 block"
-          onClick={() => setIsAddActionDialogOpen(true)}
-        >
-          Create New Action
-        </Button>
-      </div>
+    <>
 
-      <Dialog
-        open={isAddActionDialogOpen}
-        onOpenChange={handleAddActionDialogClose}
-      >
-        <DialogContent className="p-6 max-w-md bg-white shadow-lg rounded-lg">
-          <h2 className="font-semibold text-xl mb-4">Create New Action</h2>
-          <Label className="block text-sm font-medium text-gray-700 mb-1">
-            Action Event Name
-          </Label>
-          <input
-            type="text"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-            placeholder="Enter Action event name"
-            onChange={(e) => setActionName(e.target.value)}
-            required
-          />
-          <Label className="block text-sm font-medium text-gray-700 mb-1">
-            Action Event Description (Optional)
-          </Label>
-          <textarea
-            className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
-            rows={3}
-            onChange={(e) => setActionEventDescription(e.target.value)}
-            placeholder="Enter Action event description"
-          ></textarea>
+      <div className="bg-white p-2 rounded-lg">
+        <div className="block">
+          <p className="font-semibold text-2xl mb-4">Inbuilt Actions</p>
+        </div>
+        <div className="block">
+          <span className="text-gray-500 text-sm ">
+            Configure your app inbuilt action details like name, description and API details.
+          </span>
           <Button
-            className="bg-blue-500 text-white hover:bg-blue-600"
-            onClick={onSubmit}
+            className="bg-blue-500 text-white hover:bg-blue-600 lg:float-right mt-4 lg:mt-0 block"
           >
-            Save
+            Create Inbuilt Action
           </Button>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
 
-      <div className="block mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-4 col-span-1 h-64">
-            <div className="block">
-              <div className="border-b border-gray-300 mt-2">
-                <h1 className="text-md font-semibold mt-4 mb-4">
-                  Inbuilt Actions
-                </h1>
+      <div className="flex min-h-screen bg-gray-50">
+        <div className="flex flex-col md:flex-row w-full p-1 md:p-2 gap-4">
+          {/* actions List Section - Responsive */}
+          <div className='md:block w-full md:w-1/3 lg:w-1/4 mb-4 md:mb-0'>
+            <div className="bg-white rounded-md shadow">
+              <div className="p-4 border-b border-gray-200">
+                <h2 className="text-lg font-medium">Inbuilt Actions</h2>
               </div>
-              <hr className="border-gray-300" />
+              <ul className="divide-y divide-gray-200">
+                {inbuiltactions.map((inbuiltactions) => (
+                  <li key={inbuiltactions.id} className="p-4 hover:bg-gray-50 relative">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <span className="h-2 w-2 rounded-full bg-yellow-400 mr-3"></span>
+                        <span className="text-sm text-gray-800">{inbuiltactions.name}</span>
+                      </div>
+                      <div className="relative">
+                        <button
+                          onClick={() => toggleDropdown(inbuiltactions.id)}
+                          className="p-1 rounded-full hover:bg-gray-200 focus:outline-none"
+                        >
+                          <EllipsisVerticalIcon className="h-5 w-5 text-gray-500" />
+                        </button>
+
+                        {openDropdownId === inbuiltactions.id && (
+                          <div className="absolute right-0 mt-1 w-36 bg-white shadow-lg rounded-md border border-gray-200 z-10">
+                            <ul className="py-1">
+                              <li
+                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleClone(inbuiltactions.id)}
+                              >
+                                Clone
+                              </li>
+                              <li
+                                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleDelete(inbuiltactions.id)}
+                              >
+                                Delete
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="block mt-2">Hello</div>
           </div>
-          <div className="bg-white p-4 mr-2 lg:mr-0 col-span-3">
-            <div className="block">
-              <div className="border-b border-gray-300 mt-2">
-                <h1 className="text-md font-semibold mt-4 mb-4">
-                  Inbuilt Action Detail{" "}
-                  <span className="inline-flex items-center">
-                    {<FaQuestionCircle />}
-                  </span>
-                </h1>
-              </div>
-              <hr className="border-gray-300 w-full" />
-            </div>
-            <form className="mt-4">
-              <div className=" mt-4">
-                <div className="flex items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Inbuilt Action Name
-                  </label>
-                  <p className="text-red-500 ml-2">(Required)</p>
-                  {/* <Button className="bg-background text-blue-500 border border-blue-500 hover:bg-blue-600 lg:float-right block">AI Suggestion</Button> */}
+
+          {/* actions Detail Section */}
+          <div className="w-full md:w-2/3 lg:w-3/4">
+            <div className="bg-white rounded-md shadow">
+              <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <div className="flex items-center">
+                  <h2 className="text-lg font-medium">Inbuilt Action Detail</h2>
+                  
                 </div>
-                <input
-                  type="text"
-                  value={formData.actionEventName}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      actionEventName: e.target.value,
-                    })
-                  }
-                  className="outline-none bg-slate-100 focus:outline-blue-500 border border-gray-300 rounded-md p-2 w-full"
-                  placeholder="Enter action event name"
-                  required
-                />
+
               </div>
-              {/* inbuilt action type dropdown */}
-              <div className="mt-3">
-                <div className="flex items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+
+              <form onSubmit={handleSubmit} className="p-4">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Inbuilt Action Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Inbuilt Action Type
                   </label>
-                  <p className="text-red-500 ml-2">(Required)</p>
+                  <div className="relative">
+                    <select
+                      name="responseType"
+                      value={formData.responseType}
+                      onChange={handleInputChange}
+                      className="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-400 px-4 py-2 pr-8 rounded leading-tight focus:outline-none"
+                    >
+                      <option>Dropdown & Custom Fields (Default) </option>
+                      <option>Multi-Step</option>
+                      <option>App Auth Validator</option>
+                      <option>Webhook Validator</option>
+                      <option>Delete Connection</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-                <select
-                  value={formData.actionType}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      actionType: e.target.value,
-                    });
-                  }}
-                  className="w-full bg-slate-200 border border-gray-300 rounded-md p-2"
-                  required
-                >
-                  <option value="dropdown">
-                    Dropdown & Custom Fields (Default)
-                  </option>
-                  <option value="multi-step">Multi-Step</option>
-                  <option value="app-auth-validator">App Auth Validator</option>
-                  <option value="webhook-validator">Webhook Validator</option>
-                  <option value="delete-webhook">Delete Webhook</option>
-                </select>
 
-                <p className="text-gray-500 text-sm mt-2 bg-yellow-100 p-2 rounded-md">
-                  After creating the In-built the action. Make sure to add this
-                  in-built action to the main action where you want this
-                  in-built action values to appear.{" "}
-                  <a href="#" className="text-blue-500">
-                    Learn more
-                  </a>
-                </p>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Inbuilt Action Event Description
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Inbuilt Action Event Description <span className="text-red-500">*</span>
                   </label>
-                  <p className="text-red-500 ml-2">(Required)</p>
+                  <div className="border border-gray-300 rounded-md mb-1">
+                    <div className="flex flex-wrap border-b border-gray-300 p-2">
+                      <button type="button" className="p-1 hover:bg-gray-100 rounded">
+                        <span className="font-bold">B</span>
+                      </button>
+                      <button type="button" className="p-1 hover:bg-gray-100 rounded mx-1">
+                        <span className="italic">I</span>
+                      </button>
+                      <button type="button" className="p-1 hover:bg-gray-100 rounded">
+                        <span className="underline">U</span>
+                      </button>
+                      <button type="button" className="p-1 hover:bg-gray-100 rounded mx-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                      </button>
+                      <button type="button" className="p-1 hover:bg-gray-100 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                        </svg>
+                      </button>
+                      <button type="button" className="p-1 hover:bg-gray-100 rounded mx-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      className="w-full p-2 focus:outline-none min-h-[100px]"
+                      required
+                    />
+                  </div>
                 </div>
-                <textarea
-                  value={formData.actionEventDescription}
-                  className=" bg-slate-100 border border-gray-300 outline-none focus:outline-blue-500 rounded-md p-2 w-full"
-                  rows="3"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      actionEventDescription: e.target.value,
-                    })
-                  }
-                  placeholder="Enter description"
-                  required
-                ></textarea>
-              </div>
-              <div className="mt-3">
-                <Button
-                  className="bg-blue-500 text-white hover:bg-blue-600"
-                  onClick={onSubmitSaveData}
+
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   Save
-                </Button>
-              </div>
-            </form>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+    </>
   );
 }
 
-export default InBuiltActions;
+export default inBuiltActions;

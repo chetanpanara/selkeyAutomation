@@ -362,7 +362,7 @@ function Apps() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-100 md:px-4">
+    <div className="w-full min-h-screen bg-slate-100 md:px-4 p-4">
       {/* Header */}
       <div className="w-full mb-6">
         <div className="flex flex-col w-full gap-2 md:flex-row md:items-center md:justify-between">
