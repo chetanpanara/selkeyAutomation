@@ -1,5 +1,7 @@
 const { imageUploadUtil } = require("../../helpers/cloudinary");
 const App = require("../../models/App");
+const Trigger = require("../../models/Trigger");
+const Action = require("../../models/Action");
 
 // handle image upload
 const handleImageUpload = async (req, res) => {
@@ -163,7 +165,11 @@ const deleteApp = async (req, res) => {
       });
     }
 
+    await Trigger.deleteMany({ appId: id });
+    await Action.deleteMany({ appId: id });
+
     await App.findByIdAndDelete(id);
+    
     res.status(200).json({
       success: true,
       message: "App deleted successfully",
