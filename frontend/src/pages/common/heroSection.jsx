@@ -21,7 +21,8 @@ function HeroSection() {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-blue-200">
+              {/* navigate to Auth login */}
+              <button onClick={() => window.location.href = '/auth/login'} className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-blue-200">
                 Start Free Trial <ArrowRight size={20} />
               </button>
               <button className="bg-white border-2 border-gray-200 hover:border-blue-200 text-gray-700 font-medium py-3 px-8 rounded-lg transition-all">

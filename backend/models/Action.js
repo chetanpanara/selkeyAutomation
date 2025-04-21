@@ -4,7 +4,7 @@ const ActionSchema = new mongoose.Schema(
   {
     appId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "AppIntegration",
+      ref: "App",
       required: true,
     },
     actionName: {

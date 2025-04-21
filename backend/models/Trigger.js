@@ -4,7 +4,7 @@ const TriggerSchema = new mongoose.Schema(
   {
     appId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "AppIntegration",
+      ref: "App",
       required: true,
     },
     triggerName: {
@@ -17,7 +17,7 @@ const TriggerSchema = new mongoose.Schema(
     },
     triggerType: {
       type: String,
-      enum: ["Webhook", "Polling", "Database Event"],
+      enum: ["Webhook", "Polling"],
       default: "Webhook",
     },
     apiEndpoint: {
