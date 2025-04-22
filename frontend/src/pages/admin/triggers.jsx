@@ -37,6 +37,18 @@ function Triggers() {
   // Fetch triggers when component mounts or activeAppId changes
   useEffect(() => {
     if (activeAppId) {
+      // Clear form data when app changes
+      setFormData({
+        name: "",
+        description: "",
+        tutorialLink: "",
+        triggerType: "Webhooks Setup by Instructions (Highly Recommended)",
+        responseType: "Simple (Default)",
+        compatibleWithHeaders: false,
+        setupInstructions: "",
+        helpText: "",
+      });
+      setSelectedTriggerId(null);
       dispatch(getTriggers(activeAppId));
     }
   }, [activeAppId, dispatch]); // Add dependencies
@@ -230,7 +242,7 @@ function Triggers() {
                   triggers.map((trigger) => (
                     <li
                       key={trigger._id}
-                      className={`p-4 hover:bg-gray-200 relative cursor-pointer ${selectedTriggerId === trigger._id ? "bg-gray-200" : ""
+                      className={`p-4 hover:bg-gray-100 relative cursor-pointer ${selectedTriggerId === trigger._id ? "bg-blue-100" : ""
                         }`}
                       onClick={() => selectTrigger(trigger)}
                     >
