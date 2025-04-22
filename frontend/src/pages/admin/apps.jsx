@@ -281,13 +281,13 @@ function Apps() {
         }
       });
     } catch (e) {
-      console.log(e);
+    
       alert(e);
     }
   }
   // Function to handle saving app details
   function handleSaveAppDetails() {
-    console.log("Active app:", activeAppId);
+  
 
     try {
       // Get all enabled auth types and their configs
@@ -307,8 +307,6 @@ function Apps() {
           configurations: enabledAuthConfigs,
         },
       };
-
-      console.log("Form data:", formdata);
       dispatch(
         updateApp({
           id: activeAppId,
@@ -361,7 +359,7 @@ function Apps() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-100 md:px-4 p-4">
+    <div className="w-full min-h-screen bg-slate-100 md:px-4 p-2">
       {/* Header */}
       <div className="w-full mb-6">
         <div className="flex flex-col w-full gap-2 md:flex-row md:items-center md:justify-between">
@@ -422,7 +420,7 @@ function Apps() {
       </Dialog>
 
       {/* Main Content */}
-      <div className="flex flex-col md:grid md:grid-cols-4 gap-4">
+      <div className="flex  flex-col md:grid md:grid-cols-4 gap-4">
         {/* Sidebar */}
         <div className="w-full bg-white rounded-lg shadow-md p-4">
           <h2 className="text-md font-semibold mb-2">Apps</h2>

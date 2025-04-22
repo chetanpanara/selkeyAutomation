@@ -25,7 +25,6 @@ function Triggers() {
     tutorialLink: "",
     triggerType: "Webhooks Setup by Instructions (Highly Recommended)",
     responseType: "Simple (Default)",
-    compatibleWithHeaders: false,
     setupInstructions: "",
     helpText: "",
   });
@@ -44,7 +43,6 @@ function Triggers() {
         tutorialLink: "",
         triggerType: "Webhooks Setup by Instructions (Highly Recommended)",
         responseType: "Simple (Default)",
-        compatibleWithHeaders: false,
         setupInstructions: "",
         helpText: "",
       });
@@ -62,7 +60,6 @@ function Triggers() {
       tutorialLink: trigger.link || "",
       triggerType: trigger.triggerType || "Webhooks Setup by Instructions (Highly Recommended)",
       responseType: trigger.responseType || "Simple (Default)",
-      compatibleWithHeaders: false,
       setupInstructions: trigger.instructions || "",
       helpText: trigger.helptext || "",
     });
@@ -90,8 +87,7 @@ function Triggers() {
       .unwrap()
       .then((result) => {
         if (result.success) {
-          console.log("Trigger created successfully:", result.data);
-          alert("created successful");
+          alert("Trigger created successful");
           handleAddTriggerDialogClose();
           // Refresh triggers list
           dispatch(getTriggers(activeAppId));
@@ -152,7 +148,6 @@ function Triggers() {
                 tutorialLink: "",
                 triggerType: "Webhooks Setup by Instructions (Highly Recommended)",
                 responseType: "Simple (Default)",
-                compatibleWithHeaders: false,
                 setupInstructions: "",
                 helpText: "",
               });
@@ -474,30 +469,7 @@ function Triggers() {
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <div className="flex items-start sm:items-center">
-                    <input
-                      type="checkbox"
-                      id="compatibleWithHeaders"
-                      name="compatibleWithHeaders"
-                      checked={formData.compatibleWithHeaders}
-                      onChange={handleInputChange}
-                      className="h-4 w-4 mt-1 sm:mt-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label
-                      htmlFor="compatibleWithHeaders"
-                      className="ml-2 block text-sm text-gray-700"
-                    >
-                      Make the trigger compatible with headers in response.
-                      <a
-                        href="#"
-                        className="text-blue-600 hover:underline ml-1"
-                      >
-                        Learn more
-                      </a>
-                    </label>
-                  </div>
-                </div>
+              
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
