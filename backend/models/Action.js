@@ -15,32 +15,18 @@ const ActionSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    actionType: {
-      type: String,
-      enum: ["API Call", "Database Update", "Send Email"],
-      default: "API Call",
-    },
-    apiEndpoint: {
+    link: {
       type: String,
       default: "",
-    }, // API to perform the action
-    requestMethod: {
+    },
+    helpText: {
       type: String,
-      enum: ["GET", "POST", "PUT", "DELETE"],
-      default: "GET",
+      default: "",
     },
-    requestHeaders: {
-      type: Object,
-      default: {},
+    responseType: {
+      type: String,
+      default: "Simple",
     },
-    requestBodyTemplate: {
-      type: Object,
-      default: {},
-    }, // JSON structure expected in API call
-    sampleResponse: {
-      type: Object,
-      default: {},
-    }, // Example response
   },
   { timestamps: true }
 );

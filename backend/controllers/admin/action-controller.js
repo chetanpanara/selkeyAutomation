@@ -4,11 +4,14 @@ const Action = require("../../models/Action");
 const createAction = async (req, res) => {
   try {
     const { appId } = req.params;
-    const { actionName } = req.body;
+    const { name } = req.body;
+
+    console.log("id", appId);
+    console.log("name", name);
 
     const action = await Action.findOne({
       appId: appId,
-      actionName: actionName,
+      actionName: name,
     });
 
     if (action) {
@@ -19,7 +22,7 @@ const createAction = async (req, res) => {
     }
     const actionCreated = await Action.create({
       appId: appId,
-      actionName: actionName,
+      actionName: name,
     });
 
     res.status(201).json({
@@ -89,6 +92,7 @@ const deleteAction = async (req, res) => {
 const getActions = async (req, res) => {
   try {
     const { appId } = req.params;
+    console.log("appId", appId);
 
     if (!appId) {
       return res.status(400).json({
@@ -96,9 +100,7 @@ const getActions = async (req, res) => {
         message: "App ID is required",
       });
     } else {
-      const actions = await Action.find({ appId: appId }).select(
-        "-createdAt -updatedAt -__v"
-      );
+      const actions = await Action.find({ appId: appId }).select();
 
       if (actions.length === 0) {
         return res.status(404).json({
@@ -109,7 +111,7 @@ const getActions = async (req, res) => {
         res.status(200).json({
           success: true,
           message: "Actions fetched successfully",
-          data: actions,
+          actions,
         });
       }
     }
