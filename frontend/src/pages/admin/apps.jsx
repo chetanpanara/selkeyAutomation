@@ -19,7 +19,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import AdminHeader from "@/components/admin/header";
 
 const tabs = [
   { id: "appDetails", label: "App Details" },
@@ -513,11 +512,11 @@ function Apps() {
 
           {/* Tab Content */}
           {activeTab === "appDetails" && (
-            <div className="mt-4 space-y-4">
+            <div className="mt-4 space-y-2">
               {/* App Name */}
               <div className="w-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  App Name <span className="text-red-500">(Required)</span>
+                  App Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -533,7 +532,7 @@ function Apps() {
               {/* Description */}
               <div className="w-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description <span className="text-red-500">(Required)</span>
+                  Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
@@ -551,8 +550,8 @@ function Apps() {
 
               {/* App Logo */}
               <div className="w-full">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description <span className="text-red-500">(Required)</span>
+                <label className="block text-sm font-medium text-gray-700 ">
+                  App Logo <span className="text-red-500">*</span>
                 </label>
                 <AppImageUpload
                   imageFile={imageFile}
@@ -568,9 +567,9 @@ function Apps() {
               {/* Auth Type */}
               <div className="w-full">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Auth Type <span className="text-red-500">(Required)</span>
+                  Auth Type <span className="text-red-500">*</span>
                 </label>
-                <div className="space-y-2">
+                <div className="-space-y-2">
                   {authTypes.map((auth) => (
                     // Render a checkbox for each auth type
                     <div
@@ -582,7 +581,7 @@ function Apps() {
                           type="checkbox"
                           name="auth-type"
                           value={auth.id}
-                          className="mt-1 mr-2"
+                          className="mr-2"
                           checked={authConfig[auth.id]?.enabled || false}
                           onChange={() => handleAuthTypeChange(auth.id)}
                         />
@@ -606,7 +605,7 @@ function Apps() {
                           <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Grant Type
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <select
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
@@ -661,7 +660,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Authorize URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -679,7 +678,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Token URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -697,7 +696,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Refresh Token URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -715,7 +714,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Scope{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -845,7 +844,7 @@ function Apps() {
                             <div className="mt-4">
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Client Authentication{" "}
-                                <span className="text-red-500">(Required)</span>
+                                <span className="text-red-500">*</span>
                               </label>
                               <select
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
@@ -1001,7 +1000,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Authorize URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1019,7 +1018,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Request Token URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1037,7 +1036,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Access Token URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1054,7 +1053,7 @@ function Apps() {
                             />
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Consumer Key{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1072,7 +1071,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Consumer Secret{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1111,7 +1110,7 @@ function Apps() {
                             {/* New Dropdown for Signature Method */}
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Signature Method{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <select
                               className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
@@ -1318,7 +1317,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Authorize URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1336,7 +1335,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Token URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1354,7 +1353,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Application ID{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1372,7 +1371,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Access Key{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1390,7 +1389,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Secret Key{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1408,7 +1407,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Client ID{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1426,7 +1425,7 @@ function Apps() {
 
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Client Secret{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1489,7 +1488,7 @@ function Apps() {
                             <div className="mt-4">
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Client Authentication{" "}
-                                <span className="text-red-500">(Required)</span>
+                                <span className="text-red-500">*</span>
                               </label>
                               <select
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none focus:outline-blue-300"
@@ -1613,7 +1612,7 @@ function Apps() {
                           <div className="mt-1 space-y-3">
                             <label className="block text-sm font-medium text-gray-700 mt-2">
                               Access Token URL{" "}
-                              <span className="text-red-500">(Required)</span>
+                              <span className="text-red-500">*</span>
                             </label>
                             <input
                               type="text"
@@ -1764,7 +1763,7 @@ function Apps() {
                             <div className="mt-3 space-y-3">
                               <label className="block text-sm font-medium text-gray-700">
                                 Token Key Name (Send){" "}
-                                <span className="text-red-500">(Required)</span>
+                                <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="text"
@@ -1784,7 +1783,7 @@ function Apps() {
                               />
                               <label className="block text-sm font-medium text-gray-700">
                                 Token Key Name (Received){" "}
-                                <span className="text-red-500">(Required)</span>
+                                <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="text"
@@ -1902,7 +1901,7 @@ function Apps() {
                               />
                               Set Body/Query/Path Parameters
                               <span className="text-red-500 ml-2">
-                                (Required)
+                                *
                               </span>
                             </label>
                             {showSetAuthParams && (
@@ -1966,7 +1965,7 @@ function Apps() {
                   ))}
                 </div>
               </div>
-              <div className="w-full mt-3">
+              {/* <div className="w-full mt-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   CURL HTTP Version (Optional)
                 </label>
@@ -1995,7 +1994,7 @@ function Apps() {
                     CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE
                   </option>
                 </select>
-              </div>
+              </div> */}
 
               <Button
                 className="w-full md:w-auto bg-blue-500 text-white hover:bg-blue-600"

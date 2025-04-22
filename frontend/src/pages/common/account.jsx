@@ -235,7 +235,7 @@ const Myaccount = () => {
   }
 
   return (
-    <div className="bg-slate-100 p-4">
+    <div className="bg-slate-100 p-2 md:p-4 lg:p-4 shadow-md w-full">  
       {loading ? (
         <p>Loading...</p>
       ) : (

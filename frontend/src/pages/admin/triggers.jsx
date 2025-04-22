@@ -511,6 +511,7 @@ function Triggers() {
                       value={formData.setupInstructions}
                       onChange={handleInputChange}
                       className="w-full p-2 focus:outline-none min-h-[100px]"
+                      placeholder="Trigger Setup Instructions"
                     />
                   </div>
                 </div>
@@ -618,6 +619,7 @@ function Triggers() {
                       value={formData.helpText}
                       onChange={handleInputChange}
                       className="w-full p-2 focus:outline-none min-h-[100px]"
+                      placeholder="Important Help Text"
                     />
                   </div>
                 </div>

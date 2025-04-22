@@ -193,6 +193,7 @@ function actions() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
+                    placeholder='Enter action name here'
                     className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -235,6 +236,7 @@ function actions() {
                       onChange={handleInputChange}
                       className="w-full p-2 focus:outline-none min-h-[100px]"
                       required
+                      placeholder='Enter action description here'
                     />
                   </div>
                 </div>
@@ -294,6 +296,7 @@ function actions() {
                       value={formData.helpText}
                       onChange={handleInputChange}
                       className="w-full p-2 focus:outline-none min-h-[100px]"
+                      placeholder='Enter help text here'
                     />
                   </div>
                 </div>

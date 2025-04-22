@@ -158,6 +158,7 @@ function inBuiltActions() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
+                    placeholder='Enter inbuilt action name here'
                     className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -223,6 +224,7 @@ function inBuiltActions() {
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
+                      placeholder='Enter inbuilt action description here'
                       className="w-full p-2 focus:outline-none min-h-[100px]"
                       required
                     />
