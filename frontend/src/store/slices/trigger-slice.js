@@ -19,13 +19,12 @@ export const getTriggers = createAsyncThunk(
 // router.post("/createTrigger/:appId", createTrigger);
 export const createTrigger = createAsyncThunk(
   "triggers/createTrigger",
-  async ({ triggerData, id }) => {
-    console.log("triggerData", triggerData);
+  async ({ name, id }) => {
+    console.log("triggerData", name);
     console.log("id", id);
-    const result = await api.post(
-      `/api/triggers/createTrigger/${id}`,
-      triggerData
-    );
+    const result = await api.post(`/api/triggers/createTrigger/${id}`, {
+      name,
+    });
 
     return result?.data;
   }

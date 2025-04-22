@@ -4,7 +4,11 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useSelector, useDispatch } from "react-redux";
-import { createTrigger, getTriggers } from "@/store/slices/trigger-slice";
+import {
+  createTrigger,
+  getTriggers,
+  deleteTrigger,
+} from "@/store/slices/trigger-slice";
 
 function Triggers() {
   // Add dialog state
@@ -22,7 +26,6 @@ function Triggers() {
     setupInstructions: "",
     helpText: "",
   });
-
   const activeAppId = useSelector((state) => state.app.activeAppId);
   const { triggers = [] } = useSelector((state) => state.trigger); // Get triggers from Redux store with default value
   // State for the dropdown menu
@@ -53,17 +56,12 @@ function Triggers() {
   const handleCreateTrigger = (e) => {
     e.preventDefault();
     if (!newTrigger.trim() || !activeAppId) return;
-
-    const triggerData = {
-      triggerName: newTrigger,
-      description: "",
-      triggerType: "Webhook",
-    };
-
-    dispatch(createTrigger({ triggerData, id: activeAppId }))
+    dispatch(createTrigger({ name: newTrigger, id: activeAppId }))
       .unwrap()
       .then((result) => {
         if (result.success) {
+          console.log("Trigger created successfully:", result.data);
+          alert("created succesful");
           handleAddTriggerDialogClose();
           // Refresh triggers list
           dispatch(getTriggers(activeAppId));
@@ -82,7 +80,21 @@ function Triggers() {
 
   // Handle delete trigger
   const handleDelete = (id) => {
-    console.log("Delete trigger with ID:", id);
+    if (window.confirm("Are you sure you want to delete this trigger?")) {
+      dispatch(deleteTrigger({ id }))
+        .unwrap()
+        .then((result) => {
+          if (result.success) {
+            alert("Trigger deleted successfully");
+            // Refresh triggers list
+            dispatch(getTriggers(activeAppId));
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to delete trigger:", error);
+          alert("Failed to delete trigger");
+        });
+    }
   };
 
   // Handle dialog close
@@ -181,7 +193,7 @@ function Triggers() {
                               <ul className="py-1">
                                 <li
                                   className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                  onClick={() => handleDelete(trigger.id)}
+                                  onClick={() => handleDelete(trigger._id)}
                                 >
                                   Delete
                                 </li>

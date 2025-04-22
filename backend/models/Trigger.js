@@ -15,27 +15,27 @@ const TriggerSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    triggerType: {
-      type: String,
-      enum: ["Webhook", "Polling"],
-      default: "Webhook",
-    },
-    apiEndpoint: {
+    link: {
       type: String,
       default: "",
-    }, // API to fetch trigger data
-    requestHeaders: {
-      type: Object,
-      default: {},
-    }, // Optional headers
-    requestParams: {
-      type: Object,
-      default: {},
-    }, // Query params
-    sampleResponse: {
-      type: Object,
-      default: {},
+    },
+    triggerType: {
+      type: String,
+      default: "",
+    },
+    responseType: {
+      type: String,
+      enum: ["Simple", "Advance"],
+      default: "Simple",
     }, // Example response
+    instructions: {
+      type: String,
+      default: "",
+    },
+    helptext: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

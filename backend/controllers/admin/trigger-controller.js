@@ -1,23 +1,14 @@
-const App = require("../../models/App");
 const Trigger = require("../../models/Trigger");
 
 // create new trigger
 const createTrigger = async (req, res) => {
   try {
     const { appId } = req.params;
-    const {
-      triggerName,
-      description,
-      triggerType,
-      apiEndpoint,
-      requestHeaders,
-      requestParams,
-      sampleResponse,
-    } = req.body;
+    const { name } = req.body;
 
     const findTrigger = await Trigger.findOne({
       appId: appId,
-      triggerName: triggerName,
+      triggerName: name,
     });
 
     if (findTrigger) {
@@ -29,13 +20,7 @@ const createTrigger = async (req, res) => {
 
     const trigger = await Trigger.create({
       appId: appId,
-      triggerName,
-      description: description || "",
-      triggerType: triggerType || "Webhook",
-      apiEndpoint: apiEndpoint || "",
-      requestHeaders: requestHeaders || {},
-      requestParams: requestParams || {},
-      sampleResponse: sampleResponse || {},
+      triggerName: name,
     });
 
     res.status(201).json({
@@ -57,13 +42,13 @@ const updateTrigger = async (req, res) => {
   try {
     const { triggerId } = req.params;
     const {
-      triggerName,
+      name,
       description,
+      link,
       triggerType,
-      apiEndpoint,
-      requestHeaders,
-      requestParams,
-      sampleResponse,
+      responseType,
+      instructions,
+      helptext,
     } = req.body;
 
     const trigger = await Trigger.findById(triggerId);
@@ -78,13 +63,13 @@ const updateTrigger = async (req, res) => {
     const updatedTrigger = await Trigger.findByIdAndUpdate(
       { _id: triggerId },
       {
-        triggerName: triggerName || trigger.triggerName,
+        triggerName: name || trigger.triggerName,
         description: description || trigger.description,
+        link: link || trigger.link,
         triggerType: triggerType || trigger.triggerType,
-        apiEndpoint: apiEndpoint || trigger.apiEndpoint,
-        requestHeaders: requestHeaders || trigger.requestHeaders,
-        requestParams: requestParams || trigger.requestParams,
-        sampleResponse: sampleResponse || trigger.sampleResponse,
+        responseType: responseType || trigger.responseType,
+        instructions: instructions || trigger.instructions,
+        helptext: helptext || trigger.helptext,
       },
       { new: true, select: " -_id -createdAt -updatedAt -__v" }
     );
@@ -138,10 +123,7 @@ const getTriggers = async (req, res) => {
         message: "App ID is required",
       });
     }
-    const triggers = await Trigger.find({ appId: appId }).select(
-      "-createdAt -updatedAt -__v"
-    );
-    console.log("Triggers :", triggers);
+    const triggers = await Trigger.find({ appId: appId }).lean();
 
     if (triggers.length === 0) {
       return res.json({
