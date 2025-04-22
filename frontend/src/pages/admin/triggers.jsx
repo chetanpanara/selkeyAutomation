@@ -8,6 +8,7 @@ import {
   createTrigger,
   getTriggers,
   deleteTrigger,
+  updateTrigger,
 } from "@/store/slices/trigger-slice";
 
 function Triggers() {
@@ -15,6 +16,8 @@ function Triggers() {
   const [isAddTriggerDialogOpen, setIsAddTriggerDialogOpen] = useState(false);
   const dispatch = useDispatch();
   const [newTrigger, setNewTrigger] = useState("");
+  // Selected trigger state
+  const [selectedTriggerId, setSelectedTriggerId] = useState(null);
   // Form data state
   const [formData, setFormData] = useState({
     name: "",
@@ -27,7 +30,7 @@ function Triggers() {
     helpText: "",
   });
   const activeAppId = useSelector((state) => state.app.activeAppId);
-  const { triggers = [] } = useSelector((state) => state.trigger); // Get triggers from Redux store with default value
+  const { triggers = [] } = useSelector((state) => state.trigger); // Get triggers from Redux store with default value
   // State for the dropdown menu
   const [openDropdownId, setOpenDropdownId] = useState(null);
 
@@ -37,6 +40,21 @@ function Triggers() {
       dispatch(getTriggers(activeAppId));
     }
   }, [activeAppId, dispatch]); // Add dependencies
+
+  // Select a trigger to display its details
+  const selectTrigger = (trigger) => {
+    setSelectedTriggerId(trigger._id);
+    setFormData({
+      name: trigger.triggerName || "",
+      description: trigger.description || "",
+      tutorialLink: trigger.link || "",
+      triggerType: trigger.triggerType || "Webhooks Setup by Instructions (Highly Recommended)",
+      responseType: trigger.responseType || "Simple (Default)",
+      compatibleWithHeaders: false,
+      setupInstructions: trigger.instructions || "",
+      helpText: trigger.helptext || "",
+    });
+  };
 
   // Toggle dropdown function
   const toggleDropdown = (id) => {
@@ -61,7 +79,7 @@ function Triggers() {
       .then((result) => {
         if (result.success) {
           console.log("Trigger created successfully:", result.data);
-          alert("created succesful");
+          alert("created successful");
           handleAddTriggerDialogClose();
           // Refresh triggers list
           dispatch(getTriggers(activeAppId));
@@ -75,7 +93,34 @@ function Triggers() {
   // Handle form submission for updating trigger details
   function onSubmit(e) {
     e.preventDefault();
-    console.log("Form submitted with data:", formData);
+    if (!selectedTriggerId) {
+      alert("Please select a trigger first");
+      return;
+    }
+
+    const triggerData = {
+      name: formData.name,
+      description: formData.description,
+      link: formData.tutorialLink,
+      triggerType: formData.triggerType,
+      responseType: formData.responseType === "Simple (Default)" ? "Simple" : "Advance",
+      instructions: formData.setupInstructions,
+      helptext: formData.helpText,
+    };
+
+    dispatch(updateTrigger({ triggerData, id: selectedTriggerId }))
+      .unwrap()
+      .then((result) => {
+        if (result.success) {
+          alert("Trigger updated successfully");
+          // Refresh triggers list
+          dispatch(getTriggers(activeAppId));
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to update trigger:", error);
+        alert("Failed to update trigger");
+      });
   }
 
   // Handle delete trigger
@@ -86,6 +131,20 @@ function Triggers() {
         .then((result) => {
           if (result.success) {
             alert("Trigger deleted successfully");
+            // Reset form if the deleted trigger was selected
+            if (id === selectedTriggerId) {
+              setSelectedTriggerId(null);
+              setFormData({
+                name: "",
+                description: "",
+                tutorialLink: "",
+                triggerType: "Webhooks Setup by Instructions (Highly Recommended)",
+                responseType: "Simple (Default)",
+                compatibleWithHeaders: false,
+                setupInstructions: "",
+                helpText: "",
+              });
+            }
             // Refresh triggers list
             dispatch(getTriggers(activeAppId));
           }
@@ -171,7 +230,9 @@ function Triggers() {
                   triggers.map((trigger) => (
                     <li
                       key={trigger._id}
-                      className="p-4 hover:bg-gray-50 relative"
+                      className={`p-4 hover:bg-gray-200 relative cursor-pointer ${selectedTriggerId === trigger._id ? "bg-gray-200" : ""
+                        }`}
+                      onClick={() => selectTrigger(trigger)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
@@ -182,7 +243,10 @@ function Triggers() {
                         </div>
                         <div className="relative">
                           <button
-                            onClick={() => toggleDropdown(trigger._id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleDropdown(trigger._id);
+                            }}
                             className="p-1 rounded-full hover:bg-gray-200 focus:outline-none"
                           >
                             <EllipsisVerticalIcon className="h-5 w-5 text-gray-500" />
@@ -193,7 +257,10 @@ function Triggers() {
                               <ul className="py-1">
                                 <li
                                   className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                  onClick={() => handleDelete(trigger._id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(trigger._id);
+                                  }}
                                 >
                                   Delete
                                 </li>
@@ -639,6 +706,7 @@ function Triggers() {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  disabled={!selectedTriggerId}
                 >
                   Save
                 </button>
