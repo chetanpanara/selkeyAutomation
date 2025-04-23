@@ -42,7 +42,7 @@ function UserHeader({ setOpen }) {
   const { userData } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  console.log(userData, "userData");
   useEffect(() => {
     if (user?.id) {
       dispatch(getUserData(user.id));
@@ -72,10 +72,10 @@ function UserHeader({ setOpen }) {
       <div className="flex flex-1 justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="hover:cursor-pointer h-10 w-10">
-              <AvatarFallback className="bg-emerald-200 border border-black text-black font-bold text-lg">
-                {userData?.firstName?.charAt(0).toUpperCase() || ''}
-                {userData?.lastName?.charAt(0).toUpperCase() || ''}
+            <Avatar className="hover:cursor-pointer h-11 w-11">
+              <AvatarFallback className="bg-sky-500 border rounded-full  text-white font-bold text-lg">
+                {userData?.firstName?.charAt(0).toUpperCase() || ""}
+                {userData?.lastName?.charAt(0).toUpperCase() || ""}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
@@ -86,9 +86,9 @@ function UserHeader({ setOpen }) {
               backgroundColor: "white",
             }}
           >
-            <DropdownMenuLabel className="flex flex-col gap-1">
+            <DropdownMenuLabel className="flex flex-col">
               <span className="text-lg font-semibold">
-                {userData?.userFirstName || ''} {userData?.userLastName || ''}
+                {userData?.firstName || ''} {userData?.lastName || ''}
               </span>
               <span className="text-sm text-gray-500">
                 {user?.email || ''}

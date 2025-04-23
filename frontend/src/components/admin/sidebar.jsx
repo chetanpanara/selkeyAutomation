@@ -98,8 +98,8 @@ function AdminSidebar({ open, setOpen }) {
           onClick={() => navigate("/apps")}
           className="flex cursor-pointer items-center gap-2"
         >
-          <img src={logo} alt="logo" className="w-13 h-9" />
-          <h1 className="text-lg font-medium ">SelKey Automation</h1>
+          <img src={logo} alt="logo" className="w-10 h-10" />
+                   <h1 className="text-lg font-semibold">SelKey Automation</h1>
         </div>
         <MenuItems />
       </aside>
