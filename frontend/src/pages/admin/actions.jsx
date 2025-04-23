@@ -12,6 +12,7 @@ import {
 } from "@/store/slices/action-slice";
 
 function actions() {
+  const [showOptions, setShowOptions] = useState(true);
   // State for the dropdown menu
   const [openDropdownId, setOpenDropdownId] = useState(null);
 
@@ -228,8 +229,68 @@ function actions() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex min-h-screen bg-gray-50">
-        <div className="flex flex-col md:flex-row w-full p-1 md:p-2 gap-4">
+      <div className="flex flex-col md:flex-row w-full p-1 md:p-2 gap-4">
+
+        {/* if no action found then display another div instead of list and display */}
+        {actions.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-lg p-4 my-4 mx-auto w-full">
+            <div className="flex flex-col md:flex-row items-start gap-6">
+              <div className="bg-blue-50 p-6 rounded-lg flex-shrink-0 w-full md:w-auto">
+                <div className="bg-purple-500 p-6 rounded-lg w-48 h-36 flex items-center justify-center">
+                  <div className="bg-white/90 rounded-md p-2 w-36 h-24">
+                    <div className="h-4 bg-gray-200 rounded mb-3 flex items-center">
+                      <div className="flex ml-2 gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                      </div>
+                    </div>
+                    <div className="h-4 bg-yellow-200 rounded my-2 relative">
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
+                    </div>
+                    <div className="h-4 bg-yellow-200 rounded my-2 relative">
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
+                    </div>
+                    <div className="h-4 bg-yellow-200 rounded my-2 relative">
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Add New Action</h2>
+                <p className="text-gray-600 mb-4">
+                  Start configuring your app action events which pushes data in to your app.
+                </p>
+
+                {showOptions && (
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-start">
+                      <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
+                      <span className="text-gray-700">Provide an action name and its short description.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
+                      <span className="text-gray-700">Configure API along with it's Request Body Type and Request Body.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
+                      <span className="text-gray-700">Make use of multi-step feature to generate dependent response for the action.</span>
+                    </li>
+                  </ul>
+                )}
+
+                <Button
+                  className="bg-blue-500 text-white hover:bg-blue-600  mt-4 lg:mt-0 block"
+                  onClick={() => setIsAddActionDialogOpen(true)}
+                >
+                  Create New Action
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (<>
           {/* actions List Section - Responsive */}
           <div className="md:block w-full md:w-1/3 lg:w-1/4 mb-4 md:mb-0">
             <div className="bg-white rounded-md shadow">
@@ -245,9 +306,8 @@ function actions() {
                   actions.map((action) => (
                     <li
                       key={action._id}
-                      className={`p-4 hover:bg-gray-100 relative cursor-pointer ${
-                        selectedActionId === action._id ? "bg-blue-100" : ""
-                      }`}
+                      className={`p-4 hover:bg-gray-100 relative cursor-pointer ${selectedActionId === action._id ? "bg-blue-100" : ""
+                        }`}
                       onClick={() => selectAction(action)}
                     >
                       <div className="flex items-center justify-between">
@@ -574,7 +634,11 @@ function actions() {
               </form>
             </div>
           </div>
-        </div>
+        </>)}
+
+
+
+
       </div>
     </>
   );
