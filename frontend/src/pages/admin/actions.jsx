@@ -4,7 +4,12 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useDispatch, useSelector } from "react-redux";
-import { getActions, createAction, updateAction, deleteAction } from "@/store/slices/action-slice";
+import {
+  getActions,
+  createAction,
+  updateAction,
+  deleteAction,
+} from "@/store/slices/action-slice";
 
 function actions() {
   // State for the dropdown menu
@@ -34,6 +39,7 @@ function actions() {
   // fetch actions data from state
   const { actions = [] } = useSelector((state) => state.action);
   const activeAppId = useSelector((state) => state.app.activeAppId);
+  const [newaction, setNewAction] = useState("");
 
   // use effect to fetch actions data
   useEffect(() => {
@@ -79,20 +85,20 @@ function actions() {
   const selectAction = (action) => {
     setSelectedActionId(action._id);
     setFormData({
-      name: action.actionName || '',
-      description: action.description || '',
-      tutorialLink: action.link || '',
-      responseType: action.responseType || 'Simple (Default)',
-      helpText: action.helpText || '',
+      name: action.actionName || "",
+      description: action.description || "",
+      tutorialLink: action.link || "",
+      responseType: action.responseType || "Simple (Default)",
+      helpText: action.helpText || "",
     });
   };
 
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: value || '', // Ensure empty string if value is null/undefined
+      [name]: value || "", // Ensure empty string if value is null/undefined
     }));
   };
 
@@ -128,13 +134,14 @@ function actions() {
 
   // Handle creating a new action
   const handleCreateAction = () => {
-    if (formData.name.trim()) {
-      dispatch(createAction({ name: formData.name, id: activeAppId }))
+    if (newaction.trim()) {
+      dispatch(createAction({ name: newaction, id: activeAppId }))
         .then(() => {
           handleAddActionDialogClose();
           // Refresh the actions list
           dispatch(getActions(activeAppId));
           alert("Action created successfully");
+          setNewAction("");
         })
         .catch((error) => {
           console.error("Error creating action:", error);
@@ -149,11 +156,11 @@ function actions() {
   const handleAddActionDialogClose = () => {
     setIsAddActionDialogOpen(false);
     setFormData({
-      name: '',
-      description: '',
-      tutorialLink: '',
-      responseType: 'Simple (Default)',
-      helpText: '',
+      name: "",
+      description: "",
+      tutorialLink: "",
+      responseType: "Simple (Default)",
+      helpText: "",
     });
   };
 
@@ -191,8 +198,8 @@ function actions() {
               </label>
               <input
                 name="name"
-                value={formData.name}
-                onChange={handleInputChange}
+                value={newaction}
+                onChange={(e) => setNewAction(e.target.value)}
                 placeholder="Enter action name here"
                 className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -224,8 +231,9 @@ function actions() {
                   actions.map((action) => (
                     <li
                       key={action._id}
-                      className={`p-4 hover:bg-gray-100 relative cursor-pointer ${selectedActionId === action._id ? "bg-blue-100" : ""
-                        }`}
+                      className={`p-4 hover:bg-gray-100 relative cursor-pointer ${
+                        selectedActionId === action._id ? "bg-blue-100" : ""
+                      }`}
                       onClick={() => selectAction(action)}
                     >
                       <div className="flex items-center justify-between">
