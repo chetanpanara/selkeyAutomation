@@ -6,6 +6,7 @@ import {
   updateUserData,
   updateUserPassword,
 } from "../../store/slices/user-slice";
+import { TextField } from "@mui/material";
 const tabs = [
   { id: "profile", label: "Profile" },
   { id: "password", label: "Password" },
@@ -235,7 +236,7 @@ const Myaccount = () => {
   }
 
   return (
-    <div className="bg-slate-100 p-2 md:p-4 lg:p-4 shadow-md w-full">  
+    <div className="bg-slate-100 p-2 shadow-md w-full">
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -280,11 +281,12 @@ const Myaccount = () => {
                 <form className="w-full " onSubmit={handleUpdateUserData}>
                   <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">
-                      <input
-                        type="text"
+                      <TextField
+                        label="First Name"
+                        variant="outlined"
                         name="firstName"
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        placeholder="First Name"
+                        size="small"
+                        className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={formData.firstName}
                         onChange={(e) =>
                           setFormData({
@@ -295,42 +297,54 @@ const Myaccount = () => {
                       />
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                      <input
-                        type="text"
+                      <TextField
+                        label="Last Name"
+                        variant="outlined"
                         name="lastName"
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        placeholder="Last Name"
+                        size="small"
+                        className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={formData.lastName}
                         onChange={(e) =>
-                          setFormData({ ...formData, lastName: e.target.value })
+                          setFormData({
+                            ...formData,
+                            lastName: e.target.value,
+                          })
                         }
                       />
                     </div>
                   </div>
 
                   <div className="relative z-0 w-full mb-5 group">
-                    <input
-                      type="text"
+                    <TextField
+                      label="Address"
+                      variant="outlined"
                       name="address"
-                      className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                      placeholder="Address"
+                      size="small"
+                      className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                       value={formData.address}
                       onChange={(e) =>
-                        setFormData({ ...formData, address: e.target.value })
+                        setFormData({
+                          ...formData,
+                          address: e.target.value,
+                        })
                       }
                     />
                   </div>
 
                   <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">
-                      <input
-                        type="text"
+                      <TextField
+                        label="City"
+                        variant="outlined"
                         name="city"
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        placeholder="City"
+                        size="small"
+                        className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={formData.city}
                         onChange={(e) =>
-                          setFormData({ ...formData, city: e.target.value })
+                          setFormData({
+                            ...formData,
+                            city: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -373,14 +387,18 @@ const Myaccount = () => {
                       </select>
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                      <input
-                        type="text"
+                      <TextField
+                        label="Contact Number"
+                        variant="outlined"
                         name="contact"
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        placeholder="Contact Number"
+                        size="small"
+                        className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={formData.contact}
                         onChange={(e) =>
-                          setFormData({ ...formData, contact: e.target.value })
+                          setFormData({
+                            ...formData,
+                            contact: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -399,12 +417,14 @@ const Myaccount = () => {
                 <div className="p-4 rounded-lg bg-gray-50">
                   <form className="w-full" onSubmit={handleUpdatePassword}>
                     <div className="relative z-0 w-full mb-5 group">
-                      <input
+                      <TextField
+                        label="Current Password"
+                        variant="outlined"
                         type={showPassword.current ? "text" : "password"}
                         name="currentPassword"
+                        size="small"
                         required
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        placeholder="Current Password"
+                        className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={passwordData.currentPassword}
                         onChange={handlePasswordChange}
                       />
@@ -417,12 +437,14 @@ const Myaccount = () => {
                       </button>
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                      <input
+                      <TextField
+                        label="New Password"
+                        variant="outlined"
                         type={showPassword.new ? "text" : "password"}
                         name="newPassword"
+                        size="small"
                         required
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        placeholder="New Password"
+                        className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={passwordData.newPassword}
                         onChange={handlePasswordChange}
                       />
@@ -435,12 +457,14 @@ const Myaccount = () => {
                       </button>
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                      <input
+                      <TextField
+                        label="Confirm New Password"
+                        variant="outlined"
                         type={showPassword.confirm ? "text" : "password"}
                         name="confirmPassword"
+                        size="small"
                         required
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        placeholder="Confirm New Password"
+                        className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
                         value={passwordData.confirmPassword}
                         onChange={handlePasswordChange}
                       />
