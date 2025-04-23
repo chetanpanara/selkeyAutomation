@@ -42,7 +42,6 @@ function UserHeader({ setOpen }) {
   const { userData } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(userData, "userData");
   useEffect(() => {
     if (user?.id) {
       dispatch(getUserData(user.id));
