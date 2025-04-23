@@ -56,6 +56,20 @@ function actions() {
     }
   }, [activeAppId, dispatch]);
 
+  useEffect(() => {
+    if (actions.length > 0) {
+      const firstAction = actions[0];
+      setSelectedActionId(firstAction._id);
+      setFormData({
+        name: firstAction.actionName || "",
+        description: firstAction.description || "",
+        tutorialLink: firstAction.link || "",
+        responseType: firstAction.responseType || "Simple (Default)",
+        helpText: firstAction.helpText || "",
+      });
+    }
+  }, [actions]);
+
   // Handle delete function
   const handleDelete = (id) => {
     dispatch(deleteAction({ id }))

@@ -6,9 +6,6 @@ const createAction = async (req, res) => {
     const { appId } = req.params;
     const { name } = req.body;
 
-    console.log("id", appId);
-    console.log("name", name);
-
     const action = await Action.findOne({
       appId: appId,
       actionName: name,
@@ -114,7 +111,6 @@ const deleteAction = async (req, res) => {
 const getActions = async (req, res) => {
   try {
     const { appId } = req.params;
-    console.log("appId", appId);
 
     if (!appId) {
       return res.status(400).json({
