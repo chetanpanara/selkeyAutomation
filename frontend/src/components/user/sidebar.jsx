@@ -87,7 +87,7 @@ function UserSideBar({ open, setOpen }) {
           </div>
         </SheetContent>
       </Sheet>
-      <aside className="hidden w-64 flex-col border-r bg-background p-2 mt-2 lg:flex">
+      <aside className="hidden w-54 flex-col border-r bg-background p-2 mt-2 lg:flex">
         <div
           onClick={() => navigate("/dashboard")}
           className="flex cursor-pointer items-center gap-2"

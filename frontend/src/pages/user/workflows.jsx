@@ -2,7 +2,6 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllApps } from "@/store/slices/app-slice";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ToggleComponent from "./ToggleComponent";
 import AppSelector from "./AppSelector";
 
 function workflows() {
@@ -23,7 +22,6 @@ function workflows() {
         </span>
       </div>
       {/* main grid */}
-     <ToggleComponent/>
       {/* <div className="max-w-full mx-auto mt-6">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
