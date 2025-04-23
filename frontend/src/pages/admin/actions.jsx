@@ -4,7 +4,7 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useDispatch, useSelector } from "react-redux";
-import { getActions } from "@/store/slices/action-slice";
+import { getActions, createAction, updateAction, deleteAction } from "@/store/slices/action-slice";
 
 function actions() {
   // State for the dropdown menu
@@ -52,16 +52,36 @@ function actions() {
 
   // Handle delete function
   const handleDelete = (id) => {
-    console.log("Delete actions:", id);
-    setOpenDropdownId(null);
+    dispatch(deleteAction({ id }))
+      .then(() => {
+        setOpenDropdownId(null);
+        // If the deleted action was selected, clear the selection
+        if (selectedActionId === id) {
+          setSelectedActionId(null);
+          setFormData({
+            name: "",
+            description: "",
+            tutorialLink: "",
+            responseType: "Simple (Default)",
+            helpText: "",
+          });
+        }
+        // Refresh the actions list
+        dispatch(getActions(activeAppId));
+        alert("Action deleted successfully");
+      })
+      .catch((error) => {
+        console.error("Error deleting action:", error);
+        alert("Failed to delete action");
+      });
   };
 
-  const seletAction = (action) => {
+  const selectAction = (action) => {
     setSelectedActionId(action._id);
     setFormData({
       name: action.actionName || '',
       description: action.description || '',
-      tutorialLink: action.tutorialLink || '',
+      tutorialLink: action.link || '',
       responseType: action.responseType || 'Simple (Default)',
       helpText: action.helpText || '',
     });
@@ -79,15 +99,50 @@ function actions() {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formDataToSubmit = {
-      ...formData,
-      name: formData.name || '',
-      description: formData.description || '',
-      tutorialLink: formData.tutorialLink || '',
-      responseType: formData.responseType || 'Simple (Default)',
-      helpText: formData.helpText || '',
-    };
-    console.log("Form submitted:", formDataToSubmit);
+
+    // If an action is selected, update it
+    if (selectedActionId) {
+      const actionData = {
+        actionName: formData.name,
+        actionDescription: formData.description,
+        link: formData.tutorialLink,
+        responseType: formData.responseType,
+        helpText: formData.helpText,
+      };
+
+      dispatch(updateAction({ actionData, id: selectedActionId }))
+        .then(() => {
+          // Refresh the actions list
+          dispatch(getActions(activeAppId));
+          alert("Action updated successfully");
+        })
+        .catch((error) => {
+          console.error("Error updating action:", error);
+          alert("Failed to update action");
+        });
+    } else {
+      console.error("No action selected for update");
+      alert("Please select an action to update");
+    }
+  };
+
+  // Handle creating a new action
+  const handleCreateAction = () => {
+    if (formData.name.trim()) {
+      dispatch(createAction({ name: formData.name, id: activeAppId }))
+        .then(() => {
+          handleAddActionDialogClose();
+          // Refresh the actions list
+          dispatch(getActions(activeAppId));
+          alert("Action created successfully");
+        })
+        .catch((error) => {
+          console.error("Error creating action:", error);
+          alert("Failed to create action");
+        });
+    } else {
+      alert("Action name cannot be empty");
+    }
   };
 
   // Handle dialog close
@@ -144,7 +199,7 @@ function actions() {
             </div>
             <Button
               className="w-full p-5 bg-blue-400 text-white hover:bg-blue-600"
-              onClick={handleSubmit}
+              onClick={handleCreateAction}
             >
               Submit
             </Button>
@@ -169,10 +224,9 @@ function actions() {
                   actions.map((action) => (
                     <li
                       key={action._id}
-                      className={`p-4 hover:bg-gray-100 relative cursor-pointer ${
-                        selectedActionId === action._id ? "bg-blue-100" : ""
-                      }`}
-                      onClick={() => seletAction(action)}
+                      className={`p-4 hover:bg-gray-100 relative cursor-pointer ${selectedActionId === action._id ? "bg-blue-100" : ""
+                        }`}
+                      onClick={() => selectAction(action)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
@@ -238,6 +292,7 @@ function actions() {
                     placeholder="Enter action name here"
                     className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
+                    disabled={!selectedActionId}
                   />
                 </div>
 
@@ -331,6 +386,7 @@ function actions() {
                       className="w-full p-2 focus:outline-none min-h-[100px]"
                       required
                       placeholder="Enter action description here"
+                      disabled={!selectedActionId}
                     />
                   </div>
                 </div>
@@ -346,6 +402,7 @@ function actions() {
                     onChange={handleInputChange}
                     placeholder="Enter the forum documentation link or YouTube video URL here."
                     className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={!selectedActionId}
                   />
                 </div>
 
@@ -453,6 +510,7 @@ function actions() {
                       onChange={handleInputChange}
                       className="w-full p-2 focus:outline-none min-h-[100px]"
                       placeholder="Enter help text here"
+                      disabled={!selectedActionId}
                     />
                   </div>
                 </div>
@@ -467,6 +525,7 @@ function actions() {
                       value={formData.responseType}
                       onChange={handleInputChange}
                       className="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-400 px-4 py-2 pr-8 rounded leading-tight focus:outline-none"
+                      disabled={!selectedActionId}
                     >
                       <option>Simple (Default)</option>
                       <option>Advanced</option>
@@ -486,6 +545,7 @@ function actions() {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  disabled={!selectedActionId}
                 >
                   Save
                 </button>

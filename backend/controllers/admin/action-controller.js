@@ -56,14 +56,10 @@ const updateAction = async (req, res) => {
         { _id: actionId },
         {
           actionName: req.body.actionName || action.actionName,
-          description: req.body.actionDescription || action.actionDescription,
-          actionType: req.body.actionType || action.actionType,
-          apiEndpoint: req.body.apiEndpoint || action.apiEndpoint,
-          requestMethod: req.body.actionMethod || action.requestMethod,
-          requestHeaders: req.body.actionHeaders || action.requestHeaders,
-          requestBodyTemplate:
-            req.body.actionBody || action.requestBodyTemplate,
-          sampleResponse: req.body.actionResponse || action.sampleResponse,
+          description: req.body.actionDescription || action.description,
+          link: req.body.link || action.link,
+          helpText: req.body.helpText || action.helpText,
+          responseType: req.body.responseType || action.responseType,
         },
         { new: true, select: "-createdAt -updatedAt -__v" }
       );
@@ -76,6 +72,11 @@ const updateAction = async (req, res) => {
     }
   } catch (e) {
     console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error updating action",
+      error: e.message,
+    });
   }
 };
 
@@ -83,8 +84,29 @@ const updateAction = async (req, res) => {
 const deleteAction = async (req, res) => {
   try {
     const { actionId } = req.params;
+    
+    const action = await Action.findById(actionId);
+    
+    if (!action) {
+      return res.status(404).json({
+        success: false,
+        message: "Action not found",
+      });
+    }
+    
+    await Action.findByIdAndDelete(actionId);
+    
+    res.status(200).json({
+      success: true,
+      message: "Action deleted successfully",
+    });
   } catch (e) {
     console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting action",
+      error: e.message,
+    });
   }
 };
 
@@ -103,9 +125,10 @@ const getActions = async (req, res) => {
       const actions = await Action.find({ appId: appId }).select();
 
       if (actions.length === 0) {
-        return res.status(404).json({
-          success: false,
+        return res.status(200).json({
+          success: true,
           message: "No actions found",
+          actions: [],
         });
       } else {
         res.status(200).json({
@@ -117,6 +140,11 @@ const getActions = async (req, res) => {
     }
   } catch (e) {
     console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching actions",
+      error: e.message,
+    });
   }
 };
 
