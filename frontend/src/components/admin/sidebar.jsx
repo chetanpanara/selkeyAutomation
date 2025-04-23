@@ -31,12 +31,12 @@ const dashboardSidebarMenuItems = [
     to: "/apps/actions",
     icons: <GrAction />,
   },
-  {
-    id: "InBuiltAction",
-    name: "Inbuilt Actions",
-    to: "/apps/in-built-actions",
-    icons: <HiMenuAlt1 />,
-  },
+  // {
+  //   id: "InBuiltAction",
+  //   name: "Inbuilt Actions",
+  //   to: "/apps/in-built-actions",
+  //   icons: <HiMenuAlt1 />,
+  // },
 ];
 
 function MenuItems({ setOpen }) {

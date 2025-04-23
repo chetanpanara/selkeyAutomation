@@ -88,7 +88,7 @@ function App() {
           <Route index element={<Apps />} />
           <Route path="actions" element={<Actions />} />
           <Route path="triggers" element={<Triggers />} />
-          <Route path="in-built-actions" element={<InBuiltActions />} />
+          {/* <Route path="in-built-actions" element={<InBuiltActions />} /> */}
           <Route path="profile" element={<Myaccount />} />
           <Route path="*" element={<NotFound />} />
         </Route>
