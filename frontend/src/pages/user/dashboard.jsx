@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreVertical,
+  ChevronDown,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -12,8 +13,9 @@ import {
   fetchAllFolders,
   updateFolder,
   deleteFolder,
-} from "@/store/slices/folder-slice"; // Add these imports
+} from "@/store/slices/folder-slice";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { createWorkflow } from "@/store/slices/workflow-slice";
 
 let userdId = null;
 
@@ -28,6 +30,10 @@ function UserDashboard() {
   const [folderName, setFolderName] = useState("");
   const [workflowName, setWorkflowName] = useState("");
   const [folders, setFolders] = useState([]);
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [folderSearchQuery, setFolderSearchQuery] = useState("");
+  const dropdownRef = useRef(null);
 
   userdId = user?.id; // Get user ID from the user object
 
@@ -37,6 +43,12 @@ function UserDashboard() {
         .then((res) => {
           if (res.payload && Array.isArray(res.payload.folders)) {
             setFolders(res.payload.folders); // Assuming the payload contains the folders
+
+            // Find and set "Home" folder as default
+            const homeFolder = res.payload.folders.find(folder => folder.folderName === "Home");
+            if (homeFolder) {
+              setSelectedFolder(homeFolder);
+            }
           } else {
             console.error("Invalid API response format:", res);
           }
@@ -45,6 +57,19 @@ function UserDashboard() {
           console.error("Error fetching folders:", error); // Log any errors
         });
     }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleCreateFolder = () => {
@@ -56,8 +81,22 @@ function UserDashboard() {
   };
 
   const handleCreateWorkflow = () => {
-    console.log("Workflow created:", workflowName);
+    console.log("Workflow created:", workflowName, "Folder:", selectedFolder?.folderName, "Folder ID:", selectedFolder?._id);
+    dispatch(createWorkflow({ userId: userdId, folderId: selectedFolder._id, workflowName }))
+      .then((res) => {
+        console.log("Workflow created successfully:", res);
+        setWorkflowName("");
+        setSelectedFolder(null);
+        window.location.reload(); // Reload the page after workflow creation
+
+      })
+      .catch((err) => {
+        console.error("Error creating workflow:", err);
+      });
+    // Reset the selected folder and workflow name after creation
+
     setIsWorkflowDialogOpen(false);
+
   };
 
   const handleRenameDialogOpen = (folderId, folderName) => {
@@ -89,13 +128,19 @@ function UserDashboard() {
     )
       .then((res) => {
         console.log("Folder renamed successfully:", res);
-        window.location.reload(); Reload // // the page after renaming
+        window.location.reload(); // Reload the page after renaming
       })
       .catch((err) => {
         console.error("Error renaming folder:", err);
       });
     setIsRenameDialogOpen(false);
   };
+
+  // Filter folders for the dropdown - exclude "Trash" folder
+  const dropdownFolders = folders.filter(folder =>
+    folder.folderName !== "Trash" &&
+    folder.folderName.toLowerCase().includes(folderSearchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 rounded-lg p-2 md:p-3">
@@ -360,9 +405,59 @@ function UserDashboard() {
                 className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
+            {/* Folder Dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Folder
+              </label>
+              <div className="relative mt-2" ref={dropdownRef}>
+                <div
+                  className="w-full p-2 border border-gray-300 rounded-md flex justify-between items-center cursor-pointer"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <span className={selectedFolder ? "text-gray-900" : "text-gray-400"}>
+                    {selectedFolder ? selectedFolder.folderName : "Select a folder"}
+                  </span>
+                  <ChevronDown size={18} className="text-gray-500" />
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                    <div className="sticky top-0 bg-white p-2 border-b border-gray-300">
+                      <input
+                        type="text"
+                        value={folderSearchQuery}
+                        onChange={(e) => setFolderSearchQuery(e.target.value)}
+                        placeholder="Search folders..."
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    {dropdownFolders.length > 0 ? (
+                      dropdownFolders.map((folder) => (
+                        <div
+                          key={folder._id}
+                          className="p-3 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setSelectedFolder(folder);
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          {folder.folderName}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-3 text-gray-500">No folders found</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
             <button
               className="w-full p-2 rounded-md bg-blue-600 text-white hover:bg-blue-400"
               onClick={handleCreateWorkflow}
+              disabled={!workflowName || !selectedFolder}
             >
               Create Workflow
             </button>
@@ -457,9 +552,8 @@ function FolderItem({
 
   return (
     <div
-      className={`relative flex justify-between items-center px-3 py-2 rounded-md ${
-        active ? "bg-blue-50" : "hover:bg-gray-100"
-      }`}
+      className={`relative flex justify-between items-center px-3 py-2 rounded-md ${active ? "bg-blue-50" : "hover:bg-gray-100"
+        }`}
     >
       <span className={active ? "text-blue-500" : "text-gray-700"}>{name}</span>
       <div className="flex items-center gap-2">
