@@ -15,7 +15,7 @@ import {
   deleteFolder,
 } from "@/store/slices/folder-slice";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { createWorkflow } from "@/store/slices/workflow-slice";
+import { createWorkflow, getWorkflowCounts } from "@/store/slices/workflow-slice"; // Corrected named export
 
 let userdId = null;
 
@@ -42,10 +42,30 @@ function UserDashboard() {
       dispatch(fetchAllFolders(user?.id))
         .then((res) => {
           if (res.payload && Array.isArray(res.payload.folders)) {
-            setFolders(res.payload.folders); // Assuming the payload contains the folders
+            const foldersData = res.payload.folders;
+            setFolders(foldersData); // Assuming the payload contains the folders
+
+            // Fetch workflow counts for each folder
+            const folderIds = foldersData.map(folder => folder._id);
+            dispatch(getWorkflowCounts({ userId: user.id, folderIds })) // Updated function name
+              .then((workflowRes) => {
+                if (workflowRes.payload && workflowRes.payload.counts) {
+                  console.log("Workflow counts:", workflowRes.payload.counts); // Log the counts for debugging
+                  const updatedFolders = foldersData.map(folder => ({
+                    ...folder,
+                    count: workflowRes.payload.counts[folder._id] || 0, // Ensure count is fetched correctly
+                  }));
+                  setFolders(updatedFolders);
+                } else {
+                  console.error("Invalid workflow counts response:", workflowRes.payload);
+                }
+              })
+              .catch((err) => {
+                console.error("Error fetching workflow counts:", err);
+              });
 
             // Find and set "Home" folder as default
-            const homeFolder = res.payload.folders.find(folder => folder.folderName === "Home");
+            const homeFolder = foldersData.find(folder => folder.folderName === "Home");
             if (homeFolder) {
               setSelectedFolder(homeFolder);
             }
@@ -227,7 +247,7 @@ function UserDashboard() {
                       )}
                     <FolderItem
                       name={folder.folderName}
-                      count={folder.count}
+                      count={folder.count || 0} // Display workflow count, default to 0 if undefined
                       active={folder.active}
                       id={folder._id} // Pass the id prop
                       handleRenameDialogOpen={(id) =>
