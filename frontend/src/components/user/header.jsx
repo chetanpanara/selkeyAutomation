@@ -86,7 +86,7 @@ function UserHeader({ setOpen }) {
             }}
           >
             <DropdownMenuLabel className="flex flex-col">
-              <span className="text-lg font-semibold">
+              <span className="text-md font-semibold">
                 {userData?.firstName || ''} {userData?.lastName || ''}
               </span>
               <span className="text-sm text-gray-500">
