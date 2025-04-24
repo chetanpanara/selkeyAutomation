@@ -35,7 +35,6 @@ function UserDashboard() {
     if (user) {
       dispatch(fetchAllFolders(user?.id))
         .then((res) => {
-          console.log("API Response:", res); // Debugging the API response
           if (res.payload && Array.isArray(res.payload.folders)) {
             setFolders(res.payload.folders); // Assuming the payload contains the folders
           } else {
@@ -47,8 +46,6 @@ function UserDashboard() {
         });
     }
   }, []);
-
-  console.log("Folders State:", folders);
 
   const handleCreateFolder = () => {
     dispatch(createFolder({ userId: user.id, folderName })).then((res) => {
@@ -63,18 +60,36 @@ function UserDashboard() {
     setIsWorkflowDialogOpen(false);
   };
 
-  const handleRenameDialogOpen = (folderId) => {
+  const handleRenameDialogOpen = (folderId, folderName) => {
     setRenameFolderId(folderId);
+    setFolderName(folderName); // Set the existing folder name
     setIsRenameDialogOpen(true);
+  };
+
+  const handleDeleteFolder = (folderId) => {
+    console.log("Deleting folder with ID:", folderId);
+    // Call the deleteFolder action with the folder ID
+    dispatch(deleteFolder({ userId: userdId, folderId }))
+      .then((res) => {
+        console.log("Folder deleted successfully:", res);
+        window.location.reload(); // Reload the page after deletion
+      })
+      .catch((err) => {
+        console.error("Error deleting folder:", err);
+      });
   };
 
   const handleRenameFolder = () => {
     dispatch(
-      updateFolder({ userId: userdId, folderId: renameFolderId, folderName: folderName })
+      updateFolder({
+        userId: userdId,
+        folderId: renameFolderId,
+        folderName: folderName,
+      })
     )
       .then((res) => {
         console.log("Folder renamed successfully:", res);
-        window.location.reload(); // Reload the page after renaming
+        window.location.reload(); Reload // // the page after renaming
       })
       .catch((err) => {
         console.error("Error renaming folder:", err);
@@ -159,23 +174,23 @@ function UserDashboard() {
                   return a.folderName.localeCompare(b.folderName);
                 })
                 .map((folder, index, sortedFolders) => (
-                  <>
+                  <div key={folder._id || `folder-${index}`}>
                     {index > 0 &&
-                      ((folder.folderName !== "Trash" &&
-                        sortedFolders[index - 1].folderName === "Home") ||
-                        (folder.folderName === "Trash" &&
-                          sortedFolders[index - 1].folderName !== "Trash")) && (
+                      folder.folderName === "Trash" &&
+                      sortedFolders[index - 1].folderName !== "Trash" && (
                         <hr className="my-2 border-gray-300" />
                       )}
                     <FolderItem
-                      key={folder._id} // Use folder.id if available, otherwise fallback to index
                       name={folder.folderName}
                       count={folder.count}
                       active={folder.active}
                       id={folder._id} // Pass the id prop
-                      handleRenameDialogOpen={handleRenameDialogOpen} // Pass the handler to FolderItem
+                      handleRenameDialogOpen={(id) =>
+                        handleRenameDialogOpen(id, folder.folderName)
+                      } // Pass folder name
+                      handleDeleteFolder={handleDeleteFolder} // Pass the delete handler to FolderItem
                     />
-                  </>
+                  </div>
                 ))}
           </div>
 
@@ -403,10 +418,16 @@ function StatCard({ value, label, iconColor, icon }) {
   );
 }
 
-function FolderItem({ name, count, active = false, id, handleRenameDialogOpen }) {
+function FolderItem({
+  name,
+  count,
+  active = false,
+  id,
+  handleRenameDialogOpen,
+  handleDeleteFolder,
+}) {
   // Add `id` prop
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [newFolderName, setNewFolderName] = useState(name); // State for renaming
   const dropdownRef = useRef(null);
   const dispatch = useDispatch(); // Use dispatch for actions
 
@@ -416,13 +437,8 @@ function FolderItem({ name, count, active = false, id, handleRenameDialogOpen })
   };
 
   const handleDelete = () => {
-    dispatch(deleteFolder(id)) // Dispatch deleteFolder
-      .then((res) => {
-        console.log(`Folder deleted successfully: ${res}`);
-      })
-      .catch((err) => {
-        console.error(`Error deleting folder: ${err}`);
-      });
+    // Call the deleteFolder action with the folder ID
+    handleDeleteFolder(id);
     setIsDropdownOpen(false);
   };
 

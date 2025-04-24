@@ -162,7 +162,7 @@ const deleteFolder = async (req, res) => {
       });
     }
 
-    if (folder.userId !== userId) {
+    if (folder.userId.toString() !== userId) {
       return res.status(403).json({
         success: false,
         message: "Unauthorized",
