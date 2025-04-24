@@ -6,7 +6,7 @@ import {
   updateUserData,
   updateUserPassword,
 } from "../../store/slices/user-slice";
-import { TextField } from "@mui/material";
+import { TextField, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 const tabs = [
   { id: "profile", label: "Profile" },
   { id: "password", label: "Password" },
@@ -349,42 +349,55 @@ const Myaccount = () => {
                       />
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                      <select
-                        name="country"
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        onChange={handleCountryChange}
-                        value={formData.country}
-                      >
-                        <option value="">Select Country</option>
-                        {Object.keys(countryStates).map((country) => (
-                          <option key={country} value={country}>
-                            {country}
-                          </option>
-                        ))}
-                      </select>
+                      <FormControl fullWidth size="small" className="mb-5">
+                        <InputLabel id="country-label">Country</InputLabel>
+                        <Select
+                          labelId="country-label"
+                          id="country-select"
+                          name="country"
+                          value={formData.country}
+                          label="Country"
+                          onChange={handleCountryChange}
+                          className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
+                        >
+                          {Object.keys(countryStates).map((country) => (
+                            <MenuItem key={country} value={country}>
+                              {country}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 md:gap-6">
                     <div className="relative z-0 w-full mb-5 group">
-                      <select
-                        name="state"
-                        className="block py-2.5 px-3 w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
-                        value={formData.state}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            state: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="">Select State/Province</option>
-                        {availableStates.map((state) => (
-                          <option key={state} value={state}>
-                            {state}
-                          </option>
-                        ))}
-                      </select>
+                      <FormControl fullWidth size="small" className="mb-5">
+                        <InputLabel id="state-label">State/Province</InputLabel>
+                        <Select
+                          labelId="state-label"
+                          id="state-select"
+                          name="state"
+                          value={formData.state}
+                          label="State/Province"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              state: e.target.value,
+                            })
+                          }
+                          className="block w-full text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:bg-white"
+                        >
+                          <MenuItem value="">
+                            <em>Select State/Province</em>
+                          </MenuItem>
+                          {availableStates.map((state) => (
+                            <MenuItem key={state} value={state}>
+                              {state}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
                       <TextField
