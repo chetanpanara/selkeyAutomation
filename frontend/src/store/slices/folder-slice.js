@@ -11,7 +11,7 @@ export const fetchAllFolders = createAsyncThunk(
   "folders/fetchAllFolders",
   async (userId) => {
     const response = await api.get(`/api/folders/getallfolders/${userId}`);
-    console.log("response", response);
+
     return response.data;
   }
 );
@@ -20,8 +20,6 @@ export const fetchAllFolders = createAsyncThunk(
 export const createFolder = createAsyncThunk(
   "folders/createFolder",
   async ({ userId, folderName }) => {
-    console.log("userId", userId);
-    console.log("folderName", folderName);
     const response = await api.post(`/api/folders/createfolder/${userId}`, {
       folderName,
     });

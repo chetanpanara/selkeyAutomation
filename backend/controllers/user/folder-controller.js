@@ -23,7 +23,7 @@ const createFolder = async (req, res) => {
     const existingFolder = await Folder.findOne({
       userId,
       folderName: { $regex: new RegExp(`^${folderName}$`, "i") },
-    });
+    }).lean();
 
     if (existingFolder) {
       return res.status(400).json({
@@ -37,7 +37,6 @@ const createFolder = async (req, res) => {
       userId,
       folderName,
       isSpecial: false,
-      workflows: [],
     });
 
     await newFolder.save();

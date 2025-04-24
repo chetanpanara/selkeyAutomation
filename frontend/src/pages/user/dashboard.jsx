@@ -1,9 +1,86 @@
-import { useState } from 'react';
-import { Search, Plus, Filter, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
-import Chart from './Chart';
+import { useEffect, useRef, useState } from "react";
+import {
+  Search,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  MoreVertical,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createFolder,
+  fetchAllFolders,
+  updateFolder,
+  deleteFolder,
+} from "@/store/slices/folder-slice"; // Add these imports
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
+let userdId = null;
 
 function UserDashboard() {
-  const [dense, setDense] = useState(false);
+  // fetch user from auth
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
+  const [isWorkflowDialogOpen, setIsWorkflowDialogOpen] = useState(false);
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
+  const [renameFolderId, setRenameFolderId] = useState(null);
+  const [folderName, setFolderName] = useState("");
+  const [workflowName, setWorkflowName] = useState("");
+  const [folders, setFolders] = useState([]);
+
+  userdId = user?.id; // Get user ID from the user object
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchAllFolders(user?.id))
+        .then((res) => {
+          console.log("API Response:", res); // Debugging the API response
+          if (res.payload && Array.isArray(res.payload.folders)) {
+            setFolders(res.payload.folders); // Assuming the payload contains the folders
+          } else {
+            console.error("Invalid API response format:", res);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching folders:", error); // Log any errors
+        });
+    }
+  }, []);
+
+  console.log("Folders State:", folders);
+
+  const handleCreateFolder = () => {
+    dispatch(createFolder({ userId: user.id, folderName })).then((res) => {
+      console.log("Folder created successfully:", res);
+      window.location.reload(); // Reload the page after folder creation
+    });
+    setIsFolderDialogOpen(false);
+  };
+
+  const handleCreateWorkflow = () => {
+    console.log("Workflow created:", workflowName);
+    setIsWorkflowDialogOpen(false);
+  };
+
+  const handleRenameDialogOpen = (folderId) => {
+    setRenameFolderId(folderId);
+    setIsRenameDialogOpen(true);
+  };
+
+  const handleRenameFolder = () => {
+    dispatch(
+      updateFolder({ userId: userdId, folderId: renameFolderId, folderName: folderName })
+    )
+      .then((res) => {
+        console.log("Folder renamed successfully:", res);
+        window.location.reload(); // Reload the page after renaming
+      })
+      .catch((err) => {
+        console.error("Error renaming folder:", err);
+      });
+    setIsRenameDialogOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 rounded-lg p-2 md:p-3">
@@ -13,13 +90,19 @@ function UserDashboard() {
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
             <p className="text-gray-600">
-              Create & manage all of your automation workflows in one place with Pabbly Connect Dashboard.
-              <a href="#" className="text-blue-500 ml-1">Learn more</a>
+              Create & manage all of your automation workflows in one place with
+              Pabbly Connect Dashboard.
+              <a href="#" className="text-blue-500 ml-1">
+                Learn more
+              </a>
             </p>
           </div>
-          <button className="bg-blue-600 hover:bg-blue-500 text-white rounded-md px-4 py-2 flex items-center gap-2">
+          <button
+            className="bg-blue-600 hover:bg-blue-500 text-white rounded-md px-4 py-2 flex items-center gap-2"
+            onClick={() => setIsWorkflowDialogOpen(true)}
+          >
             <Plus size={20} />
-            <span className="hidden md:inline">Create Workflow</span>
+            <span>Create Workflow</span>
           </button>
         </div>
 
@@ -53,33 +136,59 @@ function UserDashboard() {
 
         {/* Main Content */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
-
           {/* Sidebar */}
-          <div className="md:col-span-3  lg:col-span-3 bg-white rounded-lg p-4 shadow-md">
-            <div className="flex  justify-between items-center mb-4">
+          <div className="md:col-span-3 lg:col-span-3 bg-white rounded-lg p-4 shadow-md">
+            <div className="flex justify-between items-center mb-4">
               <h2 className="font-medium text-gray-700">Folders</h2>
-              <button className="bg-blue-600 hover:bg-blue-500 text-white p-1 rounded-md">
+              <button
+                className="bg-blue-600 hover:bg-blue-500 text-white p-1 rounded-md"
+                onClick={() => setIsFolderDialogOpen(true)}
+              >
                 <Plus size={20} />
               </button>
             </div>
 
-            <div className="space-y-1">
-              <FolderItem name="Home" count="3" />
-              <div className="h-px bg-gray-200 my-3"></div>
-              <FolderItem name="folder new" count="0" active={true} />
-              <div className="h-px bg-gray-200 my-3"></div>
-              <FolderItem name="Trash" count="2" />
-            </div>
+            {/* Safely render folder list */}
+            {Array.isArray(folders) &&
+              folders
+                .sort((a, b) => {
+                  if (a.folderName === "Home") return -1;
+                  if (b.folderName === "Home") return 1;
+                  if (a.folderName === "Trash") return 1;
+                  if (b.folderName === "Trash") return -1;
+                  return a.folderName.localeCompare(b.folderName);
+                })
+                .map((folder, index, sortedFolders) => (
+                  <>
+                    {index > 0 &&
+                      ((folder.folderName !== "Trash" &&
+                        sortedFolders[index - 1].folderName === "Home") ||
+                        (folder.folderName === "Trash" &&
+                          sortedFolders[index - 1].folderName !== "Trash")) && (
+                        <hr className="my-2 border-gray-300" />
+                      )}
+                    <FolderItem
+                      key={folder._id} // Use folder.id if available, otherwise fallback to index
+                      name={folder.folderName}
+                      count={folder.count}
+                      active={folder.active}
+                      id={folder._id} // Pass the id prop
+                      handleRenameDialogOpen={handleRenameDialogOpen} // Pass the handler to FolderItem
+                    />
+                  </>
+                ))}
           </div>
 
           {/* Content */}
           <div className="md:col-span-9 lg:col-span-9 bg-white rounded-lg p-4 shadow-md">
             <h2 className="font-medium text-gray-700 mb-4">Home</h2>
-
             {/* Search and filters */}
             <div className="flex flex-col sm:flex-row gap-1 mb-4">
               <div className="relative flex-grow">
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <Search
+                  className="absolute left-3 top-2.5 text-gray-400"
+                  size={18}
+                />
                 <input
                   type="text"
                   placeholder="Search by workflow name..."
@@ -90,7 +199,6 @@ function UserDashboard() {
                 <Plus size={20} />
                 <span>Select Actions</span>
               </button>
-  
             </div>
 
             {/* Table */}
@@ -99,7 +207,10 @@ function UserDashboard() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="py-3 px-4 text-left">
-                      <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm " />
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm"
+                      />
                     </th>
                     <th className="py-3 px-4 text-left">
                       <div className="flex items-center gap-1">
@@ -116,17 +227,26 @@ function UserDashboard() {
                 <tbody>
                   <tr className="hover:bg-gray-50">
                     <td className="py-3 px-4">
-                      <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm " />
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm"
+                      />
                     </td>
                     <td className="py-3 px-4">
                       <div>
-                        <span className="bg-green-100 text-green-600 text-xs font-medium px-2 py-0.5 rounded">Active</span>
+                        <span className="bg-green-100 text-green-600 text-xs font-medium px-2 py-0.5 rounded">
+                          Active
+                        </span>
                       </div>
-                      <div className="text-sm text-gray-500">Apr 23, 2025 09:14:46</div>
+                      <div className="text-sm text-gray-500">
+                        Apr 23, 2025 09:14:46
+                      </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <div className="bg-green-500 text-white rounded-full p-2">P</div>
+                        <div className="bg-green-500 text-white rounded-full p-2">
+                          P
+                        </div>
                         <div className="bg-gray-200 rounded-full p-2">+</div>
                       </div>
                     </td>
@@ -136,7 +256,9 @@ function UserDashboard() {
                     </td>
                     <td className="py-3 px-4">
                       <div>0 Tasks Consumed</div>
-                      <div className="text-sm text-gray-500">0 Free Tasks Consumed</div>
+                      <div className="text-sm text-gray-500">
+                        0 Free Tasks Consumed
+                      </div>
                     </td>
                     <td className="py-3 px-4 text-right">
                       <button>
@@ -150,7 +272,6 @@ function UserDashboard() {
 
             {/* Table Footer */}
             <div className="mt-4 flex flex-col sm:flex-row justify-end items-center gap-3">
-        
               <div className="flex items-center gap-4">
                 <div className="flex  items-center gap-2">
                   <span className="text-sm text-gray-600">Rows per page:</span>
@@ -174,9 +295,92 @@ function UserDashboard() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
+
+      {/* Folder Dialog */}
+      <Dialog open={isFolderDialogOpen} onOpenChange={setIsFolderDialogOpen}>
+        <DialogContent className="p-4 sm:p-6 w-[95vw] max-w-md mx-auto">
+          <h2 className="font-semibold text-xl mb-2">Create Folder</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Folder Name
+              </label>
+              <input
+                type="text"
+                value={folderName}
+                onChange={(e) => setFolderName(e.target.value)}
+                placeholder="Enter folder name here"
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button
+              className="w-full p-2 rounded-md bg-blue-600 text-white hover:bg-blue-400"
+              onClick={handleCreateFolder}
+            >
+              Create Folder
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Workflow Dialog */}
+      <Dialog
+        open={isWorkflowDialogOpen}
+        onOpenChange={setIsWorkflowDialogOpen}
+      >
+        <DialogContent className="p-4 sm:p-6 w-[95vw] max-w-md mx-auto">
+          <h2 className="font-semibold text-xl mb-2">Create Workflow</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Workflow Name
+              </label>
+              <input
+                type="text"
+                value={workflowName}
+                onChange={(e) => setWorkflowName(e.target.value)}
+                placeholder="Enter workflow name here"
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button
+              className="w-full p-2 rounded-md bg-blue-600 text-white hover:bg-blue-400"
+              onClick={handleCreateWorkflow}
+            >
+              Create Workflow
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rename Folder Dialog */}
+      <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
+        <DialogContent className="p-4 sm:p-6 w-[95vw] max-w-md mx-auto">
+          <h2 className="font-semibold text-xl mb-2">Rename Folder</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                New Folder Name
+              </label>
+              <input
+                type="text"
+                value={folderName}
+                onChange={(e) => setFolderName(e.target.value)}
+                placeholder="Enter new folder name here"
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button
+              className="w-full p-2 rounded-md bg-blue-600 text-white hover:bg-blue-400"
+              onClick={handleRenameFolder}
+            >
+              Rename Folder
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -189,7 +393,9 @@ function StatCard({ value, label, iconColor, icon }) {
           <div className="text-3xl font-bold mb-1">{value}</div>
           <div className="text-gray-600">{label}</div>
         </div>
-        <div className={`${iconColor} w-10 h-10 rounded-full flex items-center justify-center`}>
+        <div
+          className={`${iconColor} w-10 h-10 rounded-full flex items-center justify-center`}
+        >
           {icon}
         </div>
       </div>
@@ -197,14 +403,77 @@ function StatCard({ value, label, iconColor, icon }) {
   );
 }
 
-function FolderItem({ name, count, active = false }) {
+function FolderItem({ name, count, active = false, id, handleRenameDialogOpen }) {
+  // Add `id` prop
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState(name); // State for renaming
+  const dropdownRef = useRef(null);
+  const dispatch = useDispatch(); // Use dispatch for actions
+
+  const handleRename = () => {
+    handleRenameDialogOpen(id); // Open the rename dialog with the folder ID
+    setIsDropdownOpen(false);
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteFolder(id)) // Dispatch deleteFolder
+      .then((res) => {
+        console.log(`Folder deleted successfully: ${res}`);
+      })
+      .catch((err) => {
+        console.error(`Error deleting folder: ${err}`);
+      });
+    setIsDropdownOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className={`flex justify-between items-center px-3 py-2 rounded-md ${active ? 'bg-blue-50' : 'hover:bg-gray-100'}`}>
-      <span className={active ? 'text-blue-500' : 'text-gray-700'}>{name}</span>
+    <div
+      className={`relative flex justify-between items-center px-3 py-2 rounded-md ${
+        active ? "bg-blue-50" : "hover:bg-gray-100"
+      }`}
+    >
+      <span className={active ? "text-blue-500" : "text-gray-700"}>{name}</span>
       <div className="flex items-center gap-2">
         <span className="text-gray-400">({count})</span>
         {name !== "Home" && name !== "Trash" && (
-          <MoreVertical size={16} className="text-gray-400" />
+          <div className="relative" ref={dropdownRef}>
+            <MoreVertical
+              size={16}
+              className="text-gray-400 cursor-pointer"
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+            />
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                <div>
+                  <button
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={handleRename}
+                  >
+                    Rename
+                  </button>
+                </div>
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
