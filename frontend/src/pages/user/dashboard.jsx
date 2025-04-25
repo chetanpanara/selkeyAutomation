@@ -236,6 +236,51 @@ function UserDashboard() {
         .includes(workflowSearchQuery.toLowerCase())
   );
 
+  //checkbox related 
+  // Add these to your existing state declarations in the UserDashboard component
+  const [selectedWorkflows, setSelectedWorkflows] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Add these handler functions in the UserDashboard component
+  const handleSelectAll = (e) => {
+    const isChecked = e.target.checked;
+    setSelectAll(isChecked);
+
+    if (isChecked) {
+      // Select all workflows
+      const allWorkflowIds = filteredWorkflows.map(workflow => workflow._id);
+      setSelectedWorkflows(allWorkflowIds);
+    } else {
+      // Deselect all workflows
+      setSelectedWorkflows([]);
+    }
+  };
+
+  const handleSelectWorkflow = (workflowId) => {
+    setSelectedWorkflows(prev => {
+      // Check if the workflow is already selected
+      const isSelected = prev.includes(workflowId);
+
+      if (isSelected) {
+        // If already selected, remove it from selected workflows
+        const newSelected = prev.filter(id => id !== workflowId);
+        // If deselecting one item, ensure the "select all" is unchecked
+        if (selectAll) {
+          setSelectAll(false);
+        }
+        return newSelected;
+      } else {
+        // If not selected, add it to selected workflows
+        const newSelected = [...prev, workflowId];
+        // If all workflows are now selected, check the "select all" checkbox
+        if (newSelected.length === filteredWorkflows.length) {
+          setSelectAll(true);
+        }
+        return newSelected;
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 rounded-lg p-2 md:p-3">
       <div className="max-w-8xl mx-auto">
@@ -339,7 +384,7 @@ function UserDashboard() {
 
           {/* Content */}
           <div className="md:col-span-9 lg:col-span-9 bg-white rounded-lg p-4 shadow-md">
-            <h2 className="font-medium text-gray-700 mb-4">
+            <h2 className="font-semibold text-gray-700 mb-4">
               {selectedFolder?.folderName || "Home"}
             </h2>
             {/* Search and filters */}
@@ -357,13 +402,6 @@ function UserDashboard() {
                   onChange={(e) => setWorkflowSearchQuery(e.target.value)}
                 />
               </div>
-
-
-              <button className="bg-blue-600 hover:bg-blue-500 text-white rounded-md px-4 py-2 flex items-center gap-2">
-                <Plus size={20} />
-                <span>Select Actions</span>
-              </button>
-
 
               <div className="relative">
                 <button
@@ -393,6 +431,7 @@ function UserDashboard() {
                 )}
               </div>
             </div>
+          
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full">
@@ -402,6 +441,8 @@ function UserDashboard() {
                       <input
                         type="checkbox"
                         className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm"
+                        checked={selectAll}
+                        onChange={handleSelectAll}
                       />
                     </th>
                     <th className="py-3 px-4 text-left">
@@ -424,16 +465,17 @@ function UserDashboard() {
                           <input
                             type="checkbox"
                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm"
+                            checked={selectedWorkflows.includes(workflow._id)}
+                            onChange={() => handleSelectWorkflow(workflow._id)}
                           />
                         </td>
                         <td className="py-3 px-4">
                           <div>
                             <span
-                              className={`text-xs font-medium px-2 py-0.5 rounded ${
-                                workflow.status === "active"
+                              className={`text-xs font-medium px-2 py-0.5 rounded ${workflow.status === "active"
                                   ? "bg-green-100 text-green-600"
                                   : "bg-red-100 text-red-600"
-                              }`}
+                                }`}
                             >
                               {workflow.status}
                             </span>
