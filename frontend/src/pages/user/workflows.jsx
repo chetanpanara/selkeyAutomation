@@ -10,7 +10,7 @@ function workflows() {
       <div className="container  w-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 ">
           <div className="block">
-            <p className="font-semibold text-3xl mb-3">Workflows</p>
+            <p className="font-semibold text-2xl mb-3">Workflows</p>
             <span className="text-gray-500 text-sm ">
               Create automation workflow below.
             </span>

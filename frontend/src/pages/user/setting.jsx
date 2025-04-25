@@ -78,7 +78,7 @@ function Settings() {
           <>
             <div className="grid grid-cols-1 mt-4">
               <div className="block">
-                <p className="font-semibold text-3xl mb-3">Task Summary</p>
+                <p className="font-semibold text-2xl mb-3">Task Summary</p>
                 <span className="text-gray-500 text-sm">
                   View all of your task summaries. Any action being performed in your workflow is considered a task. Triggers are not calculated as tasks, and internal applications of Pabbly Connect, such as the filter, router, and formatter, are also not counted as tasks. Note that the task summary is only available for the last 30 days.
                 </span>

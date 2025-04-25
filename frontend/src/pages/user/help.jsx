@@ -7,7 +7,7 @@ export default function Help() {
       <div className="container  w-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 ">
           <div className="block">
-            <p className="font-semibold text-3xl mb-3">Help & Tutorials</p>
+            <p className="font-semibold text-2xl mb-3">Help & Tutorials</p>
             <span className="text-gray-500 text-sm ">
               Tell us about your problem, and we’ll find you a solution.
             </span>
@@ -21,7 +21,7 @@ export default function Help() {
           <div className="flex flex-col md:flex-row items-center gap-8">
 
             <div className="w-full md:w-2/3">
-              <h2 className="text-2xl font-bold mb-4">
+              <h2 className="font-semibold text-2xl mb-4">
                 Points To Remember!
               </h2>
 

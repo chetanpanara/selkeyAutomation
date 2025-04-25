@@ -242,7 +242,7 @@ function UserDashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-3">Dashboard</h1>
+            <p className="font-semibold text-2xl mb-3">Dashboard</p>
             <p className="text-gray-600">
               Create & manage all of your automation workflows in one place with
               Pabbly Connect Dashboard.
@@ -357,10 +357,12 @@ function UserDashboard() {
                   onChange={(e) => setWorkflowSearchQuery(e.target.value)}
                 />
               </div>
+
               <button className="bg-blue-600 hover:bg-blue-500 text-white rounded-md px-4 py-2 flex items-center gap-2">
                 <Plus size={20} />
                 <span>Select Actions</span>
               </button>
+
             </div>
 
             {/* Table */}
