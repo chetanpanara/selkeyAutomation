@@ -20,6 +20,8 @@ import {
   fetchAllWorkflows,
   getWorkflowCounts,
   deleteWorkflows,
+  enableWorkflows,
+  disableWorkflows,
 } from "@/store/slices/workflow-slice";
 
 let userId = null;
@@ -306,6 +308,48 @@ function UserDashboard() {
     }
   };
 
+  const handleEnableWorkflows = () => {
+    if (selectedWorkflows.length === 0) {
+      alert("Please select at least one workflow to enable.");
+      return;
+    }
+
+    dispatch(enableWorkflows({ workflowIds: selectedWorkflows }))
+      .then((res) => {
+        if (res.payload.success) {
+          alert("Workflows enabled successfully.");
+          setSelectedWorkflows([]);
+          window.location.reload(); // Refresh the page to reflect changes
+        } else {
+          console.error("Failed to enable workflows:", res.payload.message);
+        }
+      })
+      .catch((err) => {
+        console.error("Error enabling workflows:", err);
+      });
+  };
+
+  const handleDisableWorkflows = () => {
+    if (selectedWorkflows.length === 0) {
+      alert("Please select at least one workflow to disable.");
+      return;
+    }
+
+    dispatch(disableWorkflows({ workflowIds: selectedWorkflows }))
+      .then((res) => {
+        if (res.payload.success) {
+          alert("Workflows disabled successfully.");
+          setSelectedWorkflows([]);
+          window.location.reload(); // Refresh the page to reflect changes
+        } else {
+          console.error("Failed to disable workflows:", res.payload.message);
+        }
+      })
+      .catch((err) => {
+        console.error("Error disabling workflows:", err);
+      });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 rounded-lg p-2 md:p-3">
       <div className="max-w-8xl mx-auto">
@@ -436,16 +480,16 @@ function UserDashboard() {
                   Select Action
                   <ChevronDown size={18} />
                 </button>
-                {isTableDropdownOpen && ( // Use new state
+                {isTableDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
                     <ul className="py-1">
                       <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                         Move Workflow
                       </li>
-                      <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                      <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={handleEnableWorkflows}>
                         Enable Workflow
                       </li>
-                      <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                      <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" onClick={handleDisableWorkflows}>
                         Disable Workflow
                       </li>
                       <li className="px-4 py-2 text-sm text-red-600 hover:bg-red-100 cursor-pointer" onClick={handleDeleteWorkflows}>

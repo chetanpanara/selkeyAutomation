@@ -204,6 +204,67 @@ const deleteMultipleWorkflows = async (req, res) => {
   }
 };
 
+// enable workflows
+const enableWorkflows = async (req, res) => {
+  try {
+    const { workflowIds } = req.body;
+
+    if (!workflowIds || workflowIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No workflows selected for enabling.",
+      });
+    }
+
+    await Workflow.updateMany(
+      { _id: { $in: workflowIds } },
+      { $set: { status: "active" } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Workflows enabled successfully.",
+    });
+  } catch (error) {
+    console.error("Error enabling workflows:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to enable workflows.",
+    });
+  }
+};
+
+// disable workflows
+const disableWorkflows = async (req, res) => {
+  try {
+    const { workflowIds } = req.body;
+
+    if (!workflowIds || workflowIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No workflows selected for disabling.",
+      });
+    }
+
+    await Workflow.updateMany(
+      { _id: { $in: workflowIds } },
+      { $set: { status: "inactive" } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Workflows disabled successfully.",
+    });
+  } catch (error) {
+    console.error("Error disabling workflows:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to disable workflows.",
+    });
+  }
+};
+
+// Add these to your module.exports
 module.exports = {
   createWorkflow,
   getAllWorkflows,
@@ -211,4 +272,6 @@ module.exports = {
   getWorkflowCounts,
   permanentlyDeleteWorkflow,
   deleteMultipleWorkflows,
+  enableWorkflows,
+  disableWorkflows,
 };

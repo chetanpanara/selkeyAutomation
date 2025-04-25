@@ -68,6 +68,28 @@ export const deleteWorkflows = createAsyncThunk(
   }
 );
 
+// enable workflows
+export const enableWorkflows = createAsyncThunk(
+  "workflows/enableWorkflows",
+  async ({ workflowIds }) => {
+    const response = await api.post(`/api/workflows/enableworkflows`, {
+      workflowIds,
+    });
+    return response.data;
+  }
+);
+
+// disable workflows
+export const disableWorkflows = createAsyncThunk(
+  "workflows/disableWorkflows",
+  async ({ workflowIds }) => {
+    const response = await api.post(`/api/workflows/disableworkflows`, {
+      workflowIds,
+    });
+    return response.data;
+  }
+);
+
 export const workflowSlice = createSlice({
   name: "workflow",
   initialState,
