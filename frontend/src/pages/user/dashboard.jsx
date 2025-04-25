@@ -15,7 +15,7 @@ import {
   deleteFolder,
 } from "@/store/slices/folder-slice";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { createWorkflow, getWorkflowCounts } from "@/store/slices/workflow-slice"; // Corrected named export
+import { createWorkflow, fetchAllWorkflows, getWorkflowCounts } from "@/store/slices/workflow-slice"; // Corrected named export
 
 let userdId = null;
 
@@ -76,7 +76,17 @@ function UserDashboard() {
         .catch((error) => {
           console.error("Error fetching folders:", error); // Log any errors
         });
+      
+      dispatch(fetchAllWorkflows({ userId: user.id, folderId: selectedFolder?._id }))
+        .then((res) => {
+          console.log("Fetched workflows:", res.payload); // Log the fetched workflows
+        })
+        .catch((error) => {
+          console.error("Error fetching workflows:", error); // Log any errors
+        });
     }
+
+
   }, []);
 
   useEffect(() => {
@@ -168,13 +178,11 @@ function UserDashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-3">Dashboard</h1>
             <p className="text-gray-600">
               Create & manage all of your automation workflows in one place with
               Pabbly Connect Dashboard.
-              <a href="#" className="text-blue-500 ml-1">
-                Learn more
-              </a>
+              
             </p>
           </div>
           <button
