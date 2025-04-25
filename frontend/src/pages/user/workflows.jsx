@@ -1,28 +1,25 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllApps } from "@/store/slices/app-slice";
+
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import AppSelector from "./AppSelector";
 
 function workflows() {
-  const { user } = useSelector((state) => state.auth);
-  const { apps } = useSelector((state) => state.app);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getAllApps());
-  }, [dispatch]);
+  
   return (
-    <div className="w-full min-h-screen bg-white md:px-4">
-      <div className="w-full mb-6">
-        <div className="flex flex-col w-full gap-2 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-xl md:text-2xl font-semibold">Workflows</h1>
+    <>
+    
+      <div className="container  w-auto p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 ">
+          <div className="block">
+            <p className="font-semibold text-3xl mb-3">Workflows</p>
+            <span className="text-gray-500 text-sm ">
+              Create automation workflow below.
+            </span>
+          </div>
         </div>
-        <span className="text-gray-500 text-sm ">
-          Create automation workflow below.
-        </span>
       </div>
+
       {/* main grid */}
-      {/* <div className="max-w-full mx-auto mt-6">
+      <div className="w-full mx-auto mt-2 px-1 sm:px-2">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="w-full md:w-1/3 bg-blue-50 rounded-lg p-4">
@@ -63,10 +60,12 @@ function workflows() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
-      <AppSelector/>
-    </div>
+      {/* <AppSelector /> */}
+      
+    </>
+   
   );
 }
 
