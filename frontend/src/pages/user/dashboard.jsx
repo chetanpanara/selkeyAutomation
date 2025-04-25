@@ -19,6 +19,7 @@ import {
   createWorkflow,
   fetchAllWorkflows,
   getWorkflowCounts,
+  deleteWorkflows,
 } from "@/store/slices/workflow-slice";
 
 let userId = null;
@@ -45,6 +46,7 @@ function UserDashboard() {
   const [currentWorkflows, setCurrentWorkflows] = useState([]);
   // New state for workflow search
   const [workflowSearchQuery, setWorkflowSearchQuery] = useState("");
+  const [isTableDropdownOpen, setIsTableDropdownOpen] = useState(false); // New state for table dropdown
 
   userId = user?.id; // Get user ID from the user object
 
@@ -281,6 +283,29 @@ function UserDashboard() {
     });
   };
 
+  const handleDeleteWorkflows = () => {
+    if (selectedWorkflows.length === 0) {
+      alert("Please select at least one workflow to delete.");
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to delete the selected workflows?")) {
+      dispatch(deleteWorkflows({ workflowIds: selectedWorkflows }))
+        .then((res) => {
+          if (res.payload.success) {
+            alert("Workflows deleted successfully.");
+            setSelectedWorkflows([]);
+            window.location.reload(); // Refresh the page to reflect changes
+          } else {
+            console.error("Failed to delete workflows:", res.payload.message);
+          }
+        })
+        .catch((err) => {
+          console.error("Error deleting workflows:", err);
+        });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 rounded-lg p-2 md:p-3">
       <div className="max-w-8xl mx-auto">
@@ -388,7 +413,7 @@ function UserDashboard() {
               {selectedFolder?.folderName || "Home"}
             </h2>
             {/* Search and filters */}
-            <div className="flex flex-col sm:flex-row gap-1 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <div className="relative flex-grow">
                 <Search
                   className="absolute left-3 top-2.5 text-gray-400"
@@ -406,12 +431,12 @@ function UserDashboard() {
               <div className="relative">
                 <button
                   className="bg-blue-600 hover:bg-blue-500 text-white rounded-md px-4 py-2 flex items-center gap-4 w-full"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => setIsTableDropdownOpen(!isTableDropdownOpen)} // Use new state
                 >
                   Select Action
                   <ChevronDown size={18} />
                 </button>
-                {isDropdownOpen && (
+                {isTableDropdownOpen && ( // Use new state
                   <div className="absolute right-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
                     <ul className="py-1">
                       <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
@@ -423,7 +448,7 @@ function UserDashboard() {
                       <li className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                         Disable Workflow
                       </li>
-                      <li className="px-4 py-2 text-sm text-red-600 hover:bg-red-100 cursor-pointer">
+                      <li className="px-4 py-2 text-sm text-red-600 hover:bg-red-100 cursor-pointer" onClick={handleDeleteWorkflows}>
                         Delete Workflow
                       </li>
                     </ul>
@@ -431,7 +456,7 @@ function UserDashboard() {
                 )}
               </div>
             </div>
-          
+
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full">
@@ -448,7 +473,6 @@ function UserDashboard() {
                     <th className="py-3 px-4 text-left">
                       <div className="flex items-center gap-1">
                         <span>Status/Date</span>
-                        <span>↑</span>
                       </div>
                     </th>
                     <th className="py-3 px-4 text-left">Application</th>
@@ -473,8 +497,8 @@ function UserDashboard() {
                           <div>
                             <span
                               className={`text-xs font-medium px-2 py-0.5 rounded ${workflow.status === "active"
-                                  ? "bg-green-100 text-green-600"
-                                  : "bg-red-100 text-red-600"
+                                ? "bg-green-100 text-green-600"
+                                : "bg-red-100 text-red-600"
                                 }`}
                             >
                               {workflow.status}
@@ -511,6 +535,7 @@ function UserDashboard() {
                           </div>
                         </td>
                         <td className="py-3 px-4 text-right">
+                          {/* dropdown for each workflow */}
                           <button>
                             <MoreVertical size={20} className="text-gray-500" />
                           </button>
@@ -616,7 +641,7 @@ function UserDashboard() {
               <div className="relative mt-2" ref={dropdownRef}>
                 <div
                   className="w-full p-2 border border-gray-300 rounded-md flex justify-between items-center cursor-pointer"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Keep using the original state
                 >
                   <span
                     className={
@@ -630,7 +655,7 @@ function UserDashboard() {
                   <ChevronDown size={18} className="text-gray-500" />
                 </div>
 
-                {isDropdownOpen && (
+                {isDropdownOpen && ( // Keep using the original state
                   <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg z-10">
                     <div className="sticky top-0 bg-white p-2 border-b border-gray-300">
                       <input

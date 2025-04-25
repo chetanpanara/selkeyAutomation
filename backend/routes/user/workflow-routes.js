@@ -6,6 +6,7 @@ const {
   deleteWorkflow,
   getWorkflowCounts,
   permanentlyDeleteWorkflow,
+  deleteMultipleWorkflows,
 } = require("../../controllers/user/workflow-controller");
 
 router.post("/createworkflow/:userId", createWorkflow);
@@ -16,5 +17,6 @@ router.delete(
   permanentlyDeleteWorkflow
 );
 router.get("/getworkflowcounts/:userId", getWorkflowCounts);
+router.post("/deletemultiple", deleteMultipleWorkflows);
 
 module.exports = router;

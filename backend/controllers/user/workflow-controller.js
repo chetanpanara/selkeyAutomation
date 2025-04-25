@@ -177,10 +177,38 @@ const getWorkflowCounts = async (req, res) => {
   }
 };
 
+// delete multiple workflows
+const deleteMultipleWorkflows = async (req, res) => {
+  try {
+    const { workflowIds } = req.body;
+
+    if (!workflowIds || workflowIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No workflows selected for deletion.",
+      });
+    }
+
+    await Workflow.deleteMany({ _id: { $in: workflowIds } });
+
+    res.status(200).json({
+      success: true,
+      message: "Workflows deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting workflows:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete workflows.",
+    });
+  }
+};
+
 module.exports = {
   createWorkflow,
   getAllWorkflows,
   deleteWorkflow,
   getWorkflowCounts,
   permanentlyDeleteWorkflow,
+  deleteMultipleWorkflows,
 };

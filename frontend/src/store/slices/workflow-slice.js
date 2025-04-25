@@ -56,6 +56,18 @@ export const deleteWorkflow = createAsyncThunk(
     return response.data;
   }
 );
+
+// delete multiple workflows
+export const deleteWorkflows = createAsyncThunk(
+  "workflows/deleteWorkflows",
+  async ({ workflowIds }) => {
+    const response = await api.post(`/api/workflows/deletemultiple`, {
+      workflowIds,
+    });
+    return response.data;
+  }
+);
+
 export const workflowSlice = createSlice({
   name: "workflow",
   initialState,
