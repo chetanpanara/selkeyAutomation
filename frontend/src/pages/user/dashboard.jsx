@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import {
   Search,
   Plus,
@@ -15,9 +15,13 @@ import {
   deleteFolder,
 } from "@/store/slices/folder-slice";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { createWorkflow, getWorkflowCounts } from "@/store/slices/workflow-slice"; // Corrected named export
+import {
+  createWorkflow,
+  fetchAllWorkflows,
+  getWorkflowCounts,
+} from "@/store/slices/workflow-slice"; // Corrected named export
 
-let userdId = null;
+let userId = null;
 
 function UserDashboard() {
   // fetch user from auth
@@ -31,11 +35,12 @@ function UserDashboard() {
   const [workflowName, setWorkflowName] = useState("");
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
+  const [activeFolderid, setActiveFolderid] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [folderSearchQuery, setFolderSearchQuery] = useState("");
   const dropdownRef = useRef(null);
 
-  userdId = user?.id; // Get user ID from the user object
+  userId = user?.id; // Get user ID from the user object
 
   useEffect(() => {
     if (user) {
@@ -46,29 +51,34 @@ function UserDashboard() {
             setFolders(foldersData); // Assuming the payload contains the folders
 
             // Fetch workflow counts for each folder
-            const folderIds = foldersData.map(folder => folder._id);
+            const folderIds = foldersData.map((folder) => folder._id);
             dispatch(getWorkflowCounts({ userId: user.id, folderIds })) // Updated function name
               .then((workflowRes) => {
                 if (workflowRes.payload && workflowRes.payload.counts) {
-                  console.log("Workflow counts:", workflowRes.payload.counts); // Log the counts for debugging
-                  const updatedFolders = foldersData.map(folder => ({
+                  const updatedFolders = foldersData.map((folder) => ({
                     ...folder,
                     count: workflowRes.payload.counts[folder._id] || 0, // Ensure count is fetched correctly
                   }));
                   setFolders(updatedFolders);
+
+                  // Find and set "Home" folder as default
+                  const homeFolder = updatedFolders.find(
+                    (folder) => folder.folderName === "Home"
+                  );
+                  if (homeFolder) {
+                    setSelectedFolder(homeFolder); // Set the selected folder name
+                    setActiveFolderid(homeFolder._id); // Set the selected folder ID
+                  }
                 } else {
-                  console.error("Invalid workflow counts response:", workflowRes.payload);
+                  console.error(
+                    "Invalid workflow counts response:",
+                    workflowRes.payload
+                  );
                 }
               })
               .catch((err) => {
                 console.error("Error fetching workflow counts:", err);
               });
-
-            // Find and set "Home" folder as default
-            const homeFolder = foldersData.find(folder => folder.folderName === "Home");
-            if (homeFolder) {
-              setSelectedFolder(homeFolder);
-            }
           } else {
             console.error("Invalid API response format:", res);
           }
@@ -78,6 +88,23 @@ function UserDashboard() {
         });
     }
   }, []);
+
+  // fetch all workflows folder wise
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchAllWorkflows({ userId: userId }))
+        .then((res) => {
+          if (res.payload.success) {
+            console.log("Fetched workflows successfully:", res.payload.folderWorkflows);
+          } else {
+            console.error("Invalid API response format:", res);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching workflows:", error); // Log any errors
+        });
+    }
+  }, [user, userId]); // Add dependencies to ensure it runs only when `user` or `userId` changes
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -101,14 +128,26 @@ function UserDashboard() {
   };
 
   const handleCreateWorkflow = () => {
-    console.log("Workflow created:", workflowName, "Folder:", selectedFolder?.folderName, "Folder ID:", selectedFolder?._id);
-    dispatch(createWorkflow({ userId: userdId, folderId: selectedFolder._id, workflowName }))
+    console.log(
+      "Workflow created:",
+      workflowName,
+      "Folder:",
+      selectedFolder?.folderName,
+      "Folder ID:",
+      selectedFolder?._id
+    );
+    dispatch(
+      createWorkflow({
+        userId: userId,
+        folderId: selectedFolder._id,
+        workflowName,
+      })
+    )
       .then((res) => {
         console.log("Workflow created successfully:", res);
         setWorkflowName("");
         setSelectedFolder(null);
         window.location.reload(); // Reload the page after workflow creation
-
       })
       .catch((err) => {
         console.error("Error creating workflow:", err);
@@ -116,7 +155,6 @@ function UserDashboard() {
     // Reset the selected folder and workflow name after creation
 
     setIsWorkflowDialogOpen(false);
-
   };
 
   const handleRenameDialogOpen = (folderId, folderName) => {
@@ -128,7 +166,7 @@ function UserDashboard() {
   const handleDeleteFolder = (folderId) => {
     console.log("Deleting folder with ID:", folderId);
     // Call the deleteFolder action with the folder ID
-    dispatch(deleteFolder({ userId: userdId, folderId }))
+    dispatch(deleteFolder({ userId: userId, folderId }))
       .then((res) => {
         console.log("Folder deleted successfully:", res);
         window.location.reload(); // Reload the page after deletion
@@ -141,7 +179,7 @@ function UserDashboard() {
   const handleRenameFolder = () => {
     dispatch(
       updateFolder({
-        userId: userdId,
+        userId: userId,
         folderId: renameFolderId,
         folderName: folderName,
       })
@@ -157,9 +195,10 @@ function UserDashboard() {
   };
 
   // Filter folders for the dropdown - exclude "Trash" folder
-  const dropdownFolders = folders.filter(folder =>
-    folder.folderName !== "Trash" &&
-    folder.folderName.toLowerCase().includes(folderSearchQuery.toLowerCase())
+  const dropdownFolders = folders.filter(
+    (folder) =>
+      folder.folderName !== "Trash" &&
+      folder.folderName.toLowerCase().includes(folderSearchQuery.toLowerCase())
   );
 
   return (
@@ -239,7 +278,13 @@ function UserDashboard() {
                   return a.folderName.localeCompare(b.folderName);
                 })
                 .map((folder, index, sortedFolders) => (
-                  <div key={folder._id || `folder-${index}`}>
+                  <div
+                    key={folder._id || `folder-${index}`}
+                    onClick={() => {
+                      setSelectedFolder(folder);
+                      setActiveFolderid(folder._id); // Set the selected folder ID
+                    }}
+                  >
                     {index > 0 &&
                       folder.folderName === "Trash" &&
                       sortedFolders[index - 1].folderName !== "Trash" && (
@@ -247,13 +292,13 @@ function UserDashboard() {
                       )}
                     <FolderItem
                       name={folder.folderName}
-                      count={folder.count || 0} // Display workflow count, default to 0 if undefined
-                      active={folder.active}
-                      id={folder._id} // Pass the id prop
+                      count={folder.count || 0}
+                      id={folder._id}
+                      activeFolderid={activeFolderid} // Pass activeFolderid to FolderItem
                       handleRenameDialogOpen={(id) =>
                         handleRenameDialogOpen(id, folder.folderName)
-                      } // Pass folder name
-                      handleDeleteFolder={handleDeleteFolder} // Pass the delete handler to FolderItem
+                      }
+                      handleDeleteFolder={handleDeleteFolder}
                     />
                   </div>
                 ))}
@@ -436,8 +481,14 @@ function UserDashboard() {
                   className="w-full p-2 border border-gray-300 rounded-md flex justify-between items-center cursor-pointer"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  <span className={selectedFolder ? "text-gray-900" : "text-gray-400"}>
-                    {selectedFolder ? selectedFolder.folderName : "Select a folder"}
+                  <span
+                    className={
+                      selectedFolder ? "text-gray-900" : "text-gray-400"
+                    }
+                  >
+                    {selectedFolder
+                      ? selectedFolder.folderName
+                      : "Select a folder"}
                   </span>
                   <ChevronDown size={18} className="text-gray-500" />
                 </div>
@@ -536,10 +587,10 @@ function StatCard({ value, label, iconColor, icon }) {
 function FolderItem({
   name,
   count,
-  active = false,
   id,
   handleRenameDialogOpen,
   handleDeleteFolder,
+  activeFolderid, // Pass activeFolderid as a prop
 }) {
   // Add `id` prop
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -572,10 +623,15 @@ function FolderItem({
 
   return (
     <div
-      className={`relative flex justify-between items-center px-3 py-2 rounded-md ${active ? "bg-blue-50" : "hover:bg-gray-100"
-        }`}
+      className={`relative flex justify-between items-center px-3 py-2 rounded-md ${
+        id === activeFolderid ? "bg-blue-100" : "hover:bg-gray-100"
+      }`}
     >
-      <span className={active ? "text-blue-500" : "text-gray-700"}>{name}</span>
+      <span
+        className={id === activeFolderid ? "text-blue-500" : "text-gray-700"}
+      >
+        {name}
+      </span>
       <div className="flex items-center gap-2">
         <span className="text-gray-400">({count})</span>
         {name !== "Home" && name !== "Trash" && (

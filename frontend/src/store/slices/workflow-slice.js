@@ -9,11 +9,9 @@ const initialState = {
 // fetch all workflows
 export const fetchAllWorkflows = createAsyncThunk(
   "workflows/fetchAllWorkflows",
-  async ({ userId, folderId }) => {
-    console.log("userId", userId);
-    console.log("folderId", folderId);
+  async ({ userId }) => {
     const response = await api.get(
-      `/api/workflows/getallworkflows/${userId}/${folderId}`
+      `/api/workflows/getallworkflows/${userId}`
     );
     return response.data;
   }
