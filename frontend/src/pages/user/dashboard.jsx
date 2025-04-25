@@ -19,8 +19,7 @@ import {
   createWorkflow,
   fetchAllWorkflows,
   getWorkflowCounts,
-} from "@/store/slices/workflow-slice"; // Corrected named export
-
+} from "@/store/slices/workflow-slice";
 
 let userId = null;
 
@@ -40,8 +39,23 @@ function UserDashboard() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [folderSearchQuery, setFolderSearchQuery] = useState("");
   const dropdownRef = useRef(null);
+  // New state for storing all workflows by folder
+  const [folderWorkflows, setFolderWorkflows] = useState({});
+  // New state for storing workflows in the selected folder
+  const [currentWorkflows, setCurrentWorkflows] = useState([]);
+  // New state for workflow search
+  const [workflowSearchQuery, setWorkflowSearchQuery] = useState("");
 
   userId = user?.id; // Get user ID from the user object
+
+  // Function to update current workflows based on selected folder
+  const updateCurrentWorkflows = (folderId) => {
+    if (folderId && folderWorkflows[folderId]) {
+      setCurrentWorkflows(folderWorkflows[folderId]);
+    } else {
+      setCurrentWorkflows([]);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -53,7 +67,7 @@ function UserDashboard() {
 
             // Fetch workflow counts for each folder
             const folderIds = foldersData.map((folder) => folder._id);
-            dispatch(getWorkflowCounts({ userId: user.id, folderIds })) // Updated function name
+            dispatch(getWorkflowCounts({ userId: user.id, folderIds }))
               .then((workflowRes) => {
                 if (workflowRes.payload && workflowRes.payload.counts) {
                   const updatedFolders = foldersData.map((folder) => ({
@@ -87,17 +101,7 @@ function UserDashboard() {
         .catch((error) => {
           console.error("Error fetching folders:", error); // Log any errors
         });
-      
-      dispatch(fetchAllWorkflows({ userId: user.id, folderId: selectedFolder?._id }))
-        .then((res) => {
-          console.log("Fetched workflows:", res.payload); // Log the fetched workflows
-        })
-        .catch((error) => {
-          console.error("Error fetching workflows:", error); // Log any errors
-        });
     }
-
-
   }, []);
 
   // fetch all workflows folder wise
@@ -107,6 +111,12 @@ function UserDashboard() {
         .then((res) => {
           if (res.payload.success) {
             console.log("Fetched workflows successfully:", res.payload.folderWorkflows);
+            setFolderWorkflows(res.payload.folderWorkflows);
+
+            // Update current workflows if a folder is already selected
+            if (activeFolderid) {
+              updateCurrentWorkflows(activeFolderid);
+            }
           } else {
             console.error("Invalid API response format:", res);
           }
@@ -116,6 +126,11 @@ function UserDashboard() {
         });
     }
   }, [user, userId]); // Add dependencies to ensure it runs only when `user` or `userId` changes
+
+  // Update current workflows when active folder changes
+  useEffect(() => {
+    updateCurrentWorkflows(activeFolderid);
+  }, [activeFolderid, folderWorkflows]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -212,6 +227,15 @@ function UserDashboard() {
       folder.folderName.toLowerCase().includes(folderSearchQuery.toLowerCase())
   );
 
+  // Filter workflows based on search query
+  const filteredWorkflows = currentWorkflows.filter(
+    (workflow) =>
+      workflow.workflowName &&
+      workflow.workflowName
+        .toLowerCase()
+        .includes(workflowSearchQuery.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 rounded-lg p-2 md:p-3">
       <div className="max-w-8xl mx-auto">
@@ -222,7 +246,7 @@ function UserDashboard() {
             <p className="text-gray-600">
               Create & manage all of your automation workflows in one place with
               Pabbly Connect Dashboard.
-              
+
             </p>
           </div>
           <button
@@ -315,7 +339,9 @@ function UserDashboard() {
 
           {/* Content */}
           <div className="md:col-span-9 lg:col-span-9 bg-white rounded-lg p-4 shadow-md">
-            <h2 className="font-medium text-gray-700 mb-4">Home</h2>
+            <h2 className="font-medium text-gray-700 mb-4">
+              {selectedFolder?.folderName || "Home"}
+            </h2>
             {/* Search and filters */}
             <div className="flex flex-col sm:flex-row gap-1 mb-4">
               <div className="relative flex-grow">
@@ -327,6 +353,8 @@ function UserDashboard() {
                   type="text"
                   placeholder="Search by workflow name..."
                   className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md"
+                  value={workflowSearchQuery}
+                  onChange={(e) => setWorkflowSearchQuery(e.target.value)}
                 />
               </div>
               <button className="bg-blue-600 hover:bg-blue-500 text-white rounded-md px-4 py-2 flex items-center gap-2">
@@ -359,47 +387,71 @@ function UserDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="hover:bg-gray-50">
-                    <td className="py-3 px-4">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm"
-                      />
-                    </td>
-                    <td className="py-3 px-4">
-                      <div>
-                        <span className="bg-green-100 text-green-600 text-xs font-medium px-2 py-0.5 rounded">
-                          Active
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Apr 23, 2025 09:14:46
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="bg-green-500 text-white rounded-full p-2">
-                          P
-                        </div>
-                        <div className="bg-gray-200 rounded-full p-2">+</div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="text-blue-500">Untitled Workflow</div>
-                      <div className="text-sm text-gray-500">Home</div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div>0 Tasks Consumed</div>
-                      <div className="text-sm text-gray-500">
-                        0 Free Tasks Consumed
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <button>
-                        <MoreVertical size={20} className="text-gray-500" />
-                      </button>
-                    </td>
-                  </tr>
+                  {filteredWorkflows.length > 0 ? (
+                    filteredWorkflows.map((workflow) => (
+                      <tr key={workflow._id} className="hover:bg-gray-50">
+                        <td className="py-3 px-4">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm"
+                          />
+                        </td>
+                        <td className="py-3 px-4">
+                          <div>
+                            <span
+                              className={`text-xs font-medium px-2 py-0.5 rounded ${
+                                workflow.status === "active"
+                                  ? "bg-green-100 text-green-600"
+                                  : "bg-red-100 text-red-600"
+                              }`}
+                            >
+                              {workflow.status}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {new Date(workflow.createdAt).toLocaleString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                              hour12: false
+                            })}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2">
+                            <div className="bg-green-500 text-white rounded-full p-2">
+                              P
+                            </div>
+                            <div className="bg-gray-200 rounded-full p-2">+</div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="text-blue-500">{workflow.workflowName}</div>
+                          <div className="text-sm text-gray-500">{selectedFolder?.folderName}</div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div>0 Tasks Consumed</div>
+                          <div className="text-sm text-gray-500">
+                            0 Free Tasks Consumed
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <button>
+                            <MoreVertical size={20} className="text-gray-500" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="py-4 text-center text-gray-500">
+                        No workflows found in this folder
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -416,7 +468,11 @@ function UserDashboard() {
                   </select>
                 </div>
 
-                <div className="text-sm text-gray-600">1-1 of 1</div>
+                <div className="text-sm text-gray-600">
+                  {filteredWorkflows.length > 0
+                    ? `1-${filteredWorkflows.length} of ${filteredWorkflows.length}`
+                    : "0-0 of 0"}
+                </div>
 
                 <div className="flex gap-1">
                   <button className="p-1 rounded border border-gray-300 text-gray-500">
@@ -599,9 +655,8 @@ function FolderItem({
   id,
   handleRenameDialogOpen,
   handleDeleteFolder,
-  activeFolderid, // Pass activeFolderid as a prop
+  activeFolderid,
 }) {
-  // Add `id` prop
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const dispatch = useDispatch(); // Use dispatch for actions
@@ -632,9 +687,8 @@ function FolderItem({
 
   return (
     <div
-      className={`relative flex justify-between items-center px-3 py-2 rounded-md ${
-        id === activeFolderid ? "bg-blue-100" : "hover:bg-gray-100"
-      }`}
+      className={`relative flex justify-between items-center px-3 py-2 rounded-md ${id === activeFolderid ? "bg-blue-100" : "hover:bg-gray-100"
+        }`}
     >
       <span
         className={id === activeFolderid ? "text-blue-500" : "text-gray-700"}

@@ -18,8 +18,8 @@ function workflows() {
         </div>
       </div>
 
-      {/* main grid */}
-      <div className="w-full mx-auto mt-2 px-1 sm:px-2">
+      {/*if apps found then it can be display main grid */}
+      {/* <div className="w-full mx-auto mt-2 px-1 sm:px-2">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="w-full md:w-1/3 bg-blue-50 rounded-lg p-4">
@@ -60,9 +60,9 @@ function workflows() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      {/* <AppSelector /> */}
+      <AppSelector />
       
     </>
    

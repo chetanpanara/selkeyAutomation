@@ -59,9 +59,7 @@ const getAllWorkflows = async (req, res) => {
   //fetch all folders for the user
   const folders = await Folder.find({ userId: userId });
   //fetch all workflows for the user
-  const workflows = await Workflow.find({ userId: userId }).select(
-    "workflowName folderId _id"
-  );
+  const workflows = await Workflow.find({ userId: userId }).lean();
   //create an object with folderId as key and workflows as value
   const folderWorkflows = {};
   for (const folder of folders) {
