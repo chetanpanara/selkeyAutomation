@@ -184,7 +184,6 @@ function Apps() {
   useEffect(() => {
     if (activeAppId) {
       localStorage.setItem("activeAppId", activeAppId);
-      console.log(activeAppId);
     }
   }, [activeAppId]);
 
@@ -282,14 +281,11 @@ function Apps() {
         }
       });
     } catch (e) {
-
       alert(e);
     }
   }
   // Function to handle saving app details
   function handleSaveAppDetails() {
-
-
     try {
       // Get all enabled auth types and their configs
       const enabledAuthConfigs = Object.entries(authConfig)
@@ -376,7 +372,6 @@ function Apps() {
           >
             Create New App
           </Button>
-
         </div>
       </div>
 
@@ -422,55 +417,64 @@ function Apps() {
       </Dialog>
 
       {/* Main Content */}
-      
-        {apps.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-4 my-4 mx-auto w-full">
-            <div className="flex flex-col md:flex-row items-start gap-6">
-              <div className="bg-blue-50 p-6 rounded-lg flex-shrink-0 w-full md:w-auto">
-                <div className="bg-purple-500 p-6 rounded-lg w-48 h-36 flex items-center justify-center">
-                  <div className="bg-white/90 rounded-md p-2 w-36 h-24">
-                    <div className="h-4 bg-gray-200 rounded mb-3 flex items-center">
-                      <div className="flex ml-2 gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
-                      </div>
+
+      {apps.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-lg p-4 my-4 mx-auto w-full">
+          <div className="flex flex-col md:flex-row items-start gap-6">
+            <div className="bg-blue-50 p-6 rounded-lg flex-shrink-0 w-full md:w-auto">
+              <div className="bg-purple-500 p-6 rounded-lg w-48 h-36 flex items-center justify-center">
+                <div className="bg-white/90 rounded-md p-2 w-36 h-24">
+                  <div className="h-4 bg-gray-200 rounded mb-3 flex items-center">
+                    <div className="flex ml-2 gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
                     </div>
-                    <div className="h-4 bg-yellow-200 rounded my-2 relative">
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
-                    </div>
-                    <div className="h-4 bg-yellow-200 rounded my-2 relative">
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
-                    </div>
-                    <div className="h-4 bg-yellow-200 rounded my-2 relative">
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
-                    </div>
+                  </div>
+                  <div className="h-4 bg-yellow-200 rounded my-2 relative">
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
+                  </div>
+                  <div className="h-4 bg-yellow-200 rounded my-2 relative">
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
+                  </div>
+                  <div className="h-4 bg-yellow-200 rounded my-2 relative">
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Add New App</h2>
-                <p className="text-gray-600 mb-4">
-                  Start configuring your app triggers which executes the workflow, Pabbly Connect supports the following types of triggers:
-                </p>
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Add New App
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Start configuring your app triggers which executes the workflow,
+                Pabbly Connect supports the following types of triggers:
+              </p>
 
-                {showOptions && (
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-start">
-                      <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
-                      <span className="text-gray-700">Webhooks Setup by Instructions (Highly Recommended).</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
-                      <span className="text-gray-700">Webhooks Setup by API Request (Recommended).</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
-                      <span className="text-gray-700">Polling to Check New Data (Not Recommended).</span>
-                    </li>
-                  </ul>
-                )}
+              {showOptions && (
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-start">
+                    <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
+                    <span className="text-gray-700">
+                      Webhooks Setup by Instructions (Highly Recommended).
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
+                    <span className="text-gray-700">
+                      Webhooks Setup by API Request (Recommended).
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="min-w-3 h-3 bg-gray-400 rounded-full mt-1.5 mr-2"></div>
+                    <span className="text-gray-700">
+                      Polling to Check New Data (Not Recommended).
+                    </span>
+                  </li>
+                </ul>
+              )}
 
               <Button
                 className="bg-blue-500 text-white hover:bg-blue-600 mt-4  lg:mt-0 block"
@@ -478,11 +482,11 @@ function Apps() {
               >
                 Create New App
               </Button>
-              </div>
             </div>
           </div>
-        ) : (
-          <>
+        </div>
+      ) : (
+        <>
           <div className="flex flex-col md:grid md:grid-cols-4 gap-4">
             {/* Sidebar */}
             <div className="w-full bg-white rounded-lg shadow-md p-4">
@@ -498,8 +502,9 @@ function Apps() {
                 .map((app) => (
                   <div
                     key={app._id}
-                    className={`flex justify-between items-center p-2 rounded cursor-pointer ${activeAppId === app._id ? "bg-blue-50" : ""
-                      }`}
+                    className={`flex justify-between items-center p-2 rounded cursor-pointer ${
+                      activeAppId === app._id ? "bg-blue-50" : ""
+                    }`}
                     onClick={() => {
                       dispatch(setActiveAppId(app._id)); // Update activeAppId in Redux store
                       setImageFile(null);
@@ -547,10 +552,11 @@ function Apps() {
                     {tabs.map((tab) => (
                       <button
                         key={tab.id}
-                        className={`py-2 px-1 text-sm font-medium border-b-2 ${activeTab === tab.id
-                          ? "border-blue-500 text-blue-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                          }`}
+                        className={`py-2 px-1 text-sm font-medium border-b-2 ${
+                          activeTab === tab.id
+                            ? "border-blue-500 text-blue-600"
+                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        }`}
                         onClick={() => setActiveTab(tab.id)}
                       >
                         {tab.label}
@@ -572,7 +578,10 @@ function Apps() {
                       type="text"
                       value={formDataApp.appName}
                       onChange={(e) =>
-                        setFormDataApp({ ...formDataApp, appName: e.target.value })
+                        setFormDataApp({
+                          ...formDataApp,
+                          appName: e.target.value,
+                        })
                       }
                       className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
                       placeholder="Enter app name"
@@ -644,10 +653,11 @@ function Apps() {
                             </a>
                           </div>
                           <div
-                            className={`mt-2 ml-6 w-11/12 transition-all duration-300 ease-in-out transform origin-top ${authConfig[auth.id]?.enabled
-                              ? "scale-y-100 opacity-100 h-auto"
-                              : "scale-y-0 opacity-0 h-0"
-                              }`}
+                            className={`mt-2 ml-6 w-11/12 transition-all duration-300 ease-in-out transform origin-top ${
+                              authConfig[auth.id]?.enabled
+                                ? "scale-y-100 opacity-100 h-auto"
+                                : "scale-y-0 opacity-0 h-0"
+                            }`}
                           >
                             {/* Add a unique form for each auth type here */}
                             {auth.id === "oauth2" && (
@@ -762,8 +772,7 @@ function Apps() {
                                 />
 
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Scope{" "}
-                                  <span className="text-red-500">*</span>
+                                  Scope <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                   type="text"
@@ -804,7 +813,9 @@ function Apps() {
                                       type="text"
                                       className="w-[109%] rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300 mb-2"
                                       placeholder="Enter header prefix e.g. Bearer"
-                                      value={authConfig.oauth2.headerPrefixValue}
+                                      value={
+                                        authConfig.oauth2.headerPrefixValue
+                                      }
                                       onChange={(e) =>
                                         updateAuthConfig(
                                           "oauth2",
@@ -818,7 +829,9 @@ function Apps() {
                                     <input
                                       type="checkbox"
                                       className="mr-2"
-                                      checked={authConfig.oauth2.sendClientSecretOn}
+                                      checked={
+                                        authConfig.oauth2.sendClientSecretOn
+                                      }
                                       onChange={() =>
                                         updateAuthConfig(
                                           "oauth2",
@@ -858,7 +871,9 @@ function Apps() {
                                     <input
                                       type="checkbox"
                                       className="mr-2"
-                                      checked={authConfig.oauth2.enableUserAgent}
+                                      checked={
+                                        authConfig.oauth2.enableUserAgent
+                                      }
                                       onChange={() =>
                                         updateAuthConfig(
                                           "oauth2",
@@ -874,7 +889,8 @@ function Apps() {
                                       type="checkbox"
                                       className="mr-2"
                                       checked={
-                                        authConfig.oauth2.refreshTokenOnExpiration
+                                        authConfig.oauth2
+                                          .refreshTokenOnExpiration
                                       }
                                       onChange={() =>
                                         updateAuthConfig(
@@ -938,7 +954,9 @@ function Apps() {
                                             placeholder="Enter parameter key e.g. subdomain"
                                             value={param}
                                             onChange={(e) => {
-                                              const newParams = [...setAuthParams];
+                                              const newParams = [
+                                                ...setAuthParams,
+                                              ];
                                               newParams[index] = e.target.value;
                                               setSetAuthParams(newParams);
                                             }}
@@ -976,38 +994,47 @@ function Apps() {
                                   </label>
                                   {showReceivedAuthParams && (
                                     <>
-                                      {receivedAuthParams.map((param, index) => (
-                                        <div
-                                          key={index}
-                                          className="flex items-center mt-2"
-                                        >
-                                          <input
-                                            type="text"
-                                            className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                            placeholder="Enter parameter key e.g. subdomain"
-                                            value={param}
-                                            onChange={(e) => {
-                                              const newParams = [
-                                                ...receivedAuthParams,
-                                              ];
-                                              newParams[index] = e.target.value;
-                                              setReceivedAuthParams(newParams);
-                                            }}
-                                          />
-                                          <div className="flex items-center ml-6">
-                                            <FaMinus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={() =>
-                                                handleRemoveReceivedAuthParam(index)
-                                              }
+                                      {receivedAuthParams.map(
+                                        (param, index) => (
+                                          <div
+                                            key={index}
+                                            className="flex items-center mt-2"
+                                          >
+                                            <input
+                                              type="text"
+                                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                              placeholder="Enter parameter key e.g. subdomain"
+                                              value={param}
+                                              onChange={(e) => {
+                                                const newParams = [
+                                                  ...receivedAuthParams,
+                                                ];
+                                                newParams[index] =
+                                                  e.target.value;
+                                                setReceivedAuthParams(
+                                                  newParams
+                                                );
+                                              }}
                                             />
-                                            <FaPlus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={handleAddReceivedAuthParam}
-                                            />
+                                            <div className="flex items-center ml-6">
+                                              <FaMinus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={() =>
+                                                  handleRemoveReceivedAuthParam(
+                                                    index
+                                                  )
+                                                }
+                                              />
+                                              <FaPlus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={
+                                                  handleAddReceivedAuthParam
+                                                }
+                                              />
+                                            </div>
                                           </div>
-                                        </div>
-                                      ))}
+                                        )
+                                      )}
                                     </>
                                   )}
                                 </div>
@@ -1199,7 +1226,9 @@ function Apps() {
                                             placeholder="Enter parameter key e.g. subdomain"
                                             value={param}
                                             onChange={(e) => {
-                                              const newParams = [...setAuthParams];
+                                              const newParams = [
+                                                ...setAuthParams,
+                                              ];
                                               newParams[index] = e.target.value;
                                               setSetAuthParams(newParams);
                                             }}
@@ -1237,38 +1266,47 @@ function Apps() {
                                   </label>
                                   {showReceivedAuthParams && (
                                     <>
-                                      {receivedAuthParams.map((param, index) => (
-                                        <div
-                                          key={index}
-                                          className="flex items-center mt-2"
-                                        >
-                                          <input
-                                            type="text"
-                                            className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                            placeholder="Enter parameter key e.g. subdomain"
-                                            value={param}
-                                            onChange={(e) => {
-                                              const newParams = [
-                                                ...receivedAuthParams,
-                                              ];
-                                              newParams[index] = e.target.value;
-                                              setReceivedAuthParams(newParams);
-                                            }}
-                                          />
-                                          <div className="flex items-center ml-6">
-                                            <FaMinus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={() =>
-                                                handleRemoveReceivedAuthParam(index)
-                                              }
+                                      {receivedAuthParams.map(
+                                        (param, index) => (
+                                          <div
+                                            key={index}
+                                            className="flex items-center mt-2"
+                                          >
+                                            <input
+                                              type="text"
+                                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                              placeholder="Enter parameter key e.g. subdomain"
+                                              value={param}
+                                              onChange={(e) => {
+                                                const newParams = [
+                                                  ...receivedAuthParams,
+                                                ];
+                                                newParams[index] =
+                                                  e.target.value;
+                                                setReceivedAuthParams(
+                                                  newParams
+                                                );
+                                              }}
                                             />
-                                            <FaPlus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={handleAddReceivedAuthParam}
-                                            />
+                                            <div className="flex items-center ml-6">
+                                              <FaMinus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={() =>
+                                                  handleRemoveReceivedAuthParam(
+                                                    index
+                                                  )
+                                                }
+                                              />
+                                              <FaPlus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={
+                                                  handleAddReceivedAuthParam
+                                                }
+                                              />
+                                            </div>
                                           </div>
-                                        </div>
-                                      ))}
+                                        )
+                                      )}
                                     </>
                                   )}
                                 </div>
@@ -1501,7 +1539,8 @@ function Apps() {
                                       updateAuthConfig(
                                         "awsSignature",
                                         "sendClientSecretOn",
-                                        !authConfig.awsSignature.sendClientSecretOn
+                                        !authConfig.awsSignature
+                                          .sendClientSecretOn
                                       )
                                     }
                                   />
@@ -1582,7 +1621,9 @@ function Apps() {
                                             placeholder="Enter parameter key e.g. subdomain"
                                             value={param}
                                             onChange={(e) => {
-                                              const newParams = [...setAuthParams];
+                                              const newParams = [
+                                                ...setAuthParams,
+                                              ];
                                               newParams[index] = e.target.value;
                                               setSetAuthParams(newParams);
                                             }}
@@ -1620,38 +1661,47 @@ function Apps() {
                                   </label>
                                   {showReceivedAuthParams && (
                                     <>
-                                      {receivedAuthParams.map((param, index) => (
-                                        <div
-                                          key={index}
-                                          className="flex items-center mt-2"
-                                        >
-                                          <input
-                                            type="text"
-                                            className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                            placeholder="Enter parameter key e.g. subdomain"
-                                            value={param}
-                                            onChange={(e) => {
-                                              const newParams = [
-                                                ...receivedAuthParams,
-                                              ];
-                                              newParams[index] = e.target.value;
-                                              setReceivedAuthParams(newParams);
-                                            }}
-                                          />
-                                          <div className="flex items-center ml-6">
-                                            <FaMinus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={() =>
-                                                handleRemoveReceivedAuthParam(index)
-                                              }
+                                      {receivedAuthParams.map(
+                                        (param, index) => (
+                                          <div
+                                            key={index}
+                                            className="flex items-center mt-2"
+                                          >
+                                            <input
+                                              type="text"
+                                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                              placeholder="Enter parameter key e.g. subdomain"
+                                              value={param}
+                                              onChange={(e) => {
+                                                const newParams = [
+                                                  ...receivedAuthParams,
+                                                ];
+                                                newParams[index] =
+                                                  e.target.value;
+                                                setReceivedAuthParams(
+                                                  newParams
+                                                );
+                                              }}
                                             />
-                                            <FaPlus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={handleAddReceivedAuthParam}
-                                            />
+                                            <div className="flex items-center ml-6">
+                                              <FaMinus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={() =>
+                                                  handleRemoveReceivedAuthParam(
+                                                    index
+                                                  )
+                                                }
+                                              />
+                                              <FaPlus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={
+                                                  handleAddReceivedAuthParam
+                                                }
+                                              />
+                                            </div>
                                           </div>
-                                        </div>
-                                      ))}
+                                        )
+                                      )}
                                     </>
                                   )}
                                 </div>
@@ -1732,7 +1782,9 @@ function Apps() {
                                             placeholder="Enter parameter key e.g. subdomain"
                                             value={param}
                                             onChange={(e) => {
-                                              const newParams = [...setAuthParams];
+                                              const newParams = [
+                                                ...setAuthParams,
+                                              ];
                                               newParams[index] = e.target.value;
                                               setSetAuthParams(newParams);
                                             }}
@@ -1770,38 +1822,47 @@ function Apps() {
                                   </label>
                                   {showReceivedAuthParams && (
                                     <>
-                                      {receivedAuthParams.map((param, index) => (
-                                        <div
-                                          key={index}
-                                          className="flex items-center mt-2"
-                                        >
-                                          <input
-                                            type="text"
-                                            className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
-                                            placeholder="Enter parameter key e.g. subdomain"
-                                            value={param}
-                                            onChange={(e) => {
-                                              const newParams = [
-                                                ...receivedAuthParams,
-                                              ];
-                                              newParams[index] = e.target.value;
-                                              setReceivedAuthParams(newParams);
-                                            }}
-                                          />
-                                          <div className="flex items-center ml-6">
-                                            <FaMinus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={() =>
-                                                handleRemoveReceivedAuthParam(index)
-                                              }
+                                      {receivedAuthParams.map(
+                                        (param, index) => (
+                                          <div
+                                            key={index}
+                                            className="flex items-center mt-2"
+                                          >
+                                            <input
+                                              type="text"
+                                              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                                              placeholder="Enter parameter key e.g. subdomain"
+                                              value={param}
+                                              onChange={(e) => {
+                                                const newParams = [
+                                                  ...receivedAuthParams,
+                                                ];
+                                                newParams[index] =
+                                                  e.target.value;
+                                                setReceivedAuthParams(
+                                                  newParams
+                                                );
+                                              }}
                                             />
-                                            <FaPlus
-                                              className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
-                                              onClick={handleAddReceivedAuthParam}
-                                            />
+                                            <div className="flex items-center ml-6">
+                                              <FaMinus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={() =>
+                                                  handleRemoveReceivedAuthParam(
+                                                    index
+                                                  )
+                                                }
+                                              />
+                                              <FaPlus
+                                                className="ml-2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                                onClick={
+                                                  handleAddReceivedAuthParam
+                                                }
+                                              />
+                                            </div>
                                           </div>
-                                        </div>
-                                      ))}
+                                        )
+                                      )}
                                     </>
                                   )}
                                   <label className="flex items-center">
@@ -1872,7 +1933,9 @@ function Apps() {
                                     <option value="header">
                                       Send token in header
                                     </option>
-                                    <option value="body">Send token in body</option>
+                                    <option value="body">
+                                      Send token in body
+                                    </option>
                                   </select>
                                 </div>
                                 {/* checkbox */}
@@ -1903,22 +1966,22 @@ function Apps() {
                                   </span>
                                   {authConfig.basicAuthAccessResponseToken
                                     .requestBody && (
-                                      <textarea
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300"
-                                        placeholder="{'key': 'value'}"
-                                        value={
-                                          authConfig.basicAuthAccessResponseToken
-                                            .requestBody
-                                        }
-                                        onChange={(e) =>
-                                          updateAuthConfig(
-                                            "basicAuthAccessResponseToken",
-                                            "requestBody",
-                                            e.target.value
-                                          )
-                                        }
-                                      />
-                                    )}
+                                    <textarea
+                                      className="w-full rounded-md border border-gray-300 px-3 py-2 mt-2 outline-none focus:outline-blue-300"
+                                      placeholder="{'key': 'value'}"
+                                      value={
+                                        authConfig.basicAuthAccessResponseToken
+                                          .requestBody
+                                      }
+                                      onChange={(e) =>
+                                        updateAuthConfig(
+                                          "basicAuthAccessResponseToken",
+                                          "requestBody",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -1949,9 +2012,7 @@ function Apps() {
                                     onChange={handleSetAuthParamsChange}
                                   />
                                   Set Body/Query/Path Parameters
-                                  <span className="text-red-500 ml-2">
-                                    *
-                                  </span>
+                                  <span className="text-red-500 ml-2">*</span>
                                 </label>
                                 {showSetAuthParams && (
                                   <>
@@ -1966,7 +2027,9 @@ function Apps() {
                                           placeholder="Enter parameter key e.g. subdomain"
                                           value={param}
                                           onChange={(e) => {
-                                            const newParams = [...setAuthParams];
+                                            const newParams = [
+                                              ...setAuthParams,
+                                            ];
                                             newParams[index] = e.target.value;
                                             setSetAuthParams(newParams);
                                           }}
@@ -2014,36 +2077,6 @@ function Apps() {
                       ))}
                     </div>
                   </div>
-                  {/* <div className="w-full mt-3">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  CURL HTTP Version (Optional)
-                </label>
-                <select
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 mb-3 outline-none"
-                  value={CURLVersion}
-                  onChange={(e) => setCURLVersion(e.target.value)}
-                >
-                  <option value="default">Default</option>
-                  <option value="CURL_HTTP_VERSION_NONE">
-                    CURL_HTTP_VERSION_NONE
-                  </option>
-                  <option value="CURL_HTTP_VERSION_1_0">
-                    CURL_HTTP_VERSION_1_0
-                  </option>
-                  <option value="CURL_HTTP_VERSION_1_1">
-                    CURL_HTTP_VERSION_1_1
-                  </option>
-                  <option value="CURL_HTTP_VERSION_2_0">
-                    CURL_HTTP_VERSION_2_0
-                  </option>
-                  <option value="CURL_HTTP_VERSION_2TLS">
-                    CURL_HTTP_VERSION_2TLS
-                  </option>
-                  <option value="CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE">
-                    CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE
-                  </option>
-                </select>
-              </div> */}
 
                   <Button
                     className="w-full md:w-auto bg-blue-500 text-white hover:bg-blue-600"
@@ -2055,9 +2088,8 @@ function Apps() {
               )}
             </div>
           </div>
-          </>
-        )}
-     
+        </>
+      )}
     </>
   );
 }
