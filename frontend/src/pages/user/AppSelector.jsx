@@ -205,13 +205,13 @@ const AppSelector = () => {
                     isFiltered && (
                       <div
                         key={app._id}
-                        className={`flex items-center p-2 rounded-md cursor-pointer ${
+                        className={`flex border border-gray-300 items-center p-2 py-5 rounded-md cursor-pointer ${
                           isSelected ? "bg-blue-100" : "hover:bg-gray-50"
                         }`}
                         onClick={() => handleAppSelect(app)}
                       >
                         <div className="flex flex-col items-center justify-center w-full">
-                          <img src={app.logoUrl} alt="" className="w-7 h-7 rounded-full mb-2" />
+                          <img src={app.logoUrl} alt="" className="w-11 h-11 rounded-full mb-2" />
                           <span className="text-lg text-center">{app.appName}</span>
                         </div>
                       </div>
