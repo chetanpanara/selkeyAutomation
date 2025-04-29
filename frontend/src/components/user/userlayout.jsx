@@ -7,7 +7,7 @@ function UserLayout() {
     const [openSidebar, setOpenSidebar] = useState(false);
 
     return (
-        <div className="flex min-h-screen w-full">
+        <div className="flex min-h-screen mb-20 w-full">
           {/* dashboard sidebar */}
           <UserSideBar open={openSidebar} setOpen={setOpenSidebar} />
           <div className="flex flex-1 flex-col">
