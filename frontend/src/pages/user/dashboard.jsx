@@ -509,20 +509,20 @@ function UserDashboard() {
                     <th className="py-3 px-4 text-left">
                       <input
                         type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm "
                         checked={selectAll}
                         onChange={handleSelectAll}
                       />
                     </th>
                     <th className="py-3 px-4 text-left">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 font-semibold">
                         <span>Status/Date</span>
                       </div>
                     </th>
-                    <th className="py-3 px-4 text-left">Application</th>
-                    <th className="py-3 px-4 text-left">Workflow Name</th>
-                    <th className="py-3 px-4 text-left">Task Consumption</th>
-                    <th className="py-3 px-4 text-left"></th>
+                    <th className="py-3 px-4 text-left font-semibold">Application</th>
+                    <th className="py-3 px-4 text-left font-semibold">Workflow Name</th>
+                    <th className="py-3 px-4 text-left font-semibold">Task Consumption</th>
+                    <th className="py-3 px-4 text-left font-semibold"></th>
                   </tr>
                 </thead>
                 <tbody>
