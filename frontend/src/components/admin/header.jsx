@@ -112,48 +112,58 @@ function AdminHeader({ setOpen }) {
         <span className="sr-only">Toggle Menu</span>
       </Button>
       <div className="flex items-center justify-center flex-1 md:justify-start lg:justify-start md:ml-6 lg:ml-6">
-        <Popover open={opendropdown} onOpenChange={setOpendropdown}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={opendropdown}
-              className="w-[250px] md:w-[300px] lg:w-[300px] justify-between"
-            >
-              {value || "Search App..."}
-              <GrDown className="opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[250px] md:w-[300px] lg:w-[300px] p-0">
-            <Command>
-              <CommandInput placeholder="Search App..." className="h-9" />
-              <CommandList>
-                <CommandEmpty>No App found.</CommandEmpty>
-                <CommandGroup>
-                  {apps
-                    .slice()
-                    .sort((a, b) => {
-                      if (a._id === activeAppId) return -1;
-                      if (b._id === activeAppId) return 1;
-                      return a.appName.localeCompare(b.appName);
-                    })
-                    .map((app) => (
-                      <CommandItem
-                        key={app._id}
-                        onSelect={() => {
-                          dispatch(setActiveAppId(app._id));
-                          setValue(app.appName);
-                          setOpendropdown(false);
-                        }}
-                      >
-                        {app.appName}
-                      </CommandItem>
-                    ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+          <div className="flex items-center">
+                      <div className="inline-flex rounded-md shadow-sm">
+                        <Button
+                          variant="ghost"
+                          className="rounded-r-none border border-r-0 font-medium text-sm  text-white bg-blue-400"
+                        >
+                         App
+                        </Button>
+                        <Popover open={opendropdown} onOpenChange={setOpendropdown}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={opendropdown}
+                              className="rounded-l-none w-[250px] md:w-[300px] lg:w-[300px] justify-between"
+                            >
+                              {value || "Search App..."}
+                              <GrDown className="opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[250px] md:w-[300px] lg:w-[300px] p-0">
+                            <Command>
+                              <CommandInput placeholder="Search App..." className="h-9" />
+                              <CommandList>
+                                <CommandEmpty>No App found.</CommandEmpty>
+                                <CommandGroup>
+                                  {apps
+                                    .slice()
+                                    .sort((a, b) => {
+                                      if (a._id === activeAppId) return -1;
+                                      if (b._id === activeAppId) return 1;
+                                      return a.appName.localeCompare(b.appName);
+                                    })
+                                    .map((app) => (
+                                      <CommandItem
+                                        key={app._id}
+                                        onSelect={() => {
+                                          dispatch(setActiveAppId(app._id));
+                                          setValue(app.appName);
+                                          setOpendropdown(false);
+                                        }}
+                                      >
+                                        {app.appName}
+                                      </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
       </div>
       <div className="flex justify-end">
         <DropdownMenu>
