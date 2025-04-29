@@ -64,8 +64,9 @@ const AppSelector = () => {
   // Handle trigger selection
   const handleTriggerSelect = (trigger) => {
     setSelectedTrigger(trigger.triggerName);
+    setWebhookUrl(trigger.link);
     setIsTriggerExpanded(false);
-    setShowWebhookSection(true); // Show webhook section when trigger is selected
+    setShowWebhookSection(true);
   };
 
   // Display app logo (either emoji or custom element based on app)
@@ -274,7 +275,7 @@ const AppSelector = () => {
             <input
               type="text"
               className="flex-grow pl-4 py-2 border border-gray-300 rounded-l-md focus:outline-none"
-              value={webhookUrl}
+              value={webhookUrl|| " No Webhook Url Found" }
               readOnly
             />
             <button
