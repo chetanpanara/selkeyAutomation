@@ -1,70 +1,75 @@
 import React, { useEffect, useState } from "react";
 import AppSelector from "./AppSelector";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { getAllApps, setActiveAppId } from "@/store/slices/app-slice";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { GrDown } from "react-icons/gr";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  fetchAllWorkflows,
-  fetchAllWorkflowsForUser,
-} from "@/store/slices/workflow-slice";
-
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { fetchAllWorkflows } from "@/store/slices/workflow-slice";
 let userId = null;
-
 function workflows() {
+
   const { user } = useSelector((state) => state.auth);
   userId = user?.id; // Get user ID from the user object
 
-  const { workflows = [] } = useSelector((state) => state.workflow); // Ensure workflows is always an array
-
+  const { apps } = useSelector((state) => state.app);
   const dispatch = useDispatch();
+  const activeAppId = useSelector((state) => state.app.activeAppId);
   const [opendropdown, setOpendropdown] = useState(false);
   const [value, setValue] = useState("");
-  const [filteredWorkflows, setFilteredWorkflows] = useState([]);
-
-  // Filter workflows based on search input
-  const handleSearchWorkflow = (query) => {
-    const filtered = workflows.filter((workflow) =>
-      workflow.workflowName?.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredWorkflows(filtered);
-  };
 
   // fetch all workflows folder wise
   useEffect(() => {
     if (user) {
-      dispatch(fetchAllWorkflows({ userId: userId }));
+      dispatch(fetchAllWorkflows({ userId: userId }))
+        .then((res) => {
+          if (res.payload.success) {
+            console.log("Fetched workflows successfully:", res.payload.folderWorkflows);
+          }
+          else {
+            console.error("Invalid API response format:", res);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching workflows:", error); // Log any errors
+        });
     }
-  }, []); // Add dependencies to ensure it runs only when `user` or `userId` changes
+  }, [user, userId]); // Add dependencies to ensure it runs only when `user` or `userId` changes
 
-  // get all workflows for user
-  useEffect(() => {
-    if (!userId) return; // Ensure userId is available before dispatching
-    dispatch(fetchAllWorkflowsForUser({ userId }));
-  }, [userId]); // Only depend on userId
 
-  // Initialize filteredWorkflows when workflows change
   useEffect(() => {
-    setFilteredWorkflows(workflows);
-  }, [workflows]);
+    dispatch(fetchAllWorkflows()).then((res) => {
+      if (res?.payload?.success) {
+        const appsData = res.payload.data;
+        if (appsData.length > 0) {
+          const storedActiveAppId = localStorage.getItem("activeAppId");
+          const activeAppExists = appsData.some(
+            (app) => app._id === storedActiveAppId
+          );
+
+          if (storedActiveAppId && activeAppExists) {
+            dispatch(setActiveAppId(storedActiveAppId));
+            const activeApp = appsData.find(
+              (app) => app._id === storedActiveAppId
+            );
+            setValue(activeApp.appName);
+          } else {
+            dispatch(setActiveAppId(appsData[0]._id));
+            setValue(appsData[0].appName);
+          }
+        }
+      }
+    });
+  }, []);
 
   return (
     <>
+
       <div className="container  w-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 ">
           <div className="block">
+
             <div className="flex items-center">
               <div className="inline-flex rounded-md shadow-sm">
                 <Button
@@ -87,25 +92,29 @@ function workflows() {
                   </PopoverTrigger>
                   <PopoverContent className="w-[250px] md:w-[300px] lg:w-[300px] p-0">
                     <Command>
-                      <CommandInput
-                        placeholder="Search Workflow..."
-                        className="h-9"
-                        onChange={(e) => handleSearchWorkflow(e.target.value)}
-                      />
+                      <CommandInput placeholder="Search Workflow..." className="h-9" />
                       <CommandList>
-                        <CommandEmpty>No Workflow found.</CommandEmpty>
+                        <CommandEmpty>No App found.</CommandEmpty>
                         <CommandGroup>
-                          {filteredWorkflows.map((workflow) => (
-                            <CommandItem
-                              key={workflow._id}
-                              onSelect={() => {
-                                setValue(workflow.workflowName);
-                                setOpendropdown(false);
-                              }}
-                            >
-                              {workflow.workflowName}
-                            </CommandItem>
-                          ))}
+                          {apps
+                            .slice()
+                            .sort((a, b) => {
+                              if (a._id === activeAppId) return -1;
+                              if (b._id === activeAppId) return 1;
+                              return a.appName.localeCompare(b.appName);
+                            })
+                            .map((app) => (
+                              <CommandItem
+                                key={app._id}
+                                onSelect={() => {
+                                  dispatch(setActiveAppId(app._id));
+                                  setValue(app.appName);
+                                  setOpendropdown(false);
+                                }}
+                              >
+                                {app.appName}
+                              </CommandItem>
+                            ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -113,6 +122,7 @@ function workflows() {
                 </Popover>
               </div>
             </div>
+
 
             <p className="font-semibold text-2xl my-3">Workflows</p>
             <span className="text-gray-500 text-sm ">
@@ -167,7 +177,9 @@ function workflows() {
       </div> */}
 
       <AppSelector />
+
     </>
+
   );
 }
 
