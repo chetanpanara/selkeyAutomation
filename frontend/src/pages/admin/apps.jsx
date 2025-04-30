@@ -49,14 +49,12 @@ function Apps() {
   const [isAddAppDialogOpen, setIsAddAppDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("appDetails");
   const [copied, setCopied] = useState(false);
-  const [isHeaderPrefixChecked, setIsHeaderPrefixChecked] = useState(false);
   const [showSetAuthParams, setShowSetAuthParams] = useState(false);
   const [showReceivedAuthParams, setShowReceivedAuthParams] = useState(false);
   const [setAuthParams, setSetAuthParams] = useState([""]);
   const [receivedAuthParams, setReceivedAuthParams] = useState([""]);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [currentParamIndex, setCurrentParamIndex] = useState(null);
-  const [CURLVersion, setCURLVersion] = useState("default");
 
   // image upload
   const [imageFile, setImageFile] = useState(null);
@@ -164,7 +162,7 @@ function Apps() {
             setFormDataApp({
               appName: activeApp.appName || "",
               description: activeApp.description || "",
-              appLogo: activeApp.appLogo || "",
+              appLogo: activeApp.logoUrl || "",
               authType: activeApp.authType || "",
             });
           } else {
@@ -172,7 +170,7 @@ function Apps() {
             setFormDataApp({
               appName: appsData[0].appName || "",
               description: appsData[0].description || "",
-              appLogo: appsData[0].appLogo || "",
+              appLogo: appsData[0].logoUrl || "",
               authType: appsData[0].authType || "",
             });
           }
@@ -511,7 +509,7 @@ function Apps() {
                       setFormDataApp({
                         appName: app.appName,
                         description: app.description,
-                        appLogo: app.appLogo,
+                        appLogo: app.logoUrl,
                         authType: app.authType,
                       });
                     }}
@@ -612,6 +610,7 @@ function Apps() {
                     <label className="block text-sm font-medium text-gray-700 ">
                       App Logo <span className="text-red-500">*</span>
                     </label>
+                    <img src={formDataApp.appLogo} alt="App Logo" className="w-12 h-12 rounded-full" />
                     <AppImageUpload
                       imageFile={imageFile}
                       setImageFile={setImageFile}
