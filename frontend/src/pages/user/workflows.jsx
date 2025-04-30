@@ -47,15 +47,18 @@ function workflows() {
     if (user) {
       dispatch(fetchAllWorkflows({ userId: userId }));
     }
-  }, [user, userId]); // Add dependencies to ensure it runs only when `user` or `userId` changes
+  }, []); // Add dependencies to ensure it runs only when `user` or `userId` changes
 
   // get all workflows for user
   useEffect(() => {
     if (!userId) return; // Ensure userId is available before dispatching
     dispatch(fetchAllWorkflowsForUser({ userId }));
-    setFilteredWorkflows(workflows); // Initialize with all workflows
-  }, [userId,workflows]);
+  }, [userId]); // Only depend on userId
 
+  // Initialize filteredWorkflows when workflows change
+  useEffect(() => {
+    setFilteredWorkflows(workflows);
+  }, [workflows]);
 
   return (
     <>
