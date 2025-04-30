@@ -312,6 +312,8 @@ function Apps() {
           dispatch(getAllApps());
           alert("App updated successfully");
         }
+        window.location.reload();
+        setImageFile(null);
       });
     } catch (error) {
       console.log(error);
@@ -570,7 +572,7 @@ function Apps() {
                   {/* App Name */}
                   <div className="w-full">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      App Name <span className="text-red-500">*</span>
+                      App Name <span className="text-red-500">*</span> (Required)
                     </label>
                     <input
                       type="text"
@@ -589,7 +591,7 @@ function Apps() {
                   {/* Description */}
                   <div className="w-full">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description <span className="text-red-500">*</span>
+                      Description <span className="text-red-500">*</span> (Required)
                     </label>
                     <textarea
                       className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
@@ -608,7 +610,7 @@ function Apps() {
                   {/* App Logo */}
                   <div className="w-full">
                     <label className="block text-sm font-medium text-gray-700 ">
-                      App Logo <span className="text-red-500">*</span>
+                      App Logo <span className="text-red-500">*</span>(Required)
                     </label>
                     <img src={formDataApp.appLogo} alt="App Logo" className="w-12 h-12 rounded-full" />
                     <AppImageUpload
