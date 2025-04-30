@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "@/utils/axios";
 
 const initialState = {
+  workflows: [],
+  workflowCounts: {},
   workflowData: null,
   isLoading: false,
 };
@@ -10,8 +12,19 @@ const initialState = {
 export const fetchAllWorkflows = createAsyncThunk(
   "workflows/fetchAllWorkflows",
   async ({ userId }) => {
+    const response = await api.get(`/api/workflows/getallworkflows/${userId}`);
+    return response.data;
+  }
+);
+
+// fetch all workflows for user
+// http://localhost:5000/api/workflows/getAllWorkflowsForUser/:userId
+export const fetchAllWorkflowsForUser = createAsyncThunk(
+  "workflows/fetchAllWorkflowsForUser",
+  async ({ userId }) => {
+    console.log("userId", userId);
     const response = await api.get(
-      `/api/workflows/getallworkflows/${userId}`
+      `/api/workflows/getAllWorkflowsForUser/${userId}`
     );
     return response.data;
   }
@@ -95,9 +108,29 @@ export const workflowSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchAllWorkflows.pending, (state) => {
-      state.isLoading = true;
-    });
+    builder
+      .addCase(fetchAllWorkflows.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAllWorkflows.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.workflows = action.payload.workflows;
+        state.workflowCounts = action.payload.workflowCounts;
+      })
+      .addCase(fetchAllWorkflows.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(fetchAllWorkflowsForUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAllWorkflowsForUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.workflows = action.payload.workflows;
+        state.workflowCounts = action.payload.workflowCounts;
+      })
+      .addCase(fetchAllWorkflowsForUser.rejected, (state) => {
+        state.isLoading = false;
+      });
   },
 });
 

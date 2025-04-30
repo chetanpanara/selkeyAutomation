@@ -46,10 +46,10 @@ const createWorkflow = async (req, res) => {
   }
 };
 
-//fetch all user workflows folder wise
+//get all user workflows folder wise
 const getAllWorkflows = async (req, res) => {
   const { userId } = req.params;
-  console.log(userId ,"userid in workflow controller");
+  console.log(userId, "userid in workflow controller");
   if (!userId) {
     return res.status(400).json({
       success: false,
@@ -71,6 +71,24 @@ const getAllWorkflows = async (req, res) => {
     success: true,
     message: "Workflows fetched successfully",
     folderWorkflows: folderWorkflows,
+  });
+};
+
+// fetch All workflows for a user
+const getAllWorkflowsForUser = async (req, res) => {
+  const { userId } = req.params;
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      message: "User ID is required",
+    });
+  }
+  //fetch all workflows for the user
+  const workflows = await Workflow.find({ userId: userId }).lean();
+  res.status(200).json({
+    success: true,
+    message: "Workflows fetched successfully",
+    workflows: workflows,
   });
 };
 
@@ -268,6 +286,7 @@ const disableWorkflows = async (req, res) => {
 module.exports = {
   createWorkflow,
   getAllWorkflows,
+  getAllWorkflowsForUser,
   deleteWorkflow,
   getWorkflowCounts,
   permanentlyDeleteWorkflow,

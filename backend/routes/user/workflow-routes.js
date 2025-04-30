@@ -9,10 +9,12 @@ const {
   deleteMultipleWorkflows,
   enableWorkflows,
   disableWorkflows,
+  getAllWorkflowsForUser,
 } = require("../../controllers/user/workflow-controller");
 
 router.post("/createworkflow/:userId", createWorkflow);
 router.get("/getallworkflows/:userId", getAllWorkflows);
+router.get("/getAllWorkflowsForUser/:userId", getAllWorkflowsForUser);
 router.put("/deleteworkflow/:workflowId", deleteWorkflow);
 router.delete(
   "/permanentlydeleteworkflow/:workflowId",
