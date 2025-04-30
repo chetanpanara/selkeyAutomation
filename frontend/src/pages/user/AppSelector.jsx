@@ -21,6 +21,8 @@ const AppSelector = () => {
   );
   const [showWebhookSection, setShowWebhookSection] = useState(false);
   const [triggerEvents, setTriggerEvents] = useState([]);
+  const [selectedTriggerHelptext, setSelectedTriggerHelptext] = useState(""); // State to store helptext of the selected trigger
+  const [selectedTriggerInstruction, setSelectedTriggerInstruction] = useState(""); // State to store Instruction of the selected trigger
   const triggerDropdownRef = useRef(null);
   const triggerEventDropdownRef = useRef(null);
   const triggerSectionRef = useRef(null);
@@ -126,6 +128,8 @@ const AppSelector = () => {
     setWebhookUrl(trigger.link);
     setIsTriggerEventExpanded(false);
     setShowWebhookSection(true);
+    setSelectedTriggerHelptext(trigger.helptext); // Store helptext for the selected trigger
+    setSelectedTriggerInstruction(trigger.instructions);
   };
 
   const handleTriggerSearchChange = (e) => {
@@ -357,44 +361,13 @@ const AppSelector = () => {
             </div>
 
             <div className="mb-4">
-              <h3 className="font-medium mb-2">Follow the steps below:</h3>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>
-                  Log in to the application where you want to enter the webhook
-                  URL.
-                </li>
-                <li>
-                  Copy the webhook URL and add it under the webhook section of the
-                  application.
-                </li>
-                <li>
-                  Click on the below "Capture Webhook Response" button and do a
-                  test record so that the webhook response can be captured here.
-                </li>
-              </ul>
+              <h3 className="font-medium mb-2">Follow the Instruction below:</h3>
+              <p>{selectedTriggerInstruction || "No additional information available."}</p>
             </div>
 
             <div className="p-4 bg-blue-50 border-l-4 border-blue-500 mb-4">
               <h4 className="font-medium">Important Note:</h4>
-              <p>
-                The webhook URL is unique for every workflow. Webhook URLs of two
-                different workflows may look similar but they are not exactly the
-                same.
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <span className="mr-3">Simple Response</span>
-                <label className="inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    defaultChecked
-                  />
-                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
+              <p>{selectedTriggerHelptext || "No additional information available."}</p>
             </div>
 
             <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">
