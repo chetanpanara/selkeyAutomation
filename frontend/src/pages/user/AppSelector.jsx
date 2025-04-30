@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllApps } from "@/store/slices/app-slice";
 import { getTriggers } from "@/store/slices/trigger-slice";
 import { getActions } from "@/store/slices/action-slice";
+import Sidebar from "./Sidebar"; // Import Sidebar component
 
 const AppSelector = () => {
   // Common state (shared between trigger and action)
@@ -17,7 +18,7 @@ const AppSelector = () => {
   const [isTriggerEventExpanded, setIsTriggerEventExpanded] = useState(false);
   const [selectedTriggerEvent, setSelectedTriggerEvent] = useState(null);
   const [webhookUrl, setWebhookUrl] = useState(
-    "https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjYwNTY4MDYzNTA0MzE1MjY4NTUzMDUxMzli"
+    "https://selkautomation.com/workflow/sendwebhookdata/IjU3NjYwNTY4MDYzNTA0MzE1MjY4NTUzMDUxMzli"
   );
   const [showWebhookSection, setShowWebhookSection] = useState(false);
   const [triggerEvents, setTriggerEvents] = useState([]);
@@ -186,6 +187,17 @@ const AppSelector = () => {
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(webhookUrl);
     // Could add a toast notification here
+  };
+
+  // Sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar visibility
+
+  const handleConnectClick = () => {
+    setIsSidebarOpen(true); // Open the sidebar
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false); // Close the sidebar
   };
 
   return (
@@ -527,7 +539,28 @@ const AppSelector = () => {
             </div>
           </div>
         )}
+        {/* Add "Connect" button */}
+        {selectedActionEvent && (
+          <div className="mt-6">
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
+              onClick={handleConnectClick} // Open sidebar on click
+            >
+              Connect
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Sidebar Component */}
+      {isSidebarOpen && (
+        <Sidebar
+          onClose={handleCloseSidebar}
+          appId={selectedActionApp?._id} // Pass appId
+          appName={selectedActionApp?.appName} // Pass appName
+          logoUrl={selectedActionApp?.logoUrl} // Pass logoUrl
+        />
+      )}
     </>
   );
 };
