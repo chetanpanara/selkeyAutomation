@@ -18,7 +18,6 @@ export const fetchAllWorkflows = createAsyncThunk(
 );
 
 // fetch all workflows for user
-// http://localhost:5000/api/workflows/getAllWorkflowsForUser/:userId
 export const fetchAllWorkflowsForUser = createAsyncThunk(
   "workflows/fetchAllWorkflowsForUser",
   async ({ userId }) => {
