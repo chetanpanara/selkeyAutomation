@@ -3,6 +3,18 @@ import { useState } from "react";
 const Sidebar = ({ onClose, appId, appName, logoUrl }) => {
   const [connectionType, setConnectionType] = useState("new"); // State to manage selected radio button
 
+
+  const [formData, setFormData] = useState({
+    connectionName: "",
+    token: "",
+    phoneNumberId: "",
+    businessAccountId: "",
+  });
+
+  const handelsaveclick = () => { 
+    console.log(formData);
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Overlay */}
@@ -72,6 +84,7 @@ const Sidebar = ({ onClose, appId, appName, logoUrl }) => {
                 <input
                   type="text"
                   placeholder="Enter Connection Name"
+                  onChange={(e) => setFormData({ ...formData, connectionName: e.target.value })}
                   className="w-full px-4 py-2 border bg-gray-100 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -84,6 +97,7 @@ const Sidebar = ({ onClose, appId, appName, logoUrl }) => {
                 </label>
                 <input
                   type="text"
+                  onChange={(e) => setFormData({ ...formData, token: e.target.value })}
                   placeholder="Enter the system's user-generated token here."
                   className="w-full px-4 py-2 border bg-gray-100 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -105,7 +119,8 @@ const Sidebar = ({ onClose, appId, appName, logoUrl }) => {
                   Phone Number ID
                 </label>
                 <input
-                  type="text"
+                  type="number"
+                  onChange={(e) => setFormData({ ...formData, phoneNumberId: e.target.value })}
                   placeholder="Enter Phone Number ID here."
                   className="w-full px-4 py-2 border bg-gray-100 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -120,7 +135,8 @@ const Sidebar = ({ onClose, appId, appName, logoUrl }) => {
                   WhatsApp Business Account ID
                 </label>
                 <input
-                  type="text"
+                  type="number"
+                  onChange={(e) => setFormData({ ...formData, businessAccountId: e.target.value })}
                   placeholder="Enter WhatsApp Business Account ID here."
                   className="w-full px-4 py-2 border bg-gray-100 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -160,7 +176,7 @@ const Sidebar = ({ onClose, appId, appName, logoUrl }) => {
             >
               Cancel
             </button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">
+            <button onClick={handelsaveclick} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">
               Save
             </button>
           </div>

@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { loginUser } from "@/store/slices/auth-slice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
 function AuthLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,29 +45,30 @@ function AuthLogin() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-md w-full space-y-4 bg-white p-6 rounded-3xl shadow-xl">
-        <div className="text-center">
-          <img
-            alt="Selkey Automation"
-            src={logo}
-            className="mx-auto h-10 w-auto transform transition-transform duration-300 hover:scale-110"
-          />
-          <h2 className="mt-3 text-2xl font-bold text-gray-900 tracking-tight">
-            Welcome Back
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Please sign in to continue your journey
-          </p>
-        </div>
+    <div className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-xl  ">
+      {/* Card Header */}
+      <div className="bg-indigo-600 px-6 py-5 text-center">
+        <img
+          alt="Selkey Automation"
+          src={logo}
+          className="mx-auto h-12 w-auto transform transition-transform duration-300 hover:scale-110"
+        />
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-white">
+          Welcome Back
+        </h2>
+        <p className="mt-2 text-sm text-indigo-100">
+          Please sign in to continue your journey
+        </p>
+      </div>
 
-        <form className="mt-4 space-y-2" onSubmit={handleSubmit}>
-          {/* {error && <div className="text-red-500 text-center">{error}</div>} */}
-          <div className="space-y-2">
+      {/* Form Body */}
+      <div className="px-4 py-4">
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="space-y-4">
             <div className="group text-left">
               <label
                 htmlFor="email"
-                className="text-sm font-medium text-gray-700 mb-1 transition-colors group-hover:text-indigo-600"
+                className="mb-1 block text-sm font-medium text-gray-700 transition-colors group-hover:text-indigo-600"
               >
                 Email Address
               </label>
@@ -82,8 +84,8 @@ function AuthLogin() {
                   placeholder="Enter your email"
                   autoComplete="email"
                   required
-                  className="block w-full px-3 py-1.5 border border-indigo-200 rounded-2xl text-gray-900 placeholder-gray-400 
-                           focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 hover:border-indigo-300 focus:outline-none"
+                  className="block w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400 
+                             focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 hover:border-indigo-300"
                 />
               </div>
             </div>
@@ -91,7 +93,7 @@ function AuthLogin() {
             <div className="group text-left">
               <label
                 htmlFor="password"
-                className="text-sm font-medium text-gray-700 mb-1 transition-colors group-hover:text-indigo-600"
+                className="mb-1 block text-sm font-medium text-gray-700 transition-colors group-hover:text-indigo-600"
               >
                 Password
               </label>
@@ -107,25 +109,39 @@ function AuthLogin() {
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   required
-                  className="block w-full px-3 py-1.5 border border-gray-300 rounded-2xl text-gray-900 placeholder-gray-400
-                           focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 hover:border-indigo-300 focus:outline-none"
+                  className="block w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-400
+                             focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 hover:border-indigo-300"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition-colors focus:outline-none"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-indigo-600 focus:outline-none"
                 >
                   {showPassword ? (
-                    <FaEye className="h-4 w-4" />
+                    <FaEye className="h-5 w-5" />
                   ) : (
-                    <FaEyeSlash className="h-4 w-4" />
+                    <FaEyeSlash className="h-5 w-5" />
                   )}
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-700"
+              >
+                Remember me
+              </label>
+            </div>
             <a
               href="/auth/forgot-password"
               className="text-sm font-medium text-indigo-600 hover:text-indigo-500 hover:underline"
@@ -137,23 +153,16 @@ function AuthLogin() {
           <div>
             <button
               type="submit"
-              className="w-full py-1.5 px-4 text-white bg-indigo-600 rounded-2xl font-medium text-sm
-                       hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              className="w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-sm
+                         transition-all hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             >
               Sign in
             </button>
           </div>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">or</span>
-            </div>
-          </div>
 
-          <div className="text-center">
+
+          <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
               <a
