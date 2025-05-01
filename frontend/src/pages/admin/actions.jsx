@@ -30,6 +30,12 @@ function actions() {
   // Add dialog state
   const [isAddActionDialogOpen, setIsAddActionDialogOpen] = useState(false);
 
+  // State for managing parameters
+  const [setAuthParams, setSetAuthParams] = useState([""]);
+  const [showSetAuthParams, setShowSetAuthParams] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [currentParamIndex, setCurrentParamIndex] = useState(null);
+
   // Toggle dropdown function
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
@@ -177,6 +183,35 @@ function actions() {
       responseType: "Simple (Default)",
       helpText: "",
     });
+  };
+
+  // Function to handle checkbox change for Set Auth Params
+  const handleSetAuthParamsChange = () => {
+    setShowSetAuthParams((prev) => !prev);
+  };
+
+  // Function to handle adding a new input field for Set Auth Params
+  const handleAddSetAuthParam = () => {
+    setSetAuthParams((prev) => [...prev, ""]);
+  };
+
+  // Function to handle removing an input field for Set Auth Params
+  const handleRemoveSetAuthParam = (index) => {
+    if (setAuthParams.length > 1) {
+      setSetAuthParams((prev) => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  // Function to handle opening the settings modal
+  const handleOpenSettingsModal = (index) => {
+    setCurrentParamIndex(index);
+    setIsSettingsModalOpen(true);
+  };
+
+  // Function to handle closing the settings modal
+  const handleCloseSettingsModal = () => {
+    setIsSettingsModalOpen(false);
+    setCurrentParamIndex(null);
   };
 
   return (
@@ -352,7 +387,7 @@ function actions() {
             </div>
           </div>
 
-          {/* actions Detail Section */}
+          {/* Actions Detail Section */}
           <div className="w-full md:w-2/3 lg:w-3/4">
             <div className="bg-white rounded-md shadow">
               <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -503,7 +538,7 @@ function actions() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
                     </span>
@@ -632,14 +667,134 @@ function actions() {
                   Save
                 </button>
               </form>
+
+            </div>
+
+            {/* API Configuration Section */}
+            <div className="w-full bg-white rounded-md shadow mt-6">
+              <div className="p-4 border-b border-gray-200">
+                <h2 className="text-lg font-medium">Action Event API Configuration</h2>
+              </div>
+              <div className="p-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    HTTP Method <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>PUT</option>
+                    <option>DELETE</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    API Endpoint URL <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://example.com/api/endpoint"
+                    className="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="httpHeaders"
+                      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="httpHeaders" className="ml-2 text-sm text-gray-700">
+                      HTTP Headers
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="queryParams"
+                      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      onChange={handleSetAuthParamsChange}
+                    />
+                    <label htmlFor="queryParams" className="ml-2 text-sm text-gray-700">
+                      Set Body/Query/Path Parameters
+                    </label>
+                  </div>
+                  {showSetAuthParams && (
+                    <>
+                      {setAuthParams.map((param, index) => (
+                        <div key={index} className="flex items-center mt-2">
+                          <input
+                            type="text"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:outline-blue-300"
+                            placeholder="Enter parameter key e.g. subdomain"
+                            value={param}
+                            onChange={(e) => {
+                              const newParams = [...setAuthParams];
+                              newParams[index] = e.target.value;
+                              setSetAuthParams(newParams);
+                            }}
+                          />
+                          <div className="flex items-end ml-2">
+                            <button
+                              type="button"
+                              className="text-gray-500 hover:text-blue-600"
+                              onClick={() => handleOpenSettingsModal(index)}
+                            >
+                              ⚙️
+                            </button>
+                            <button
+                              type="button"
+                              className="ml-2 text-gray-500 hover:text-blue-600"
+                              onClick={() => handleRemoveSetAuthParam(index)}
+                            >
+                              ➖
+                            </button>
+                            <button
+                              type="button"
+                              className="ml-2 text-gray-500 hover:text-blue-600"
+                              onClick={handleAddSetAuthParam}
+                            >
+                              ➕
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="requestBody"
+                      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="requestBody" className="ml-2 text-sm text-gray-700">
+                      Request Body (Raw JSON)
+                    </label>
+                  </div>
+                </div>
+                <button className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </>)}
 
 
-
-
       </div>
+
+      {/* Settings Modal */}
+      <Dialog open={isSettingsModalOpen} onOpenChange={handleCloseSettingsModal}>
+        <DialogContent className="w-[95vw] max-w-md mx-auto p-4">
+          <h2 className="text-xl font-semibold mb-4">
+            Settings for Parameter {currentParamIndex + 1}
+          </h2>
+          <p>Configure settings for parameter at index {currentParamIndex}.</p>
+          <Button onClick={handleCloseSettingsModal}>Close</Button>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

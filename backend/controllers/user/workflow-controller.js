@@ -49,7 +49,6 @@ const createWorkflow = async (req, res) => {
 //get all user workflows folder wise
 const getAllWorkflows = async (req, res) => {
   const { userId } = req.params;
-  console.log(userId, "userid in workflow controller");
   if (!userId) {
     return res.status(400).json({
       success: false,
