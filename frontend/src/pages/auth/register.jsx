@@ -56,16 +56,16 @@ function AuthRegister() {
   return (
     <div className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-xl">
       {/* Card Header */}
-      <div className="bg-indigo-600 px-6 py-5 text-center">
+      <div className="bg-gray-100 px-6 py-5 text-center">
         <img
           alt="Selkey Automation"
           src={logo}
           className="mx-auto h-12 w-auto transform transition-transform duration-300 hover:scale-110"
         />
-        <h2 className="mt-3 text-2xl font-bold tracking-tight text-white">
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-indigo-500">
           Create an Account
         </h2>
-        <p className="mt-2 text-sm text-indigo-100">
+        <p className="mt-2 text-sm text-gray-700">
           Join us and start your journey
         </p>
       </div>
