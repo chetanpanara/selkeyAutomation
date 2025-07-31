@@ -7,8 +7,7 @@ const initialState = {
 };
 
 // fetch all folders
-export const fetchAllFolders = createAsyncThunk(
-  "folders/fetchAllFolders",
+export const fetchAllFolders = createAsyncThunk("folders/fetchAllFolders",
   async (userId) => {
     const response = await api.get(`/api/folders/getallfolders/${userId}`);
 
